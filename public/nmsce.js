@@ -4384,13 +4384,12 @@ class NMSCE {
 
             let ref = doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)
 
+            let res = await getDoc(doc(collection(ref, "votes"), bhs.user.uid));
+            
             e = {}
 
-            let vref = collection(ref, "votes")
-            vref = doc(vref, bhs.user.uid)
-            let doc = await vref.get()
-            if (doc.exists()) {
-                e = doc.data()
+            if (res.exists()) {
+                e = res.data()
                 v = typeof e[id] === "undefined" ? 1 : e[id] ? 0 : 1
             }
 
@@ -4406,7 +4405,7 @@ class NMSCE {
             if (this.last.Type)
                 e.Type = this.last.Type
 
-            setDoc(ref, e, {
+            await setDoc(res.ref, e, {
                 merge: true
             })
 
@@ -4415,14 +4414,14 @@ class NMSCE {
             e = {}
             e[id] = increment(v ? 1 : -1)
 
-            setDoc(ref, {
+            await setDoc(ref, {
                 votes: e
             }, {
                 merge: true
             })
 
             ref = doc(collection(ref, "nmsceCommon"), this.last.id)
-            setDoc(ref, {
+            await setDoc(ref, {
                 votes: e
             }, {
                 merge: true
