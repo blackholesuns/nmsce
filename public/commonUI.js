@@ -235,13 +235,11 @@ blackHoleSuns.prototype.displayUser = function (user, force) {
         }
     }
 
-    // TODO: Figure out what this does and if its needed?
     if (
-        typeof Storage !== "undefined" &&
-        (!bhs.user.galaxy || !bhs.user.platform)
+        typeof Storage !== "undefined"
     ) {
-        bhs.user.galaxy = window.localStorage.getItem("galaxy");
-        bhs.user.platform = window.localStorage.getItem("platform");
+        bhs.user.galaxy = bhs.user.galaxy || window.localStorage.getItem("galaxy");
+        bhs.user.platform = bhs.user.platform || window.localStorage.getItem("platform");
     }
 
     $("body").css(
@@ -912,8 +910,8 @@ blackHoleSuns.prototype.buildTotals = function () {
     $("#hdr-Player").html(h);
     $("#itm-Player").empty();
 
-    let galaxy = bhs.user.galaxy ? bhs.user.galaxy : "Euclid";
-    let platform = bhs.user.platform ? bhs.user.platform : "PC-XBox";
+    let galaxy = bhs.user.galaxy || "Euclid";
+    let platform = bhs.user.platform || "PC-XBox";
 
     totalsRows.forEach((x) => {
         let t = /altplatform/[Symbol.replace](
@@ -983,8 +981,8 @@ blackHoleSuns.prototype.displayTotals = function (e, refpath) {
         colid = "id-Player";
     } else colid = "id-Total";
 
-    let platform = bhs.user.platform ? bhs.user.platform : "PC-XBox";
-    let galaxy = bhs.user.galaxy ? bhs.user.galaxy : "Euclid";
+    let platform = bhs.user.platform || "PC-XBox";
+    let galaxy = bhs.user.galaxy || "Euclid";
 
     for (let rid of totalsRows) {
         let loc = tot.find("#" + rid.id).find("#" + colid);
