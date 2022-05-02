@@ -126,7 +126,7 @@ export class blackHoleSuns {
         //     $("#loggedout").html("<h4>" + errorMessage + "</h4>")
         // })
     
-        this.fbauth.onAuthStateChanged(this.onAuthStateChanged.bind(bhs))
+        this.fbauth.onAuthStateChanged(this.onAuthStateChanged.bind(this))
     }
     
     logIn() {
@@ -190,6 +190,7 @@ export class blackHoleSuns {
             if (usr.displayName)
                 user.displayName = usr.displayName
     
+            user.platform = usr.platform || 'PC-XBox';
             user.role = usr.role || 'user';
             user.lasttime = Timestamp.now()
             this.updateUser(user)
@@ -218,7 +219,7 @@ export class blackHoleSuns {
     }
     
     async updateUser(user) {
-        this.user = mergeObjects(this.user, user)
+        this.user = Object.assign(this.user, user)
     
         if (this.user.uid) {
             let ref = this.getUsersColRef(this.user.uid)
