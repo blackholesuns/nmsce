@@ -1,0 +1,22 @@
+{
+  "name": "nmsce",
+  "version": "1.0.0",
+  "description": "A web app to search all of the NMSCE submissions",
+  "main": "index.js",
+  "scripts": {
+    "dev": "firebase serve --only hosting"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blackholesuns/nmsce.git"
+  },
+  "keywords": [
+    "\\"
+  ],
+  "author": "Stephen Piper, Christopher-Robin Ebbinghaus",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blackholesuns/nmsce/issues"
+  },
+  "homepage": "https://github.com/blackholesuns/nmsce#readme"
+}

@@ -276,8 +276,8 @@ export class blackHoleSuns {
     }
     
     getEntry(addr, displayfcn, galaxy, platform, connection) {
-        galaxy = galaxy ? galaxy : this.user.galaxy
-        platform = platform ? platform : this.user.platform
+        galaxy = galaxy || this.user.galaxy
+        platform = platform || this.user.platform
         let ref = this.getStarsColRef(galaxy, platform, addr)
     
         const pnlTop = 0
@@ -324,8 +324,8 @@ export class blackHoleSuns {
     }
     
     async getEntryByRegion(reg, displayfcn, galaxy, platform) {
-        galaxy = galaxy ? galaxy : this.user.galaxy
-        platform = platform ? platform : this.user.platform
+        galaxy = galaxy || this.user.galaxy
+        platform = platform || this.user.platform
         let ref = this.getStarsColRef(galaxy, platform)
     
         ref = query(ref, where("reg", "==", reg))
@@ -354,8 +354,8 @@ export class blackHoleSuns {
     }
     
     async getEntryBySystem(sys, displayfcn, galaxy, platform) {
-        galaxy = galaxy ? galaxy : this.user.galaxy
-        platform = platform ? platform : this.user.platform
+        galaxy = galaxy || this.user.galaxy
+        platform = platform || this.user.platform
         let ref = this.getStarsColRef(galaxy, platform)
     
         ref = query(ref, where("sys", "==", sys))
@@ -383,33 +383,39 @@ export class blackHoleSuns {
         })
     }
     
-    getEntryByRegionAddr(addr, displayfcn) {
+    async getEntryByRegionAddr(addr, displayfcn) {
+        if (!this.user.platform)
+            throw "user.platform was not defined";
+
         let ref = this.getStarsColRef(this.user.galaxy, this.user.platform)
     
+        if(ref.type == 'document')
+            throw "getStarsColRef returned a document";
+
         let aw = where("addr", ">=", addr.slice(0, 15) + "0000");
         let bw = where("addr", "<=", addr.slice(0, 15) + "02FF");
         ref = query(ref, aw, bw);
     
-        return getDocs(ref).then(async snapshot => {
-            if (!snapshot.empty) {
-                for (let doc of snapshot.docs) {
-                    let d = doc.data()
-                    if (d.reg !== "") {
-                        if (displayfcn)
-                            displayfcn(d)
-    
-                        return d
-                    }
+        let snapshot = await getDocs(ref).catch(err => {
+            console.log(err)
+        });
+
+        if (!snapshot.empty) {
+            for (let doc of snapshot.docs) {
+                let d = doc.data()
+                if (d.reg !== "") {
+                    if (displayfcn)
+                        displayfcn(d)
+
+                    return d
                 }
             }
-        }).catch(err => {
-            console.log(err)
-        })
+        }
     }
     
     async getEntryByConnection(addr, galaxy, platform) {
-        galaxy = galaxy ? galaxy : this.user.galaxy
-        platform = platform ? platform : this.user.platform
+        galaxy = galaxy || this.user.galaxy
+        platform = platform || this.user.platform
         let ref = this.getStarsColRef(galaxy, platform)
     
         ref = query(ref, where("connection", "==", addr))
@@ -670,8 +676,8 @@ export class blackHoleSuns {
     }
     
     async getEntries(displayFcn, singleDispFcn, uid, galaxy, platform) {
-        galaxy = galaxy ? galaxy : this.user.galaxy
-        platform = platform ? platform : this.user.platform
+        galaxy = galaxy || this.user.galaxy
+        platform = platform || this.user.platform
         let complete = false
     
         let ref = this.getStarsColRef(galaxy, platform)
@@ -757,9 +763,9 @@ export class blackHoleSuns {
     }
     
     async getEntriesByName(displayFcn, name, galaxy, platform) {
-        name = name ? name : this.user._name
-        galaxy = galaxy ? galaxy : this.user.galaxy
-        platform = platform ? platform : this.user.platform
+        name = name || this.user._name
+        galaxy = galaxy || this.user.galaxy
+        platform = platform || this.user.platform
     
         if (!this.loaded || !this.loaded[galaxy] || !this.loaded[galaxy][platform])
             await this.getEntries(null, null, null, galaxy, platform)
@@ -780,9 +786,9 @@ export class blackHoleSuns {
     }
     
     async getOrgEntries(displayFcn, name, galaxy, platform) {
-        name = name ? name : this.user.org
-        galaxy = galaxy ? galaxy : this.user.galaxy
-        platform = platform ? platform : this.user.platform
+        name = name || this.user.org
+        galaxy = galaxy || this.user.galaxy
+        platform = platform || this.user.platform
     
         if (!this.loaded || !this.loaded[galaxy] || !this.loaded[galaxy][platform])
             await this.getEntries(null, null, null, galaxy, platform)

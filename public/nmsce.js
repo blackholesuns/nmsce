@@ -268,7 +268,7 @@ class NMSCE {
             })
         }
 
-        addGlyphButtons($("#glyphbuttons"), this.addGlyph)
+        addGlyphButtons($("#glyphbuttons"), this.addGlyph.bind(this))
 
         if (fcedata) {
             let rloc = $("#panels")
