@@ -8,7 +8,6 @@ bootstrap.js
 env.js
 *.cache
 /.firebase/
-/.vscode/
 .metadata
 tmp.*
 
