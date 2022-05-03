@@ -1129,15 +1129,4 @@ export class blackHoleSuns {
     
         return error
     }
-    
-    validateDist(entry) {
-        let error = ""
-    
-        if (entry.dist < 3200) error = entry.addr + " star in center void"
-        else if (entry.dist > 3600 && entry.towardsCtr < 0) error = entry.addr + " => " + entry.connection + " distance < 0"
-        else if (entry.dist <= 3600 && entry.towardsCtr < -400) error = entry.addr + " => " + entry.connection + ` distance < -400`
-        else if (entry.dist <= 819200 && entry.towardsCtr > 21000) error = entry.addr + " => " + entry.connection + ` distance > 21000`
-    
-        return error
-    }
 }
