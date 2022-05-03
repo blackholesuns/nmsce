@@ -7,6 +7,7 @@ import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
+import { Version } from "./metadata.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
@@ -26,6 +27,7 @@ $(document).ready(() => {
     startUp();
 
     $("#cemenus").load("cemenus.html", () => {
+        $("#version-number").text("v" + Version)
         let loc = fnmsce ? $("#searchpage") : fcedata ? $("#entrypage") : []
         if (loc.length > 0) {
             loc.css("border-color", "red")
