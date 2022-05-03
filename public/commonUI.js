@@ -148,8 +148,7 @@ blackHoleSuns.prototype.hasRole = function (role) {
 blackHoleSuns.prototype.isRole = function (role) {
     let ok = bhs.roles;
     ok = ok && bhs.roles.includes(role);
-    ok = ok && bhs.user.role === role;
-    return bhs.roles && bhs.roles.includes(role) && bhs.user.role === role;
+    return ok;
 };
 
 blackHoleSuns.prototype.setError = function () {

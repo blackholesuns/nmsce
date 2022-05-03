@@ -1,7 +1,7 @@
 'use strict'
 
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js"
-import { addGlyphButtons, addressToXYZ, addrToGlyph, fnmsce, getIndex, mergeObjects, reformatAddress } from "./commonNms.js"
+import { addGlyphButtons, addressToXYZ, addrToGlyph, fnmsce, getIndex, mergeObjects, reformatAddress, validateAddress } from "./commonNms.js"
 import { economyList, galaxyList, latestversion, lifeformList, ownershipList, platformList } from "./constants.js"
 
 // Copyright 2019-2021 Black Hole Suns
@@ -586,7 +586,7 @@ blackHoleSuns.prototype.extractEntry = async function (idx) {
     let lastentry = bhs.last[idx] ? bhs.last[idx] : null
     let addr = loc.find("#id-addr").val()
 
-    let err = bhs.validateAddress(addr)
+    let err = validateAddress(addr)
     let ok = err === ""
 
     let hasbase = loc.find("#ck-hasbase").prop("checked")

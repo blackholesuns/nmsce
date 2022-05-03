@@ -1108,7 +1108,7 @@ export class blackHoleSuns {
     
         let str
         if (nobh) {
-            if (ok && (str = this.validateAddress(entry.addr)) != "") {
+            if (ok && (str = validateAddress(entry.addr)) != "") {
                 error += "Invalid address. (" + str + ") "
                 ok = false
             }
@@ -1128,10 +1128,6 @@ export class blackHoleSuns {
             this.status("Error: " + error + "Changes not saved.", 0)
     
         return error
-    }
-    
-    validateAddress(addr, ck) {
-        return validateAddress(addr, ck)
     }
     
     validateDist(entry) {

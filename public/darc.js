@@ -11,7 +11,6 @@ import { buildGlyphModal } from "./glyphReader.js"
 // Hack to make the function global. Should be avoided and code should be reformatted to not use it
 window.dispAddr = dispAddr;
 window.dispGlyph = dispGlyph;
-window.validateAddress = validateAddress
 
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
@@ -177,7 +176,7 @@ blackHoleSuns.prototype.setAddress = function (evt, addr) {
 
     if (addr !== "") {
         addr = reformatAddress(addr)
-        let err = bhs.validateAddress(addr, true)
+        let err = validateAddress(addr, true)
         if (err !== "")
             bhs.status(err)
         else {
@@ -325,13 +324,13 @@ blackHoleSuns.prototype.calcroute = async function (proximity) {
     let start = $("#id-addrInput #w-start #id-addr").val()
     let end = $("#id-addrInput #w-end #id-addr").val()
 
-    let err = bhs.validateAddress(start)
+    let err = validateAddress(start)
     if (err !== "") {
         bhs.status(err, true)
         return
     }
 
-    err = bhs.validateAddress(end, true)
+    err = validateAddress(end, true)
     if (err !== "") {
         bhs.status(err)
         return

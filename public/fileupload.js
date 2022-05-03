@@ -1,7 +1,7 @@
 'use strict'
 import { Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
 import { bhs, blackHoleSuns } from "./commonFb.js"
-import { addressToXYZ, mergeObjects, reformatAddress, uuidv4 } from "./commonNms.js"
+import { addressToXYZ, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js"
 import { conflictList, economyList, galaxyList, lifeformList, ownershipList, platformList } from "./constants.js"
 
 // Copyright 2019-2021 Black Hole Suns
@@ -535,9 +535,9 @@ function formatOwned(val) {
 }
 
 function validateBHAddress(addr) {
-    return bhs.validateAddress(addr, "bh")
+    return validateAddress(addr, "bh")
 }
 
 function validateExitAddress(addr) {
-    return bhs.validateAddress(addr, "exit")
+    return validateAddress(addr, "exit")
 }

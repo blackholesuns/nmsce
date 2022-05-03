@@ -4,7 +4,7 @@ import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-
 import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
-import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4 } from "./commonNms.js";
+import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
 
@@ -707,7 +707,7 @@ class NMSCE {
             entry.Economy = loc.prop("id").stripID()
 
         entry.xyzs = addressToXYZ(entry.addr)
-        let err = bhs.validateAddress(entry.addr)
+        let err = validateAddress(entry.addr)
         if (err) {
             bhs.status(err)
             ok = false
