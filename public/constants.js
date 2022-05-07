@@ -121,9 +121,8 @@ export const versionList = [
         date: "2/19/2020",
         changed: [
             {
-                type: "Ship",
-                Crashed: true,
-            },
+                type: "Ship/Crashed"
+            }
         ],
     },
     {
@@ -196,6 +195,11 @@ export const versionList = [
         name: "outlaws",
         version: 3.85,
         date: "4/13/2022",
+        changed: [
+            {
+                type: "ship/Shuttle"
+            }
+        ]
     }
 ];
 
