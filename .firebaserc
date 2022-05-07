@@ -1,4 +1,7 @@
 {
+  "projects": {
+    "nmsce": "nmsce.app"
+  },
   "targets": {
     "deploy": {
       "hosting": {
@@ -16,12 +19,9 @@
           "test-nms-bhs"
         ],
         "nmsce": [
-          "nmsce-app"
+          "nmsce.app"
         ]
       }
     }
-  },
-  "projects": {
-    "nmsce": "nmsce.app"
   }
 }
