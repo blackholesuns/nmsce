@@ -1,5 +1,9 @@
 'use strict'
 
+import { bhs, blackHoleSuns, startUp } from "./commonFb.js"
+import { addGlyphButtons, addressToXYZ, addrToGlyph, fnmsce, getIndex, mergeObjects, reformatAddress, validateAddress, validateDistance } from "./commonNms.js"
+import { economyList, galaxyList, latestversion, lifeformList, ownershipList, platformList } from "./constants.js"
+
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
 
@@ -20,7 +24,7 @@ $(document).ready(() => {
 
     $("#delete").click(async () => {
         $("#status").empty()
-        let b = bhs.fs.batch()
+        let b = writeBatch(bhs.fs)
 
         bhs.deleteEntry(bhs.last[pnlTop], b)
         if (bhs.last[pnlTop].basename)
@@ -582,7 +586,7 @@ blackHoleSuns.prototype.extractEntry = async function (idx) {
     let lastentry = bhs.last[idx] ? bhs.last[idx] : null
     let addr = loc.find("#id-addr").val()
 
-    let err = bhs.validateAddress(addr)
+    let err = validateAddress(addr)
     let ok = err === ""
 
     let hasbase = loc.find("#ck-hasbase").prop("checked")
@@ -653,7 +657,7 @@ blackHoleSuns.prototype.extractEntry = async function (idx) {
 
     if (ok) {
         if (!single) {
-            err = bhs.validateDist(entry)
+            err = validateDistance(entry)
             ok = err === ""
         }
 
@@ -722,7 +726,7 @@ blackHoleSuns.prototype.displayCalc = function () {
         entry.connection = connection
         entry.dist = tdist
         entry.towardsCtr = tdist - bdist
-        if (bhs.validateDist(entry) !== "")
+        if (validateDistance(entry) !== "")
             bottom.find("#id-tocenter").addClass("text-danger")
         else
             bottom.find("#id-tocenter").removeClass("text-danger")

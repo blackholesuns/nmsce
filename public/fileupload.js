@@ -1,4 +1,8 @@
 'use strict'
+import { Timestamp, writeBatch } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+import { bhs, blackHoleSuns } from "./commonFb.js"
+import { addressToXYZ, mergeObjects, reformatAddress, uuidv4, validateAddress, validateDistance } from "./commonNms.js"
+import { conflictList, economyList, galaxyList, lifeformList, ownershipList, platformList } from "./constants.js"
 
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
@@ -171,15 +175,15 @@ blackHoleSuns.prototype.readTextFile = function (f, id) {
         log._name = bhs.user._name
         log.galaxy = bhs.user.galaxy
         log.platform = bhs.user.platform
-        log.time = firebase.firestore.Timestamp.now()
+        log.time = Timestamp.now()
         log.file = file.name
         log.path = "fileupload/" + uuidv4() + file.name.replace(/.*(\..*)$/, "$1")
         log.log = ""
 
         if (!check)
-            bhs.fbstorage.ref().child(log.path).put(file)
+            uploadBytes(ref(bhs.fbstorage, log.path), file)
 
-        batch = bhs.fs.batch()
+        batch = writeBatch(bhs.fs)
         count = 0
 
         let allrows = reader.result.split(/\r?\n|\r/)
@@ -319,7 +323,7 @@ blackHoleSuns.prototype.readTextFile = function (f, id) {
                     ok = ok && err === ""
 
                     if (ok && !entry[1].deadzone)
-                        err = bhs.validateDist(entry[1])
+                        err = validateDistance(entry[1])
 
                     ok = ok && err === ""
 
@@ -346,7 +350,7 @@ blackHoleSuns.prototype.readTextFile = function (f, id) {
 
 blackHoleSuns.prototype.fWriteLog = async function (check) {
     if (log.log != "" && !check)
-        bhs.fs.collection("log").add(log)
+        addDoc(collection(bhs.fs, "log"), log)
 }
 
 blackHoleSuns.prototype.fBatchUpdate = async function (entry, exit, check, i, base) {
@@ -354,8 +358,8 @@ blackHoleSuns.prototype.fBatchUpdate = async function (entry, exit, check, i, ba
     let ok = false
 
     if (check) {
-        let doc = await ref.get()
-        if (doc.exists) {
+        let doc = await getDoc(ref)
+        if (doc.exists()) {
             let e = doc.data()
             if (e.uid !== entry.uid)
                 bhs.filestatus("row: " + (i + 1) + " can't write over system, " + e.addr + ", created by " + e._name, 0)
@@ -383,7 +387,7 @@ blackHoleSuns.prototype.fBatchUpdate = async function (entry, exit, check, i, ba
         if (entry.blackhole && exit) {
             entry.connection = exit.addr
 
-            exit.modded = firebase.firestore.Timestamp.now()
+            exit.modded = Timestamp.now()
             exit.xyzs = addressToXYZ(exit.addr)
             exit.dist = calcDist(exit.addr)
             entry.towardsCtr = entry.dist - exit.dist
@@ -398,7 +402,7 @@ blackHoleSuns.prototype.fBatchUpdate = async function (entry, exit, check, i, ba
             entry.x.econ = typeof exit.econ !== "undefined" ? exit.econ : ""
         }
 
-        entry.modded = firebase.firestore.Timestamp.now()
+        entry.modded = Timestamp.now()
 
         let ref = bhs.getStarsColRef(entry.galaxy, entry.platform, entry.addr)
         batch.set(ref, entry, {
@@ -423,8 +427,8 @@ blackHoleSuns.prototype.fBatchDelete = async function (entry, check) {
     let ref = bhs.getStarsColRef(entry.galaxy, entry.platform, entry.addr)
 
     if (check) {
-        doc = await ref.get()
-        if (!doc.exists)
+        doc = await getDoc(ref);
+        if (!doc.exists())
             bhs.filestatus(entry.addr + " doesn't exist for delete.", 0)
     } else {
         batch.delete(ref)
@@ -438,8 +442,8 @@ blackHoleSuns.prototype.fBatchDeleteBase = async function (entry, check) {
     let ref = bhs.getUsersColRef(entry.uid, entry.galaxy, entry.platform, entry.addr)
 
     if (check) {
-        await ref.get().then(function (doc) {
-            if (!doc.exists)
+        await getDoc(ref).then(function (doc) {
+            if (!doc.exists())
                 bhs.filestatus(entry.addr + " base doesn't exist for delete.", 0)
         }).catch(err => {
             bhs.filestatus("ERROR: " + err.code, 0)
@@ -455,7 +459,7 @@ blackHoleSuns.prototype.fBatchDeleteBase = async function (entry, check) {
 
 blackHoleSuns.prototype.fBatchWriteBase = async function (entry, check) {
     if (!check) {
-        entry.modded = firebase.firestore.Timestamp.now()
+        entry.modded = Timestamp.now()
         entry.xyzs = addressToXYZ(entry.addr)
         let err = await bhs.updateBase(entry)
         if (err)
@@ -471,7 +475,7 @@ blackHoleSuns.prototype.fCheckBatchSize = async function (flush) {
     if (flush && count > 0 || ++count > 500) {
         return await batch.commit().then(() => {
             bhs.filestatus("Commited " + count, 1)
-            batch = bhs.fs.batch()
+            batch = writeBatch(bhs.fs)
             count = 0
             return true
         }).catch(err => {
@@ -531,9 +535,9 @@ function formatOwned(val) {
 }
 
 function validateBHAddress(addr) {
-    return bhs.validateAddress(addr, "bh")
+    return validateAddress(addr, "bh")
 }
 
 function validateExitAddress(addr) {
-    return bhs.validateAddress(addr, "exit")
+    return validateAddress(addr, "exit")
 }

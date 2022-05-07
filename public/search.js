@@ -1,5 +1,10 @@
 'use strict'
 
+import { Timestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
+import { addressToXYZ, reformatAddress } from "./commonNms.js";
+import { galaxyList, platformList } from "./constants.js";
+
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
 
@@ -53,8 +58,8 @@ blackHoleSuns.prototype.search = function () {
     else if (reg != "")
         bhs.doSearch("reg", reg)
     else if (start != "" || end != "") {
-        start = start == "" ? 0 : firebase.firestore.Timestamp.fromDate(new Date(start)).seconds
-        end = end == "" ? Number.MAX_SAFE_INTEGER : firebase.firestore.Timestamp.fromDate(new Date(end)).seconds
+        start = start == "" ? 0 : Timestamp.fromDate(new Date(start)).seconds
+        end = end == "" ? Number.MAX_SAFE_INTEGER : Timestamp.fromDate(new Date(end)).seconds
 
         bhs.doSearch("created", start, end)
     } else
@@ -74,7 +79,7 @@ blackHoleSuns.prototype.searchReg = async function () {
     let galaxy = $("#btn-Galaxy").text().stripNumber()
     let platform = $("#btn-Platform").text().stripNumber()
 
-    let ref = bhs.fs.collection("stars5/" + galaxy + "/" + platform)
+    let ref = collection(bhs.fs, "stars5/" + galaxy + "/" + platform)
     bhs.entries = {}
     let p =[]
 
@@ -88,8 +93,8 @@ blackHoleSuns.prototype.searchReg = async function () {
                     s: xyz.s
                 })
 
-                p.push(ref.doc(a).get().then(doc => {
-                    if (doc.exists) {
+                p.push(doc(ref, a).get().then(doc => {
+                    if (doc.exists()) {
                         let e = doc.data()
                         bhs.entries[e.addr] = e
                     }

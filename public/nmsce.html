@@ -19,7 +19,7 @@
     <meta property="og:type" content="website" />
 
     <meta property="og:image:url"
-        content="http://raw.githubusercontent.com/spip01/nms-bhs-db/master/public/images/nmsce-ss.png" />
+        content="http://raw.githubusercontent.com/blackholesuns/nmsce/master/public/images/nmsce-ss.png" />
     <meta property="og:image:secure_url" content="https://nmsce.com/images/nmsce-ss.png" />
     <meta property="og:image:type" content="image/jpg" />
     <meta property="og:image:alt" content="Screenshot of NMSCE App" />
@@ -268,7 +268,7 @@
                         <div id="imgcol" class="col-lg-10 col-md-9 col-14">
                             <a id="permalink-img" href="">
                                 <img id="dispimage"
-                                    onload="nmsce.imageLoaded(this, $(this).parent().width(), $(window).height(), true)" />
+                                    onload="imageLoaded(this, $(this).parent().width(), $(window).height(), true)" />
                             </a>
                             <div class="row">
                                 <a id="permalink" class="col-10 h2 pl-30" href="">
@@ -382,17 +382,17 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
     </script>
 
-    <script src="/__/firebase/8.3.2/firebase-app.js"></script>
+    <!-- <script src="/__/firebase/8.3.2/firebase-app.js"></script>
     <script src="/__/firebase/8.3.2/firebase-auth.js"></script>
     <script src="/__/firebase/8.3.2/firebase-firestore.js"></script>
     <script src="/__/firebase/8.3.2/firebase-storage.js"></script>
     <script src="/__/firebase/8.3.2/firebase-functions.js"></script>
-    <script src="/__/firebase/init.js"></script>
+    <script src="/__/firebase/init.js"></script> -->
 
-    <script src="commonFb.js"></script>
-    <script src="commonUI.js"></script>
-    <script src="commonNms.js"></script>
-    <script src="nmsce.js"></script>
+    <script src="commonFb.js" type="module"></script>
+    <script src="commonUI.js" type="module"></script>
+    <script src="commonNms.js" type="module"></script>
+    <script src="nmsce.js" type="module"></script>
 </body>
 
 </html>

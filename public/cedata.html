@@ -19,7 +19,7 @@
     <meta property="og:type" content="website" />
 
     <meta property="og:image:url"
-        content="http://raw.githubusercontent.com/spip01/nms-bhs-db/master/public/images/nmsce-ss.png" />
+        content="http://raw.githubusercontent.com/blackholesuns/nmsce/master/public/images/nmsce-ss.png" />
     <meta property="og:image:secure_url" content="https://nmsce.com/images/nmsce-ss.png" />
     <meta property="og:image:type" content="image/jpg" />
     <meta property="og:image:alt" content="Screenshot of NMSCE App" />
@@ -341,7 +341,7 @@
                 <div id="id-img" class="col-lg-10 col-md-9 col-14 border">
                     <canvas id="id-canvas"></canvas>
                     <img id="id-ssImage"
-                        onload="nmsce.imageLoaded(this, $(this).parent().width(), $(window).height());$('body')[0].style.cursor = 'default';" />
+                        onload="imageLoaded(this, $(this).parent().width(), $(window).height());$('body')[0].style.cursor = 'default';" />
                 </div>
 
                 <div class="col-lg-4 col-md-5 col-14 pl-15">
@@ -490,17 +490,17 @@
     </script>
     <script src="https://kit.fontawesome.com/4c24999109.js" crossorigin="anonymous"></script>
 
-    <script src="/__/firebase/8.3.2/firebase-app.js"></script>
+    <!-- <script src="/__/firebase/8.3.2/firebase-app.js"></script>
     <script src="/__/firebase/8.3.2/firebase-auth.js"></script>
     <script src="/__/firebase/8.3.2/firebase-firestore.js"></script>
     <script src="/__/firebase/8.3.2/firebase-storage.js"></script>
     <script src="/__/firebase/8.3.2/firebase-functions.js"></script>
-    <script src="/__/firebase/init.js"></script>
+    <script src="/__/firebase/init.js"></script> -->
 
-    <script src="commonFb.js"></script>
-    <script src="commonUI.js"></script>
-    <script src="commonNms.js"></script>
-    <script src="nmsce.js"></script>
+    <script src="commonFb.js" type="module"></script>
+    <script src="commonUI.js" type="module"></script>
+    <script src="commonNms.js" type="module"></script>
+    <script src="nmsce.js" type="module"></script>
 
     <link
         href="https://fonts.googleapis.com/css?family=Redressed|Sedgwick+Ave+Display|Kaushan+Script|Permanent+Marker|Notable|Great+Vibes|Merienda+One|Inknut+Antiqua|Berkshire+Swash|Caveat+Brush|Amatic+SC&display=auto"

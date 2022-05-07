@@ -8,7 +8,6 @@ bootstrap.js
 env.js
 *.cache
 /.firebase/
-/.vscode/
 .metadata
 tmp.*
 
@@ -66,3 +65,6 @@ functions/reddit.json
 functions/redditPost.json
 functions/reddit.html
 functions/test.json
+
+#for local testing
+local.*.js

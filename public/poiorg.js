@@ -1,4 +1,8 @@
 'use strict'
+import { uploadBytes, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
+import { bhs, blackHoleSuns, startUp } from "./commonFb.js"
+import { getIndex, mergeObjects, reformatAddress, uuidv4 } from "./commonNms.js"
+import { galaxyList, modeList, platformList } from "./constants.js"
 
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
@@ -204,8 +208,7 @@ blackHoleSuns.prototype.listClick = function (evt) {
     pnl.find("#btn-delete").removeAttr("disabled")
 
     if (e.img) {
-        let ref = bhs.fbstorage.ref().child(e.img)
-        ref.getDownloadURL().then(url => {
+        getDownloadURL(ref(bhs.fbstorage, e.img)).then(url => {
             pnl.find("#img-pic").attr("src", url)
         }).catch(error => {
             console.log(error)
@@ -264,7 +267,7 @@ blackHoleSuns.prototype.save = async function (evt) {
         let pb = pnl.find("#progressbar")
         pb.show()
 
-        bhs.fbstorage.ref().child(e.img).put(file[0].files[0]).on('state_changed', function (snapshot) {
+        uploadBytes(ref(bhs.fbstorage, e.img) , file[0].files[0]).on('state_changed', function (snapshot) {
                 var pct = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
                 pb.css("width", pct + "%")
             },
@@ -276,15 +279,15 @@ blackHoleSuns.prototype.save = async function (evt) {
             })
     }
 
-    let ref = bhs.fs.collection(pnlid == "pnl-org" ? "org" : "poi")
+    let ref = collection(bhs.fs, pnlid == "pnl-org" ? "org" : "poi")
     if (idx != -1)
-        ref = ref.doc(list[idx].id)
+        ref = doc(ref, list[idx].id)
     else {
-        ref = ref.doc()
+        ref = doc(ref)
         e.id = ref.id
     }
 
-    await ref.set(e, {
+    await setDoc(ref, e, {
         merge: true
     }).then(() => {
         bhs.statusOut(pnl, e._name + " updated.")
@@ -315,10 +318,10 @@ blackHoleSuns.prototype.delete = async function (evt) {
         let e = list[idx]
 
         if (e.img)
-            bhs.fbstorage.ref().child(e.img).delete()
+            deleteObject(ref(bhs.fbstorage, e.img));
 
-        let ref = bhs.fs.collection(pnlid == "pnl-org" ? "org" : "poi").doc(e.id)
-        await ref.delete().then(() => {
+        let docRef = doc(collection(bhs.fs, pnlid == "pnl-org" ? "org" : "poi"), e.id)
+        await deleteDoc(docRef).then(() => {
             bhs.statusOut(pnl, e._name + " deleted.")
 
             list.splice(idx, 1)

@@ -1,5 +1,8 @@
 'use strict'
 
+import { addGlyphButtons, addrToGlyph, reformatAddress } from "./commonNms.js"
+import { buildGlyphModal } from "./glyphReader.js"
+
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
 
@@ -49,7 +52,7 @@ $(document).ready(() => {
     }
 })
 
-function dispAddr(evt) {
+export function dispAddr(evt) {
     let loc = $(evt).closest(".card")
     let addr = loc.find("#id-addr").val()
     let planet = loc.find("#id-planet").val()
@@ -58,6 +61,8 @@ function dispAddr(evt) {
         displayAll(addr, planet)
 }
 
+// Hack to make the function global. Should be avoided and code should be reformatted to not use it
+window.dispGlyph = dispGlyph;
 function dispGlyph(evt) {
     let glyph = typeof evt === "string" ? evt : $(evt).val().toUpperCase()
     

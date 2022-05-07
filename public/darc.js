@@ -1,5 +1,17 @@
 'use strict'
 
+import { collection, query, where, increment, doc, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+import { httpsCallable, getFunctions } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-functions.js"
+import { bhs, blackHoleSuns, startUp } from "./commonFb.js"
+import { addGlyphButtons, addressToXYZ, addrToGlyph, calcDistXYZ, getIndex, reformatAddress, validateAddress } from "./commonNms.js"
+import { galaxyList, platformList } from "./constants.js"
+import { dispAddr } from "./glyph.js"
+import { buildGlyphModal } from "./glyphReader.js"
+
+// Hack to make the function global. Should be avoided and code should be reformatted to not use it
+window.dispAddr = dispAddr;
+window.dispGlyph = dispGlyph;
+
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
 
@@ -127,14 +139,14 @@ blackHoleSuns.prototype.setGP = function () {
         window.localStorage.setItem('platform', p)
     }
 
-    var calcRoute = firebase.functions().httpsCallable('calcRoute')
+    var calcRoute = httpsCallable(getFunctions(), 'calcRoute')
     calcRoute({
-            galaxy: g,
-            platform: p,
-            preload: true
-        }).then(res => {
-            // bhs.status("complete " + res.data.preload)
-        })
+        galaxy: g,
+        platform: p,
+        preload: true
+    }).then(res => {
+        // bhs.status("complete " + res.data.preload)
+    })
         .catch(err => {
             console.log(err)
         })
@@ -164,7 +176,7 @@ blackHoleSuns.prototype.setAddress = function (evt, addr) {
 
     if (addr !== "") {
         addr = reformatAddress(addr)
-        let err = bhs.validateAddress(addr, true)
+        let err = validateAddress(addr, true)
         if (err !== "")
             bhs.status(err)
         else {
@@ -257,7 +269,7 @@ blackHoleSuns.prototype.updateDarcSettings = function () {
 blackHoleSuns.prototype.showPOI = function (name) {
     const img = `<img id="img-pic" height="auto" width="wsize" />`
     let w = Math.min($("#id-input").height() + 20, screen.width - 30)
-    let h = /wsize/ [Symbol.replace](img, w + "px")
+    let h = /wsize/[Symbol.replace](img, w + "px")
 
     $("#plymap").hide()
     $("#navcanvas").hide()
@@ -268,14 +280,11 @@ blackHoleSuns.prototype.showPOI = function (name) {
     loc.show()
     loc.append(h)
 
-    let ref = bhs.fs.collection("poi")
-    ref = ref.where("name", "==", name)
-    ref.get().then(snapshot => {
+    getDocs(query(collection(bhs.fs, "poi"), where("name", "==", name))).then(snapshot => {
         if (!snapshot.empty) {
             let e = snapshot.docs[0].data()
 
-            let ref = bhs.fbstorage.ref().child(e.img)
-            ref.getDownloadURL().then(url => {
+            getDownloadURL(ref(bhs.fbstorage, e.img)).then(url => {
                 loc.find("#img-pic").attr("src", url)
             })
         }
@@ -285,7 +294,7 @@ blackHoleSuns.prototype.showPOI = function (name) {
 blackHoleSuns.prototype.showOrg = function (name) {
     const img = `<img id="img-pic" height="auto" width="wsize" />`
     let w = Math.min($("#id-input").height() + 20, screen.width - 30)
-    let h = /wsize/ [Symbol.replace](img, w + "px")
+    let h = /wsize/[Symbol.replace](img, w + "px")
 
     $("#plymap").hide()
     $("#navcanvas").hide()
@@ -296,14 +305,11 @@ blackHoleSuns.prototype.showOrg = function (name) {
     loc.show()
     loc.append(h)
 
-    let ref = bhs.fs.collection("org")
-    ref = ref.where("name", "==", name)
-    ref.get().then(snapshot => {
+    getDocs(query(collection(bhs.fs, "org"), where("name", "==", name))).then(snapshot => {
         if (!snapshot.empty) {
             let e = snapshot.docs[0].data()
 
-            let ref = bhs.fbstorage.ref().child(e.img)
-            ref.getDownloadURL().then(url => {
+            getDownloadURL(ref(bhs.fbstorage, e.img)).then(url => {
                 loc.find("#img-pic").attr("src", url)
             })
         }
@@ -318,13 +324,13 @@ blackHoleSuns.prototype.calcroute = async function (proximity) {
     let start = $("#id-addrInput #w-start #id-addr").val()
     let end = $("#id-addrInput #w-end #id-addr").val()
 
-    let err = bhs.validateAddress(start)
+    let err = validateAddress(start)
     if (err !== "") {
         bhs.status(err, true)
         return
     }
 
-    err = bhs.validateAddress(end, true)
+    err = validateAddress(end, true)
     if (err !== "") {
         bhs.status(err)
         return
@@ -332,46 +338,45 @@ blackHoleSuns.prototype.calcroute = async function (proximity) {
 
     bhs.saveDarcSettings()
 
-    let ref = bhs.fs.doc("bhs/pageTotals")
-    const increment = firebase.firestore.FieldValue.increment(1)
+    const incrementRef = increment(1)
 
     let darc = {}
-    darc.routeGen = increment
+    darc.routeGen = incrementRef
 
     let d = new Date()
     let n = d.getFullYear() + "-" + (d.getMonth() + 1)
-    darc[n] = increment
+    darc[n] = incrementRef
 
     if (bhs.user.uid === "")
-        darc.noLogin = increment
+        darc.noLogin = incrementRef
 
-    ref.set({
+    setDoc(doc(bhs.fs, "bhs/pageTotals"),{
         darc: darc
     }, {
         merge: true
     })
 
-    var calcRoute = firebase.functions().httpsCallable('calcRoute')
+    var calcRoute = httpsCallable(getFunctions(), 'calcRoute');
     calcRoute({
-            start: start,
-            end: end,
-            range: $("#id-range").val(),
-            maxJumps: $("#id-maxJumps").val(),
-            galaxy: $("#btn-Galaxy").text().stripNumber(),
-            platform: $("#btn-Platform").text(),
-            proximity: proximity,
-            user: typeof bhs.user.uid === "undefined" ? "" : bhs.user.uid,
-            usebases: $("#ck-useBases").prop("checked"),
-            nearPath: $("#ck-nearPath").prop("checked")
-        }).then(async res => {
-            if (typeof res.data.err !== "undefined")
-                bhs.status("ERROR: " + res.data.err)
-            else {
-                bhs.route = res.data.route
-                bhs.status(" done " + res.data.calc)
-                bhs.displayResults(bhs.route)
-            }
-        })
+        start: start,
+        end: end,
+        range: $("#id-range").val(),
+        maxJumps: $("#id-maxJumps").val(),
+        galaxy: $("#btn-Galaxy").text().stripNumber(),
+        platform: $("#btn-Platform").text(),
+        proximity: proximity,
+        user: typeof bhs.user.uid === "undefined" ? "" : bhs.user.uid,
+        usebases: $("#ck-useBases").prop("checked"),
+        nearPath: $("#ck-nearPath").prop("checked")
+    }).then(async res => {
+        if (typeof res.data.err !== "undefined")
+            bhs.status("ERROR: " + res.data.err)
+        else {
+            bhs.route = res.data.route
+            bhs.status(" done " + res.data.calc)
+            bhs.displayResults(bhs.route)
+        }
+    })
         .catch(err => {
             console.log(err)
             bhs.status("ERROR: " + (typeof err.code !== "undefined" ? err.code : JSON.stringify(err)))
@@ -428,7 +433,7 @@ const restable = [{
     id: "reg",
     field: "region",
     format: "col-lg-2 col-md-4 col-14"
-}, ]
+},]
 
 blackHoleSuns.prototype.displayResults = function (routes) {
     const hdr = $("#resHeader")
@@ -445,11 +450,11 @@ blackHoleSuns.prototype.displayResults = function (routes) {
         if (f.name === "newrow")
             break
         else {
-            let l = /field/ [Symbol.replace](itm, f.name)
-            l = /format/ [Symbol.replace](l, f.format)
+            let l = /field/[Symbol.replace](itm, f.name)
+            l = /format/[Symbol.replace](l, f.format)
             // l = /txt-input-def/ [Symbol.replace](l, "")
             // l = /h4/ [Symbol.replace](l, "")
-            l = /title/ [Symbol.replace](l, f.title)
+            l = /title/[Symbol.replace](l, f.title)
             h += l
         }
     }
@@ -462,7 +467,7 @@ blackHoleSuns.prototype.displayResults = function (routes) {
     for (let rte of routes) {
         let route = rte.route
 
-        let h = /index/g [Symbol.replace](block, idx)
+        let h = /index/g[Symbol.replace](block, idx)
 
         let loc = $("#resItems")
         let range = $("#id-range").val()
@@ -473,15 +478,15 @@ blackHoleSuns.prototype.displayResults = function (routes) {
             let r = route[i]
             let finished = false
 
-            let l = /addr/ [Symbol.replace](row, r.what === "teleport" ? r.exit.addr : r.addr)
-            h += /row/ [Symbol.replace](l, b ? "row bkg-vlight-gray" : "row bkg-white")
+            let l = /addr/[Symbol.replace](row, r.what === "teleport" ? r.exit.addr : r.addr)
+            h += /row/[Symbol.replace](l, b ? "row bkg-vlight-gray" : "row bkg-white")
             b = !b
             let warp
 
             for (let f of restable) {
                 let end = false
-                let l = /field/ [Symbol.replace](itm, typeof f.id !== "undefined" ? f.id : f.name)
-                l = /format/ [Symbol.replace](l, f.format)
+                let l = /field/[Symbol.replace](itm, typeof f.id !== "undefined" ? f.id : f.name)
+                l = /format/[Symbol.replace](l, f.format)
 
                 switch (f.name) {
                     case "desc":
@@ -489,31 +494,31 @@ blackHoleSuns.prototype.displayResults = function (routes) {
                         switch (r.what) {
                             case "bh":
                                 if (r.dist === 0 && r.addr === r.exit.addr)
-                                    l = /title/ [Symbol.replace](l, "Transit black hole")
+                                    l = /title/[Symbol.replace](l, "Transit black hole")
                                 else {
-                                    l = /title/ [Symbol.replace](l, "Warp to black hole")
+                                    l = /title/[Symbol.replace](l, "Warp to black hole")
                                     warp = true
                                 }
                                 break
                             case "start":
-                                l = /title/ [Symbol.replace](l, "Start")
+                                l = /title/[Symbol.replace](l, "Start")
                                 break
                             case "teleport":
-                                l = /title/ [Symbol.replace](l, "<div class='row'>Teleport to&nbsp;&nbsp;<div class=' txt-label-def'>" + r.name + "</div></div>")
+                                l = /title/[Symbol.replace](l, "<div class='row'>Teleport to&nbsp;&nbsp;<div class=' txt-label-def'>" + r.name + "</div></div>")
                                 r = r.exit
                                 break
                             case "end":
                                 finished = true
                                 if (r.dist === 0) {
-                                    l = /title/ [Symbol.replace](l, "<h5>Arrived at destination</h5>")
+                                    l = /title/[Symbol.replace](l, "<h5>Arrived at destination</h5>")
                                     end = true
                                 } else {
-                                    l = /title/ [Symbol.replace](l, "Warp to destination")
+                                    l = /title/[Symbol.replace](l, "Warp to destination")
                                     warp = true
                                 }
                                 break
                             case "poi":
-                                l = /title/ [Symbol.replace](l, "<div class='row text-danger h6'>POI: " + r.name + "</div>")
+                                l = /title/[Symbol.replace](l, "<div class='row text-danger h6'>POI: " + r.name + "</div>")
                                 poi++
                                 break
                             default:
@@ -525,37 +530,37 @@ blackHoleSuns.prototype.displayResults = function (routes) {
 
                     case "dist":
                         if (typeof r.dist === "undefined" || i === 0)
-                            l = /title/ [Symbol.replace](l, "")
+                            l = /title/[Symbol.replace](l, "")
                         else if (r.dist === 0)
-                            l = /title/ [Symbol.replace](l, "Same Region")
+                            l = /title/[Symbol.replace](l, "Same Region")
                         else
-                            l = /title/ [Symbol.replace](l, r.dist.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "ly or " + r.jumps + " jumps")
+                            l = /title/[Symbol.replace](l, r.dist.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "ly or " + r.jumps + " jumps")
                         break
 
                     case "glyph":
-                        l = /title/ [Symbol.replace](l, r.what === "poi" || warp ? addrToGlyph(r[f.field], r.planet) : "")
+                        l = /title/[Symbol.replace](l, r.what === "poi" || warp ? addrToGlyph(r[f.field], r.planet) : "")
                         break
 
                     case "x-addr":
                     case "addr":
-                        l = /title/ [Symbol.replace](l, r[f.field])
+                        l = /title/[Symbol.replace](l, r[f.field])
                         break
 
                     case "x-sys":
-                        l = /txt-label-def/ [Symbol.replace](l, "")
+                        l = /txt-label-def/[Symbol.replace](l, "")
                     case "sys":
                         if (!warp)
-                            l = /txt-label-def/ [Symbol.replace](l, "")
-                        l = /title/ [Symbol.replace](l, typeof r[f.field] !== "undefined" && r[f.field] ? r[f.field] : typeof r.name !== "undefined" && r.name ? r.name : "")
+                            l = /txt-label-def/[Symbol.replace](l, "")
+                        l = /title/[Symbol.replace](l, typeof r[f.field] !== "undefined" && r[f.field] ? r[f.field] : typeof r.name !== "undefined" && r.name ? r.name : "")
                         break
 
                     case "x-reg":
                     case "reg":
-                        l = /title/ [Symbol.replace](l, typeof r.owner !== "undefined" && r.owner ? r.owner : typeof r[f.field] !== "undefined" && r[f.field] ? r[f.field] : "")
+                        l = /title/[Symbol.replace](l, typeof r.owner !== "undefined" && r.owner ? r.owner : typeof r[f.field] !== "undefined" && r[f.field] ? r[f.field] : "")
                         break
 
                     case "blank":
-                        l = /title/ [Symbol.replace](l, typeof f.title !== "undefined" ? f.title : "")
+                        l = /title/[Symbol.replace](l, typeof f.title !== "undefined" ? f.title : "")
                         break
 
                     case "newrow":
@@ -565,8 +570,8 @@ blackHoleSuns.prototype.displayResults = function (routes) {
                         } else if (r.what !== "teleport") {
                             r = r.exit
                             h += enddiv
-                            l = /addr/ [Symbol.replace](row, r.addr)
-                            l = /row/ [Symbol.replace](l, !b ? "row bkg-vlight-gray border-top border-white" : "row bkg-white border-top")
+                            l = /addr/[Symbol.replace](row, r.addr)
+                            l = /row/[Symbol.replace](l, !b ? "row bkg-vlight-gray border-top border-white" : "row bkg-white border-top")
                         } else
                             l = ""
                         break
@@ -595,7 +600,7 @@ blackHoleSuns.prototype.displayResults = function (routes) {
         const resrow = `<div class="col-md-7 col-14">title</div>`
 
         const r = route[route.length - 1]
-        h = /title/ [Symbol.replace](res, typeof r.name !== "undefined" ? r.name : typeof r.system !== "undefined" ? r.system : r.addr)
+        h = /title/[Symbol.replace](res, typeof r.name !== "undefined" ? r.name : typeof r.system !== "undefined" ? r.system : r.addr)
 
         const rloc = loc.find("#id-r" + idx)
         rloc.html(h)
@@ -608,17 +613,17 @@ blackHoleSuns.prototype.displayResults = function (routes) {
         h = ""
 
         if (rte.jumps < calc) {
-            h += /title/ [Symbol.replace](resrow, rte.jumps + " jumps for DARC vs. " + calc + " direct warp jumps.")
-            h += /title/ [Symbol.replace](resrow, "Original warp distance " + dist + " light years.")
-            h += /title/ [Symbol.replace](resrow, "A " + per + "% savings.")
+            h += /title/[Symbol.replace](resrow, rte.jumps + " jumps for DARC vs. " + calc + " direct warp jumps.")
+            h += /title/[Symbol.replace](resrow, "Original warp distance " + dist + " light years.")
+            h += /title/[Symbol.replace](resrow, "A " + per + "% savings.")
             if (rte.bh > 0)
-                h += /title/ [Symbol.replace](resrow, "Cornell Index of " + rte.bh + " black holes.")
+                h += /title/[Symbol.replace](resrow, "Cornell Index of " + rte.bh + " black holes.")
         } else {
-            let l = /col-md-7/ [Symbol.replace](resrow, "col-md-9")
-            h += /title/ [Symbol.replace](l, calc + " direct warp jumps, distance " + dist + " light years.")
+            let l = /col-md-7/[Symbol.replace](resrow, "col-md-9")
+            h += /title/[Symbol.replace](l, calc + " direct warp jumps, distance " + dist + " light years.")
         }
         if ($("#ck-nearPath").prop("checked") && poi > 0)
-            h += /title/ [Symbol.replace](resrow, poi + " additional POI along route.")
+            h += /title/[Symbol.replace](resrow, poi + " additional POI along route.")
 
         rloc.find("#res-row").append(h)
         idx++
