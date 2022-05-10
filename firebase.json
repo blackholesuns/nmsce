@@ -63,13 +63,6 @@
         "**/.*",
         "**/node_modules/**"
       ],
-      "redirects": [
-        {
-          "source": "/",
-          "destination": "/nmsce.html",
-          "type": 301
-        }
-      ],
       "headers": [
         {
           "source": "**/*.@(eot|otf|ttf|ttc|woff|css|jpg|jpeg|gif|png)",

@@ -4,7 +4,7 @@ import { getAuth, getRedirectResult, signInWithRedirect, GoogleAuthProvider, Git
 import { getFirestore, Timestamp, enableIndexedDbPersistence, collection, query, where, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc,  onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
 import { getStorage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-functions.js"
-import { buildGalaxyInfo, validateAddress, fcedata, findex, fnmsce, fsearch, ftotals, mergeObjects } from "./commonNms.js";
+import { buildGalaxyInfo, validateAddress, fcedata, fnmsce, fsearch, ftotals, mergeObjects } from "./commonNms.js";
 import { platformList } from "./constants.js";
 
 // Copyright 2019-2021 Black Hole Suns
@@ -683,13 +683,13 @@ export class blackHoleSuns {
     
         let ref = this.getStarsColRef(galaxy, platform)
     
-        if (uid || findex) {
+        if (uid) {
             ref = query(ref, where("uid", "==", uid ? uid : this.user.uid))
         } else
             complete = true
     
         if (this.loaded && this.loaded[galaxy] && this.loaded[galaxy][platform]) {
-            if (uid || findex) {
+            if (uid) {
                 uid = uid ? uid : this.user.uid
                 let list = Object.keys(this.list[galaxy][platform])
                 for (let i = 0; i < list.length; ++i) {
@@ -710,20 +710,6 @@ export class blackHoleSuns {
     
             let bhref = query(ref, where("blackhole", "==", true))
     
-            if (findex && this.user.settings) {
-                if (this.user.settings.start) {
-                    complete = false
-                    let start = Timestamp.fromDate(new Date(this.user.settings.start))
-                    bhref = bhref.where("created", ">=", start)
-                }
-    
-                if (this.user.settings.end) {
-                    complete = false
-                    let end = Timestamp.fromDate(new Date(this.user.settings.end))
-                    bhref = bhref.where("created", "<=", end)
-                }
-            }
-    
             await bhref.get().then(async snapshot => {
                 for (let i = 0; i < snapshot.size; ++i)
                     this.list[galaxy][platform][snapshot.docs[i].data().addr] = snapshot.docs[i].data()
@@ -738,9 +724,6 @@ export class blackHoleSuns {
     
                     this.loaded[galaxy][platform] = true
                 }
-    
-                if (findex)
-                    await blackHoleSuns.prototype.getBases(displayFcn, singleDispFcn)
             }).catch(err => {
                 console.log(err)
             })
@@ -812,16 +795,6 @@ export class blackHoleSuns {
     async getBases(displayFcn, singleDispFcn) {
         let ref = this.getUsersColRef(this.user.uid, this.user.galaxy, this.user.platform)
         ref = query(ref, where("uid", "==", this.user.uid));
-    
-        if (findex && this.user.settings.start) {
-            let start = Timestamp.fromDate(new Date(this.user.settings.start))
-            ref = query(ref, where("created", ">=", start))
-        }
-    
-        if (findex && this.user.settings.end) {
-            let end = Timestamp.fromDate(new Date(this.user.settings.end))
-            ref = query(ref, where("created", "<=", end))
-        }
     
         await getDocs(ref).then(async snapshot => {
             for (let i = 0; i < snapshot.size; ++i)
@@ -978,11 +951,6 @@ export class blackHoleSuns {
     
         ref = doc(this.fs, "bhs/Organizations")
         this.subscribe("tot-orgs", ref, displayFcn)
-    
-        if (findex) {
-            ref = doc(this.fs, "bhs/Players")
-            this.subscribe("tot-players", ref, displayFcn)
-        }
     }
     
     subscribe(what, ref, displayFcn) {

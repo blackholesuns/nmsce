@@ -2,7 +2,7 @@
 
 import {collection, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
 import { blackHoleSuns, bhs } from "./commonFb.js";
-import { addressToXYZ, fcedata, fdarc, findex, fnmsce, fpoi, fpreview, fsearch, ftotals, getIndex, mergeObjects, reformatAddress } from "./commonNms.js";
+import { addressToXYZ, fcedata, fdarc, fnmsce, fpoi, fpreview, fsearch, ftotals, getIndex, mergeObjects, reformatAddress } from "./commonNms.js";
 import { galaxyList, latestversion, platformList } from "./constants.js";
 
 // Copyright 2019-2021 Black Hole Suns
@@ -52,7 +52,7 @@ blackHoleSuns.prototype.doLoggedout = function () {
 blackHoleSuns.prototype.doLoggedin = function (user) {
     bhs.getUser(bhs.displayUser.bind(this));
 
-    if (findex || fdarc) {
+    if (fdarc) {
         let ref = doc(bhs.fs, "admin/state");
         bhs.subscribe("admin-state", ref, bhs.showError);
     }
@@ -167,7 +167,7 @@ blackHoleSuns.prototype.setError = function () {
 };
 
 blackHoleSuns.prototype.showError = function (e) {
-    if (findex || fdarc) {
+    if (fdarc) {
         if (e.errorMode) {
             $("#banner").hide();
             $("#error").show();
@@ -211,8 +211,6 @@ blackHoleSuns.prototype.displayUser = function (user, force) {
             user.platform != bhs.user.platform);
 
     bhs.user = mergeObjects(bhs.user, user);
-
-    if (findex) $("#fileupload").show();
 
     if (fpoi) return;
 
@@ -358,34 +356,7 @@ blackHoleSuns.prototype.buildUserPanel = function () {
 
     if (fnmsce) $("#namereq").hide();
 
-    if (findex)
-        $("#id-Player").change(function () {
-            if (bhs.user.uid) {
-                let user = bhs.extractUser();
-                bhs.changeName(this, user);
-            }
-        });
-
     if (!fnmsce) $("#id-Civ-Org").show();
-
-    if (findex) {
-        loc.find("#fileupload").show();
-        $("#ck-fileupload").change(function (event) {
-            if ($(this).prop("checked")) {
-                panels.forEach((p) => {
-                    $("#" + p.id).hide();
-                });
-                $("#entrybuttons").hide();
-                $("#upload").show();
-            } else {
-                panels.forEach((p) => {
-                    $("#" + p.id).show();
-                });
-                $("#entrybuttons").show();
-                $("#upload").hide();
-            }
-        });
-    }
 };
 
 blackHoleSuns.prototype.displayContest = function (contest) {
@@ -594,11 +565,6 @@ blackHoleSuns.prototype.buildEntryList = function (entry) {
     loc.append(h);
     loc.find("#lc-plat").text(entry.platform);
     loc.find("#lc-gal").text(entry.galaxy);
-
-    if (findex) {
-        mh -= loc.height() / 3;
-        loc.next("#userItems").height(mh);
-    }
 
     h = "";
     userTable.forEach((t) => {
@@ -1469,12 +1435,12 @@ blackHoleSuns.prototype.extractMapOptions = function () {
 blackHoleSuns.prototype.setMapOptions = function (entry) {
     let opt = $("#mapoptions");
 
-    if (!findex) {
-        opt.find("#id-drawbase").hide();
-        opt.find("#id-zoomreg").hide();
+    
+    opt.find("#id-drawbase").hide();
+    opt.find("#id-zoomreg").hide();
 
-        if (!fsearch) opt.find("#id-drawcon").hide();
-    }
+    if (!fsearch) opt.find("#id-drawcon").hide();
+  
 
     if (fsearch) opt.find("#zoomsection").hide();
 
@@ -1609,8 +1575,6 @@ blackHoleSuns.prototype.purgeMap = function () {
             setTimeout(() => {
                 if (e.points.length > 0 && e.points[0].text) {
                     let addr = e.points[0].text.slice(0, 19);
-
-                    if (findex) bhs.getEntry(addr, bhs.displayListEntry);
 
                     let opt = bhs.extractMapOptions();
                     let xyz = addressToXYZ(addr);
@@ -1884,7 +1848,7 @@ blackHoleSuns.prototype.drawList = function (listEntry, connection) {
 
     let k = Object.keys(listEntry);
 
-    opt.connection = findex || connection ? opt.connection : false;
+    opt.connection = connection ? opt.connection : false;
 
     let out = {};
     out.bh = initout();

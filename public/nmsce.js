@@ -2911,7 +2911,7 @@ class NMSCE {
         let e = this.last
 
         if (e && bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin"))) {
-            let link = "/cedata.html?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
+            let link = "/upload.html?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
             window.open(link, "_self")
         }
     }
@@ -4957,7 +4957,7 @@ const mapColors = {
 
 const reddit = {
     client_id: "8oDpVp9JDDN7ng",
-    redirect_url: "http://nmsce.com/cedata.html",
+    redirect_url: "http://nmsce.com/upload.html",
     scope: "identity,submit,mysubreddits,flair",
     auth_url: "https://www.reddit.com/api/v1/authorize",
     token_url: "https://ssl.reddit.com/api/v1/access_token",
