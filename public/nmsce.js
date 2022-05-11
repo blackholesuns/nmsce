@@ -259,6 +259,7 @@ class NMSCE {
         bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
             tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
             required: true,
+            sort: true,
             labelsize: "col-md-6 col-4",
             menusize: "col",
         })

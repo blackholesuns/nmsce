@@ -1186,14 +1186,10 @@ blackHoleSuns.prototype.buildMenu = function (
 
     let mlist = menu.find("#list");
 
-    if (options.sort)
-        list = list.sort((a, b) =>
-            a.name.toLowerCase() > b.name.toLowerCase()
-                ? 1
-                : a.name.toLowerCase() < b.name.toLowerCase()
-                ? -1
-                : 0
-        );
+    
+    if (options.sort){
+        list = list.sort((a, b) => a.name.localeCompare(b.name));
+    }
 
     for (let l of list) {
         let lid = l.name.nameToId();
