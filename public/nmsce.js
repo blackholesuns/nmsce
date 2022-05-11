@@ -8,6 +8,7 @@ import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, 
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
 import { Version } from "./metadata.js";
+import { BuildGalaxyMenu } from "./tmputil.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
@@ -26,8 +27,8 @@ const thumbPath = "/nmsce/disp/thumb/"
 $(document).ready(() => {
     startUp();
 
-    $("#cemenus").load("cemenus.html", () => {
-        $("#version-number").text("v" + Version)
+    $("#cemenus").load("header.html", () => {
+        $("#version-number").text("v" + Version);
         let loc = fnmsce ? $("#searchpage") : fcedata ? $("#entrypage") : []
         if (loc.length > 0) {
             loc.css("border-color", "red")
@@ -255,14 +256,20 @@ class NMSCE {
         addRadioList($("#id-Economy"), "Economy", economyListTier)
         addRadioList($("#id-Lifeform"), "Lifeform", lifeformList)
         addRadioList($("#id-Platform"), "Platform", platformListAll)
-
-        bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
-            tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
+        
+        BuildGalaxyMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
             required: true,
             sort: true,
             labelsize: "col-md-6 col-4",
             menusize: "col",
         })
+        // bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
+        //     tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
+        //     required: true,
+        //     sort: true,
+        //     labelsize: "col-md-6 col-4",
+        //     menusize: "col",
+        // })
 
         if (fnmsce) {
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
@@ -437,7 +444,7 @@ class NMSCE {
         else
             loc.find("#foundreg").hide()
 
-        $("#btn-Galaxy").text(entry.galaxy)
+        $("#btn-Galaxy").val(entry.galaxy)
 
         this.dispAddr(loc, entry.addr)
 
@@ -535,7 +542,7 @@ class NMSCE {
         if (fcedata)
             loc.find("#id-Player").val(bhs.user._name)
 
-        loc.find("#btn-Galaxy").text(bhs.user.galaxy)
+        loc.find("#btn-Galaxy").val(bhs.user.galaxy)
 
         loc = loc.find("#id-Platform")
         loc.find("input").prop("checked", false)
@@ -1012,7 +1019,7 @@ class NMSCE {
     displaySearch(search) {
         this.clearPanel(true)
 
-        $("#btn-Galaxy").text(search.galaxy)
+        $("#btn-Galaxy").val(search.galaxy)
         $("#ck-notify").prop("checked", search.notify)
         $("#id-Player").text(search.name)
 
@@ -1123,6 +1130,10 @@ class NMSCE {
     }
 
     search(search) {
+        if(search && search.preventDefault && (search.preventDefault() || true))
+            search = null;
+
+
         if (!search) {
             search = this.extractSearch()
 
@@ -1146,6 +1157,7 @@ class NMSCE {
         this.entries["Search-Results"] = []
 
         this.executeSearch(search, "Search Results", display)
+        return false;
     }
 
     saveSearch() {
@@ -1158,7 +1170,7 @@ class NMSCE {
 
         if (!bhs.user.uid || !bhs.isPatreon(2)) {
             if (typeof (Storage) !== "undefined") {
-                window.localStorage.setItem('nmsce-galaxy', $("#btn-Galaxy").text().stripNumber())
+                window.localStorage.setItem('nmsce-galaxy', $("#btn-Galaxy").val().stripNumber())
 
                 search.uid = window.localStorage.getItem('nmsce-tempuid')
                 if (!search.uid) {
@@ -1293,7 +1305,7 @@ class NMSCE {
     }
 
     extractSearch() {
-        let galaxy = $("#btn-Galaxy").text().stripNumber()
+        let galaxy = $("#btn-Galaxy").val().stripNumber()
         let s = {}
         s.search = []
         let search = s.search
@@ -1591,7 +1603,7 @@ class NMSCE {
 
         u.version = latestversion
         u._name = loc.find("#id-Player").val()
-        u.galaxy = loc.find("#btn-Galaxy").text().stripNumber()
+        u.galaxy = loc.find("#btn-Galaxy").val().stripNumber()
 
         loc = loc.find("#id-Platform :checked")
         if (loc.length > 0)
@@ -5010,7 +5022,7 @@ function getPlanet(evt) {
     if (!fcedata)
         return
 
-    let gal = $("#btn-Galaxy").text().stripNumber()
+    let gal = $("#btn-Galaxy").val().stripNumber()
     let addr = $("#panels #id-addr").val()
     let planet = $(evt.target ? evt.target : evt).val()
 
@@ -5044,7 +5056,7 @@ function getEntry() {
     let addr = $("#panels #id-addr").val()
     let name = $(this).val()
     let type = $("#typePanels .active").prop("id").stripID()
-    let gal = $("#btn-Galaxy").text().stripNumber()
+    let gal = $("#btn-Galaxy").val().stripNumber()
 
     if (gal && type && addr && name) {
         let q = query(collection(bhs.fs, "nmsce/" + gal + "/" + type), where("Name", "==", name), where("addr", "==", addr))

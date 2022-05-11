@@ -252,12 +252,13 @@ blackHoleSuns.prototype.displayUser = function (user, force) {
 
     if (bhs.user.galaxy && bhs.user.galaxy !== "") {
         let i = galaxyList[getIndex(galaxyList, "name", bhs.user.galaxy)];
-        pnl.find("#btn-Galaxy").text(i.number + " " + bhs.user.galaxy);
-        pnl.find("#btn-Galaxy").attr(
+        let btn = pnl.find("#btn-Galaxy");
+        btn.val(bhs.user.galaxy)
+        btn.attr(
             "style",
             "background-color: " + i.color + ";"
         );
-    } else pnl.find("#btn-Galaxy").text("");
+    } else pnl.find("#btn-Galaxy").val("");
 
     if (fdarc) bhs.updateDarcSettings();
 
@@ -1071,7 +1072,7 @@ blackHoleSuns.prototype.clickUser = function (evt) {
         let loc = $(evt).parent();
         let pnlid = loc.closest("[id|='itm']").prop("id");
 
-        let galaxy = $("#btn-Galaxy").text().stripNumber();
+        let galaxy = $("#btn-Galaxy").val().stripNumber();
         let name = loc.find("#id-Name").text().stripMarginWS();
         let platform = $(evt).prop("id").stripID();
 
@@ -1079,7 +1080,7 @@ blackHoleSuns.prototype.clickUser = function (evt) {
         $("#btn-Player").text(name);
 
         if (pnlid == "itm-Galaxies") {
-            $("#btn-Galaxy").text(name);
+            $("#btn-Galaxy").val(name);
             $("#btn-Player").text("");
             bhs.getEntries(
                 bhs.displayEntryList,
@@ -1098,7 +1099,7 @@ blackHoleSuns.prototype.clickGalaxy = function (evt) {
     let galaxy = $(evt).parent().find("#id-names").text().stripNumber();
 
     bhs.entries = {};
-    $("#btn-Galaxy").text(galaxy);
+    $("#btn-Galaxy").val(galaxy);
     let platform = $("#btn-Platform").text().stripMarginWS();
     $("#btn-Player").text("");
     bhs.getEntries(
@@ -1253,7 +1254,7 @@ blackHoleSuns.prototype.extractUser = function () {
 
     u._name = loc.find("#id-Player").val();
     u.platform = loc.find("#btn-Platform").text().stripNumber();
-    u.galaxy = loc.find("#btn-Galaxy").text().stripNumber();
+    u.galaxy = loc.find("#btn-Galaxy").val().stripNumber();
     u.org = loc.find("#btn-Civ-Org").text().stripNumber();
     u.version = latestversion;
 

@@ -102,7 +102,7 @@
                         <span class="txt-def hidden" data-hide=true>show</span>&nbsp;additional inputs.
                     </div>
                     <div class="row">
-                        <div id="panels" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
+                        <form id="panels" onsubmit="nmsce.search(event)" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
                             <div id="row-playerInput" class="row">
                                 <div class="col-sm-4 col-6 txt-label-def" data-allowhide=true>
                                     Player Name
@@ -213,8 +213,7 @@
                                 <div class="card-header txt-def h5">Search</div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <button id="search" type="button" class="col-md-4 col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.search()">Search</button>&nbsp;
+                                        <button id="search" type="submit" class="col-md-4 col-6 btn btn-sm btn-def">Search</button>&nbsp;
                                         <button id="clear" type="button" class="col-md-4 col-6 btn btn-sm btn-def"
                                             onclick="nmsce.clearPanel(true)">Reset</button>&nbsp;
                                     </div>
@@ -256,7 +255,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
 
                         <div id="pnl-map" class="col-md-5 col-14 pl-15"></div>
                     </div>
