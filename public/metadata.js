@@ -9,6 +9,7 @@ export const ChangeLog = [
         Changes: [
             "Deleted BHS files and references to them",
             "Moved NMSCE app to root and renamed cedata to upload",
+            "Fixed issue with which the app was impossible to debug without firebase cli",
             "Changed to use clean names without .html",
             "Fixed Galaxy selector removing unordered list and converting to text input",
             "Added This Changelog you are looking at :3"
