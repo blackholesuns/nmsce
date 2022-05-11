@@ -31,6 +31,18 @@
         "**/.*",
         "**/node_modules/**"
       ],
+      "redirects": [
+        {
+          "source": "/nmsce.html",
+          "destination": "/",
+          "type": 301
+        },
+        {
+          "source": "/cedata.html",
+          "destination": "/upload",
+          "type": 301
+        }
+      ],
       "headers": [
         {
           "source": "**/*.@(eot|otf|ttf|ttc|woff|jpg|png)",
