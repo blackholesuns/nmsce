@@ -7,7 +7,7 @@ import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
-import { Version } from "./metadata.js";
+import { CollateChangeLog, Version } from "./metadata.js";
 import { BuildGalaxyMenu } from "./tmputil.js";
 
 if (window.location.hostname === "localhost")
@@ -29,6 +29,19 @@ $(document).ready(() => {
 
     $("#cemenus").load("header.html", () => {
         $("#version-number").text("v" + Version);
+        $("#changelogpnlcontent").append(CollateChangeLog())
+
+        $("#changelog").click(() => {
+            let panel = $("#changelogpnl");
+            $("#changelogpnlexit").click(() => panel.hide())
+            $(document).on('keydown', function (event) {
+                if (event.key == "Escape") {
+                    panel.hide();
+                }
+            });
+            panel.show();
+        });
+
         let loc = fnmsce ? $("#searchpage") : fcedata ? $("#entrypage") : []
         if (loc.length > 0) {
             loc.css("border-color", "red")
