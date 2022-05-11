@@ -4911,20 +4911,6 @@ class NMSCE {
                 this.displaySingle(doc.data())
         })
     }
-
-    newDARC(evt) {
-        let addr = $(evt).text()
-
-        if (typeof (Storage) !== "undefined")
-            window.localStorage.setItem('nmsce-addr', addr)
-
-        var win = window.open('darc.html', '_blank')
-        if (win) {
-            win.focus()
-        } else {
-            alert('Please allow popups for this website')
-        }
-    }
 }
 
 let txtcanvas = document.createElement('canvas');
