@@ -60,7 +60,7 @@ $(document).ready(() => {
         }
     }
 
-    //https://localhost:5000/preview.html?i=0547-0086-0E45-00A1-himodan-s-coup&g=Euclid&t=Ship
+    //https://localhost:5000/preview?i=0547-0086-0E45-00A1-himodan-s-coup&g=Euclid&t=Ship
     let passed = {}
     let param = location.search.substring(1).split("&")
 
@@ -913,7 +913,7 @@ class NMSCE {
         this.displaySystem(entry)
         this.changeAddr(null, entry.addr)
 
-        let link = `/preview.html?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
+        let link = `/preview?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
         $("[id|='permalink']").attr("href", link)
 
         let disp = function (flds, pnltype, slist) {
@@ -1487,7 +1487,7 @@ class NMSCE {
     }
 
     openSearch() {
-        window.open("this.html?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
+        window.open("bhs?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
     }
 
     searchSystem(k) {
@@ -2911,7 +2911,7 @@ class NMSCE {
         let e = this.last
 
         if (e && bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin"))) {
-            let link = "/upload.html?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
+            let link = "/upload?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
             window.open(link, "_self")
         }
     }
@@ -3177,7 +3177,7 @@ class NMSCE {
         window.localStorage.setItem('nmsce-reddit-title', title)
 
         let e = this.last
-        let link = `/preview.html?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
         window.localStorage.setItem('nmsce-reddit-plink', link)
 
         link = `/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
@@ -4470,7 +4470,7 @@ class NMSCE {
             })
         }
 
-        let link = `/preview.html?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
         $("[id|='permalink']").attr("href", link)
 
         let idx = getIndex(objectList, "name", e.type)
@@ -4957,7 +4957,7 @@ const mapColors = {
 
 const reddit = {
     client_id: "8oDpVp9JDDN7ng",
-    redirect_url: "http://nmsce.com/upload.html",
+    redirect_url: "http://nmsce.com/upload",
     scope: "identity,submit,mysubreddits,flair",
     auth_url: "https://www.reddit.com/api/v1/authorize",
     token_url: "https://ssl.reddit.com/api/v1/access_token",

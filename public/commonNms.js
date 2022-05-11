@@ -5,14 +5,14 @@ import { galaxyRaw, galaxyList, economyList, levelRgb } from "./constants.js";
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
 
-export const findex = window.location.pathname.includes("index.html")
-export const fpoi = window.location.pathname.includes("poiorg.html")
-export const fdarc = window.location.pathname.includes("darc.html")
-export const ftotals = window.location.pathname.includes("totals.html")
-export const fsearch = window.location.pathname.includes("search.html")
-export const fcedata = window.location.pathname.includes("upload.html")
-export const fnmsce = window.location.pathname.includes("nmsce.html") || window.location.pathname == "/"
-export const fpreview = window.location.pathname.includes("preview.html")
+export const findex = window.location.pathname.includes("index")
+export const fpoi = window.location.pathname.includes("poiorg")
+export const fdarc = window.location.pathname.includes("darc")
+export const ftotals = window.location.pathname.includes("totals")
+export const fsearch = window.location.pathname.includes("search")
+export const fcedata = window.location.pathname.includes("upload")
+export const fnmsce = window.location.pathname.includes("nmsce") || window.location.pathname == "/"
+export const fpreview = window.location.pathname.includes("preview")
 
 export function addGlyphButtons(loc, fcn) {
     const gbtn = `
