@@ -4,7 +4,8 @@
   "description": "A web app to search all of the NMSCE submissions",
   "main": "index.js",
   "scripts": {
-    "dev": "firebase serve --only hosting"
+    "dev:old": "firebase serve --only hosting",
+    "dev": "npx serve ./public"
   },
   "repository": {
     "type": "git",

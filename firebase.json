@@ -25,6 +25,7 @@
     {
       "target": "test",
       "public": "public",
+      "cleanUrls": true,
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -58,10 +59,23 @@
     {
       "target": "nmsce",
       "public": "public",
+      "cleanUrls": true,
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
+      ],
+      "redirects": [
+        {
+          "source": "/nmsce.html",
+          "destination": "/",
+          "type": 301
+        },
+        {
+          "source": "/cedata.html",
+          "destination": "/upload",
+          "type": 301
+        }
       ],
       "headers": [
         {
