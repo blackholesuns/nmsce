@@ -12,7 +12,8 @@ export const ChangeLog = [
             "Fixed issue with which the app was impossible to debug without firebase cli",
             "Changed to use clean names without .html",
             "Fixed Galaxy selector removing unordered list and converting to text input",
-            "Added This Changelog you are looking at :3"
+            "Added This Changelog you are looking at :3",
+            "Fixed Error with loading Overlay when uploading"
         ]
     },
     {

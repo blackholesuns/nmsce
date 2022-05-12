@@ -2594,7 +2594,7 @@ class NMSCE {
         let file = evt.files[0]
         let reader = new FileReader()
 
-        reader.onload = function () {
+        reader.onload = () => {
             let img = new Image()
             img.crossOrigin = "anonymous"
             img.onload = this.onLoadLogo.bind(this);
@@ -2678,12 +2678,12 @@ class NMSCE {
                 if (edit) {
                     var xhr = new XMLHttpRequest()
                     xhr.responseType = 'blob'
-                    xhr.onload = function (event) {
+                    xhr.onload = (event) => {
                         this.screenshot = new Image()
                         this.screenshot.crossOrigin = "anonymous"
                         this.screenshot.src = url
 
-                        this.screenshot.onload = function () {
+                        this.screenshot.onload = () => {
                             this.restoreImageText(null, true)
                             this.scaleGlyphLocation()
 
@@ -5075,7 +5075,7 @@ function getEntry() {
         let q = query(collection(bhs.fs, "nmsce/" + gal + "/" + type), where("Name", "==", name), where("addr", "==", addr))
         getDocs(q).then(snapshot => {
             if (!snapshot.empty) {
-                this.displaySingle(snapshot.docs[0].data())
+                nmsce.displaySingle(snapshot.docs[0].data())
                 $("#typePanels .active #row-Name .fa-check").show()
             }
         })
