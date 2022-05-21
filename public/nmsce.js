@@ -2972,10 +2972,10 @@ class NMSCE {
                 username: reddit.client_id,
                 password: "",
                 crossDomain: true,
-                beforeSend: function (xhr) {
+                beforeSend: (xhr) => {
                     xhr.setRequestHeader('Authorization', 'Basic ' + btoa(reddit.client_id + ":"))
                 },
-                success(res) {
+                success: (res) => {
                     if (res.access_token) {
                         window.localStorage.setItem('nmsce-reddit-access-token', res.access_token)
                         window.localStorage.setItem('nmsce-reddit-expires', new Date().getTime() + res.expires_in * 1000)
@@ -2985,7 +2985,7 @@ class NMSCE {
                             this.redditCreate(state, res.access_token)
                     }
                 },
-                error(err) {
+                error: (err) => {
                     this.postStatus(err.message)
                 },
             })
@@ -4967,9 +4967,22 @@ const mapColors = {
     error: "#ff0000",
 }
 
+// const reddit = {
+//     client_id: "8oDpVp9JDDN7ng",
+//     redirect_url: "http://nmsce.com/upload",
+//     scope: "identity,submit,mysubreddits,flair",
+//     auth_url: "https://www.reddit.com/api/v1/authorize",
+//     token_url: "https://ssl.reddit.com/api/v1/access_token",
+//     api_oauth_url: "https://oauth.reddit.com",
+//     subscriber_endpt: "/subreddits/mine/subscriber",
+//     user_endpt: "/api/v1/me",
+//     getflair_endpt: "api/link_flair_v2",
+//     submitLink_endpt: "/api/submit",
+//     comment_endpt: "/api/comment",
+// };
 const reddit = {
-    client_id: "8oDpVp9JDDN7ng",
-    redirect_url: "http://nmsce.com/upload",
+    client_id: "vCekWEy1EPnRIy2zpu3EeA",
+    redirect_url: "http://localhost:5000/upload",
     scope: "identity,submit,mysubreddits,flair",
     auth_url: "https://www.reddit.com/api/v1/authorize",
     token_url: "https://ssl.reddit.com/api/v1/access_token",

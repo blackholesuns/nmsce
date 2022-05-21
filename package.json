@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev:old": "firebase serve --only hosting",
-    "dev": "npx serve ./public",
+    "dev": "npx serve --cors ./public",
     "deploy:beta": "firebase hosting:channel:deploy beta",
     "deploy:test": "firebase deploy --only hosting:test",
     "deploy:prod": "firebase deploy --only hosting:nmsce"
