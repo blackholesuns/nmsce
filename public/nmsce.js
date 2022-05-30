@@ -213,11 +213,9 @@ const resultsItem = `
         byname<br>
         date<br>
         <div class="pl-5 pr-5" style="min-height:20px">
-            <img id="img-idname" src="imgsrc"
-            onload="imageLoaded(this, $(this).parent().width(), $(this).parent().height(), true)">
+            <img id="img-idname" src="imgsrc" style="width: 100%;">
         </div>
     </div>`;
-
 
 function showLatLong() {
     let loc = $("#typePanels #hdr-Ship")
@@ -4384,7 +4382,6 @@ class NMSCE {
 
             let l = /idname/g[Symbol.replace](resultsItem, e.id)
             l = /galaxy/[Symbol.replace](l, e.galaxy)
-            l = /ethumb/[Symbol.replace](l, thumbPath + e.Photo)
             l = /imgsrc/[Symbol.replace](l, baseUrl + thumbPath + e.Photo)
             l = /byname/[Symbol.replace](l, e._name)
             l = /date/[Symbol.replace](l, e.created ? e.created.toDate().toDateLocalTimeString() : "")
@@ -4396,24 +4393,6 @@ class NMSCE {
         }
 
         loc.append(h)
-        // let imgs = loc.find("img")
-
-        // for (let img of imgs) {
-        //     let data = $(img).data()
-
-        //     if (!data.src && !$(img).prop("src")) {
-        //         let storageRef = ref(bhs.fbstorage, data.thumb)
-
-        //         getDownloadURL(storageRef).then(url => {
-        //             if ($(img).is(":visible"))
-        //                 $(img).attr("src", url)
-        //             else
-        //                 $(img).data("src", url)
-        //         }).catch(err => {
-        //             $(img).closest("[id|='row']").remove()
-        //         })
-        //     }
-        // }
     }
 
     async vote(evt) {
@@ -4515,10 +4494,6 @@ class NMSCE {
         let obj = objectList[idx]
 
         $("#dispimage").prop("src", baseUrl + displayPath + e.Photo)
-        // let storageRef = ref(bhs.fbstorage, displayPath + e.Photo)
-        // getDownloadURL(storageRef).then(url => {
-        //     $("#dispimage").prop("src", url)
-        // })
 
         let loc = $("#imagedata")
         loc.empty()
@@ -4784,8 +4759,7 @@ class NMSCE {
         const row = `     
         <div id="row-idname" class="col-md-p250 col-sm-p333 col-7 border border-black h6" >
             <div id="id-Photo" class="row pointer pl-10 pr-10" data-type="etype" data-id="eid" onclick="nmsce.selectList(this)" style="min-height:20px">
-                <img id="img-idname" src="imgsrc" data-thumb="ethumb"
-                onload="imageLoaded(this, $(this).parent().width(), $('#id-row').height(), false)">
+                <img id="img-idname" src="imgsrc" style="width: 100%">
             </div>
             <div class="row pl-10">`
         const item = `<div id="id-idname" class="col-md-7 col-14 border pointer">title</div>`
@@ -4805,7 +4779,6 @@ class NMSCE {
                 h = /black/[Symbol.replace](h, "black bkg-yellow")
             h = /idname/[Symbol.replace](h, e.id)
             h = /eid/[Symbol.replace](h, e.id)
-            h = /ethumb/[Symbol.replace](h, thumbPath + e.Photo)
             h = /imgsrc/[Symbol.replace](h, baseUrl + thumbPath + e.Photo)
         }
 
@@ -4893,12 +4866,6 @@ class NMSCE {
             loc = loc.find("#row-" + e.id + " img")
 
             loc.attr("src", baseUrl + thumbPath + e.Photo)
-            // getDownloadURL(ref(bhs.fbstorage, thumbPath + e.Photo)).then(url => {
-            //     if (loc.is(":visible"))
-            //         loc.attr("src", url)
-            //     else
-            //         loc.data("src", url)
-            // }).catch(err => console.log(err))
         }
     }
 
