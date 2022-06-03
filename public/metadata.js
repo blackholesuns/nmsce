@@ -13,7 +13,9 @@ export const ChangeLog = [
             "Changed to use clean names without .html",
             "Fixed Galaxy selector removing unordered list and converting to text input",
             "Added This Changelog you are looking at :3",
-            "Fixed Error with loading Overlay when uploading"
+            "Fixed Error with loading Overlay when uploading",
+            "Improved Reddit interaction fixing it for alpha,beta and local dev environments",
+            "Added validation to the Galaxy input"
         ]
     },
     {
