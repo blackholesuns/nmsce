@@ -3117,11 +3117,19 @@ class NMSCE {
                 success(res) {
                     this.subReddits = []
                     for (let s of res.data.children)
+                    {
+                        let data = s.data;
+
+                        if(data.over18 || data.subreddit_type == 'user')
+                            continue;
+
                         this.subReddits.push({
-                            name: s.data.title,
-                            url: s.data.url,
-                            link: s.data.name
+                            name: data.display_name_prefixed,
+                            url: data.url,
+                            link: data.name
                         })
+
+                    }
                     bhs.buildMenu($("#redditPost"), "SubReddit", this.subReddits, this.setSubReddit, {
                         required: true,
                         labelsize: "col-4",
@@ -4967,22 +4975,30 @@ const mapColors = {
     error: "#ff0000",
 }
 
-// const reddit = {
-//     client_id: "8oDpVp9JDDN7ng",
-//     redirect_url: "http://nmsce.com/upload",
-//     scope: "identity,submit,mysubreddits,flair",
-//     auth_url: "https://www.reddit.com/api/v1/authorize",
-//     token_url: "https://ssl.reddit.com/api/v1/access_token",
-//     api_oauth_url: "https://oauth.reddit.com",
-//     subscriber_endpt: "/subreddits/mine/subscriber",
-//     user_endpt: "/api/v1/me",
-//     getflair_endpt: "api/link_flair_v2",
-//     submitLink_endpt: "/api/submit",
-//     comment_endpt: "/api/comment",
-// };
+
+const clientIds = {
+    prod: "8oDpVp9JDDN7ng",
+    beta: "9Ukymj_MbqxWglSLm0kQqw",
+    alpha: "8DNnTDRJMlG9ZecGVV44Ew",
+    local: "vCekWEy1EPnRIy2zpu3EeA"
+}
+const currentLocation = location.href.split("?")[0];
+
+let client_id = clientIds.prod;
+
+if(currentLocation == "beta.nmsce.com")
+    client_id = clientIds.beta;
+
+if(currentLocation.includes("localhost"))
+    client_id = clientIds.local;
+
+if(currentLocation.includes("web.app"))
+    client_id = clientIds.alpha;
+
+
 const reddit = {
-    client_id: "vCekWEy1EPnRIy2zpu3EeA",
-    redirect_url: "http://localhost:5000/upload",
+    client_id: client_id,
+    redirect_url: currentLocation,
     scope: "identity,submit,mysubreddits,flair",
     auth_url: "https://www.reddit.com/api/v1/authorize",
     token_url: "https://ssl.reddit.com/api/v1/access_token",
