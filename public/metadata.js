@@ -7,7 +7,7 @@ export const ChangeLog = [
         Title: "Godspeed",
         Authors: ["CEbbinghaus"],
         Changes: [
-            "Moved entire site to Cloudfare (sorry for the outage)",
+            "Moved entire site to Cloudflare (sorry for the outage)",
             "Added better image storing with dedicated subdomain", 
             "Decreased Latency by Caching images on the edge",
             "Decreased Load times by skipping querying the URL"
