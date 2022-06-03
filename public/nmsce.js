@@ -4986,7 +4986,7 @@ const currentLocation = location.href.split("?")[0];
 
 let client_id = clientIds.prod;
 
-if(currentLocation == "beta.nmsce.com")
+if(currentLocation.includes("beta.nmsce.com"))
     client_id = clientIds.beta;
 
 if(currentLocation.includes("localhost"))

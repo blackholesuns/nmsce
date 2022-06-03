@@ -1,5 +1,6 @@
+import { galaxyList } from "./constants.js";
 
-
+const galaxyRegex = `(${galaxyList.map(v => v.name).join("|")})`;
 
 /**
  * 
@@ -26,7 +27,7 @@ export function BuildGalaxyMenu(JElement, ElementName, List, Callback, { tip, re
     
     let inputHtml = `
     <div>
-        <input list="${id}-datalist" id="btn-${id}" name="${id}" required/>
+        <input list="${id}-datalist" pattern="${galaxyRegex}" title="Valid Galaxy Name" id="btn-${id}" name="${id}" required/>
         ${tipHtml}
         ${datalistHtml}
     </div>
