@@ -2986,6 +2986,7 @@ class NMSCE {
                     }
                 },
                 error: (err) => {
+                    console.error(err);
                     this.postStatus(err.message)
                 },
             })
@@ -3709,13 +3710,13 @@ class NMSCE {
             let docRef = doc(bhs.fs, "nmsce/" + entry.galaxy + "/" + entry.type + "/" + entry.id)
 
             let vref = collection(docRef, "votes")
-            vref.get().then(snapshot => {
+            getDocs(vref).then(snapshot => {
                 for (let doc of snapshot.docs)
                     deleteDoc(doc.ref);
             })
 
             vref = collection(docRef, "nmsceCommon")
-            vref.get().then(snapshot => {
+            getDocs(vref).then(snapshot => {
                 for (let doc of snapshot.docs)
                     deleteDoc(doc.ref);
             })
@@ -3727,13 +3728,13 @@ class NMSCE {
                 $("#delete-item").prop("disabled", true)
 
                 let vref = collection(docRef, "votes")
-                vref.get().then(snapshot => {
+                getDocs(vref).then(snapshot => {
                     for (let doc of snapshot.docs)
                         deleteDoc(doc.ref);
                 })
 
                 vref = collection(docRef, "nmsceCommon")
-                vref.get().then(snapshot => {
+                getDocs(vref).then(snapshot => {
                     for (let doc of snapshot.docs)
                         delete (doc.ref);
                 })

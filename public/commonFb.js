@@ -710,7 +710,7 @@ export class blackHoleSuns {
     
             let bhref = query(ref, where("blackhole", "==", true))
     
-            await bhref.get().then(async snapshot => {
+            await getDocs(bhref).then(async snapshot => {
                 for (let i = 0; i < snapshot.size; ++i)
                     this.list[galaxy][platform][snapshot.docs[i].data().addr] = snapshot.docs[i].data()
     
