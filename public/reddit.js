@@ -1,6 +1,12 @@
 import "https://not-an-aardvark.github.io/snoowrap/snoowrap-v1.js"
 import { Version } from "./metadata.js";
 
+// Should be replaced with a ES6 Import of https://www.npmjs.com/package/snoowrap
+// Documentation for Snoowrap can be found here: https://not-an-aardvark.github.io/snoowrap (not super good)
+
+// Reddit API Documentation: https://www.reddit.com/dev/api
+// Reddit OAuth Documentation: https://github.com/reddit-archive/reddit/wiki/OAuth2
+// Reddit User Agent Documentation: https://github.com/reddit-archive/reddit/wiki/API#rules
 
 // Configurations
 
