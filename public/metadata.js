@@ -4,18 +4,20 @@ export const Version = "1.1.0"
 export const ChangeLog = [
     {
         Version: "1.1.0",
-        Title: "Weight Shedding",
+        Title: "Weight Shedding + Bonus Features",
         Authors: ["CEbbinghaus"],
         Changes: [
+            "Added This Changelog you are looking at :3",
             "Deleted BHS files and references to them",
             "Moved NMSCE app to root and renamed cedata to upload",
-            "Fixed issue with which the app was impossible to debug without firebase cli",
             "Changed to use clean names without .html",
-            "Fixed Galaxy selector removing unordered list and converting to text input",
-            "Added This Changelog you are looking at :3",
+            "Fixed issue with which the app was impossible to debug without firebase cli",
             "Fixed Error with loading Overlay when uploading",
             "Improved Reddit interaction fixing it for alpha,beta and local dev environments",
-            "Added validation to the Galaxy input"
+            "Fixed Galaxy selector removing unordered list and converting to text input",
+            "Added validation to the Galaxy input",
+            "Removed the need to specify Galaxy (Enables Searching across all galaxies)",
+            "Fixed System Search button in Preview"
         ]
     },
     {
@@ -26,7 +28,7 @@ export const ChangeLog = [
             "Moved files to ES6 Module format",
             "Updated Firebase libraries to V9",
             "Moved Prototype functions to Classes",
-            "Various Smaller Fixes"
+            "Lots and Lots of Smaller Fixes (Too many to count)"
         ]
     }
 ]
