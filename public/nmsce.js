@@ -1513,7 +1513,7 @@ class NMSCE {
     }
 
     openSearch() {
-        window.open("bhs?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
+        window.open("/?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
     }
 
     searchSystem(k) {
