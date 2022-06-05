@@ -4,7 +4,7 @@ export const Version = "1.1.0"
 export const ChangeLog = [
     {
         Version: "1.1.0",
-        Title: "Weight Shedding + Bonus Features",
+        Title: "Weight Shedding",
         Authors: ["CEbbinghaus"],
         Changes: [
             "Added This Changelog you are looking at :3",
@@ -16,8 +16,8 @@ export const ChangeLog = [
             "Improved Reddit interaction fixing it for alpha,beta and local dev environments",
             "Fixed Galaxy selector removing unordered list and converting to text input",
             "Added validation to the Galaxy input",
-            "Removed the need to specify Galaxy (Enables Searching across all galaxies)",
-            "Fixed System Search button in Preview"
+            "Fixed System Search button in Preview",
+            "Fixed Error when trying to delete a submission"
         ]
     },
     {
