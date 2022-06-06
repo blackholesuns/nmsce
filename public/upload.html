@@ -92,7 +92,7 @@
             </div-->
             <div class="card-body bkg-white">
                 <div class="row">
-                    <div id="panels" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
+                    <form id="panels" onsubmit="nmsce.search(event)" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
                         <div id="row-playerInput" class="row" data-allowhide=true>
                             <div class="col-sm-4 col-6 txt-label-def">
                                 Player Name&nbsp;
@@ -301,8 +301,7 @@
                             </div>
                             <span id="searchPanel" class="hidden">
                                 <div class="row">
-                                    <button id="search" type="button" class="col-6 btn btn-sm btn-def"
-                                        onclick="nmsce.search()">Search</button>
+                                    <button id="search" type="submit" class="col-6 btn btn-sm btn-def">Search</button>
                                 </div>
                                 <div class="row">
                                     <div id="id-Saved" class="col-lg-4 col-md-6 col-14"></div>
@@ -329,7 +328,7 @@
                             </span>
                         </div>
                         <br>
-                    </div>
+                    </form>
 
                     <div id="pnl-map" class="col-md-5 col-14 pl-15"></div>
                 </div>

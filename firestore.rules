@@ -6,8 +6,8 @@ service cloud.firestore {
       allow read, write: if false
   	}
 
-		match /admin/{document=**} {
-      allow read: if isLoggedIn(request)
+		match /admin/{user} {
+      allow read: if isUser(request, user)
       allow write: if hasRole(database, request, ["owner"])
     }
 
@@ -21,6 +21,10 @@ service cloud.firestore {
 
 		match /bhs/pageTotals {
       allow read, write: if true
+    }
+    
+	  match /bhs/patreon/contributors/{user} {
+      allow read: if isUser(request, user)
     }
 
 		match /nmsce-searches/{document} {
@@ -56,7 +60,7 @@ service cloud.firestore {
     match /users/{document=**} {
       allow read: if isOwner(request, resource) || hasRole(database, request, ["admin"])
       allow create: if isLoggedIn(request)
-      allow update: if isOwner(request, resource) || hasRole(database, request, ["admin"])
+      allow update: if isOwner(request, resource) || hasRole(database, request, ["admin"]) 
     }
 
     match /users/{uid}/{document=**} {
@@ -71,10 +75,14 @@ service cloud.firestore {
       allow delete: if isOwner(request, resource) || isAdmin(database, request)
     }
     
-    match /{path=**}/{type}/{document} {
-      allow read: if type in ["votes", "Ship","Freighter","Frigate","Fauna","Planet","Base","Multi-Tool"]
+    match /{path=**}/votes/{document} {
+      allow read: if true
     }
-
+      
+    match /{path=**}/nmsceCommon/{document} {
+      allow read: if true
+    }
+      
     match /tags/{document=**} {
           allow read: if true
           allow write: if isLoggedIn(request)
@@ -95,6 +103,10 @@ function isLoggedIn(req) {
 
 function isOwner(req, res) {
   return req.auth.uid == res.data.uid
+}
+
+function isUser(req, user){
+	return req.auth.uid == user
 }
 
 function hasRole(db, req, roles) {

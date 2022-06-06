@@ -347,9 +347,9 @@ async function checkComments(posts, mods) {
                         let str = ""
 
                         if (addr) {
-                            str = "Coordinates: " + addr + "\n\nGlyphs in hex: " + glyph + "\n\nGlyphs in [icons](https://nmsce.com/glyph.html?a=" + addr + ")"
+                            str = "Coordinates: " + addr + "\n\nGlyphs in hex: " + glyph + "\n\nGlyphs in [icons](https://nmsce.com/glyph?a=" + addr + ")"
                         } else if (glyph)
-                            str = "Glyphs in hex: " + glyph + "\n\nGlyphs in [icons](https://nmsce.com/glyph.html?a=" + glyph + ")"
+                            str = "Glyphs in hex: " + glyph + "\n\nGlyphs in [icons](https://nmsce.com/glyph?a=" + glyph + ")"
 
                         post.remove().catch(err => error("11a", err))
 

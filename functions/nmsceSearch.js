@@ -108,7 +108,7 @@ exports.checkSearch = async function (e) {
                 action: 'read',
                 expires: '03-09-2491'
             }).then(url => {
-                let link = "https://nmsce.com/preview.html?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
+                let link = "https://nmsce.com/preview?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
 
                 let mailOptions = {
                     from: '<bhsapp.testing@gmail.com>',

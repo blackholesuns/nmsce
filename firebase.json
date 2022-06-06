@@ -25,10 +25,23 @@
     {
       "target": "test",
       "public": "public",
+      "cleanUrls": true,
       "ignore": [
         "firebase.json",
         "**/.*",
         "**/node_modules/**"
+      ],
+      "redirects": [
+        {
+          "source": "/nmsce.html",
+          "destination": "/",
+          "type": 301
+        },
+        {
+          "source": "/cedata.html",
+          "destination": "/upload",
+          "type": 301
+        }
       ],
       "headers": [
         {
@@ -58,6 +71,7 @@
     {
       "target": "nmsce",
       "public": "public",
+      "cleanUrls": true,
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -65,8 +79,13 @@
       ],
       "redirects": [
         {
-          "source": "/",
-          "destination": "/nmsce.html",
+          "source": "/nmsce.html",
+          "destination": "/",
+          "type": 301
+        },
+        {
+          "source": "/cedata.html",
+          "destination": "/upload",
           "type": 301
         }
       ],

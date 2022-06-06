@@ -7,7 +7,8 @@ import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
-import { Version } from "./metadata.js";
+import { CollateChangeLog, Version } from "./metadata.js";
+import { BuildGalaxyMenu } from "./tmputil.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
@@ -26,8 +27,21 @@ const thumbPath = "/nmsce/disp/thumb/"
 $(document).ready(() => {
     startUp();
 
-    $("#cemenus").load("cemenus.html", () => {
-        $("#version-number").text("v" + Version)
+    $("#cemenus").load("header.html", () => {
+        $("#version-number").text("v" + Version);
+        $("#changelogpnlcontent").append(CollateChangeLog())
+
+        $("#changelog").click(() => {
+            let panel = $("#changelogpnl");
+            $("#changelogpnlexit").click(() => panel.hide())
+            $(document).on('keydown', function (event) {
+                if (event.key == "Escape") {
+                    panel.hide();
+                }
+            });
+            panel.show();
+        });
+
         let loc = fnmsce ? $("#searchpage") : fcedata ? $("#entrypage") : []
         if (loc.length > 0) {
             loc.css("border-color", "red")
@@ -60,7 +74,7 @@ $(document).ready(() => {
         }
     }
 
-    //https://localhost:5000/preview.html?i=0547-0086-0E45-00A1-himodan-s-coup&g=Euclid&t=Ship
+    //https://localhost:5000/preview?i=0547-0086-0E45-00A1-himodan-s-coup&g=Euclid&t=Ship
     let passed = {}
     let param = location.search.substring(1).split("&")
 
@@ -255,13 +269,20 @@ class NMSCE {
         addRadioList($("#id-Economy"), "Economy", economyListTier)
         addRadioList($("#id-Lifeform"), "Lifeform", lifeformList)
         addRadioList($("#id-Platform"), "Platform", platformListAll)
-
-        bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
-            tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
+        
+        BuildGalaxyMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
             required: true,
+            sort: true,
             labelsize: "col-md-6 col-4",
             menusize: "col",
         })
+        // bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
+        //     tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
+        //     required: true,
+        //     sort: true,
+        //     labelsize: "col-md-6 col-4",
+        //     menusize: "col",
+        // })
 
         if (fnmsce) {
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
@@ -436,7 +457,7 @@ class NMSCE {
         else
             loc.find("#foundreg").hide()
 
-        $("#btn-Galaxy").text(entry.galaxy)
+        $("#btn-Galaxy").val(entry.galaxy)
 
         this.dispAddr(loc, entry.addr)
 
@@ -534,7 +555,7 @@ class NMSCE {
         if (fcedata)
             loc.find("#id-Player").val(bhs.user._name)
 
-        loc.find("#btn-Galaxy").text(bhs.user.galaxy)
+        loc.find("#btn-Galaxy").val(bhs.user.galaxy)
 
         loc = loc.find("#id-Platform")
         loc.find("input").prop("checked", false)
@@ -913,7 +934,7 @@ class NMSCE {
         this.displaySystem(entry)
         this.changeAddr(null, entry.addr)
 
-        let link = `/preview.html?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
+        let link = `/preview?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
         $("[id|='permalink']").attr("href", link)
 
         let disp = function (flds, pnltype, slist) {
@@ -1011,7 +1032,7 @@ class NMSCE {
     displaySearch(search) {
         this.clearPanel(true)
 
-        $("#btn-Galaxy").text(search.galaxy)
+        $("#btn-Galaxy").val(search.galaxy)
         $("#ck-notify").prop("checked", search.notify)
         $("#id-Player").text(search.name)
 
@@ -1122,6 +1143,10 @@ class NMSCE {
     }
 
     search(search) {
+        if(search && search.preventDefault && (search.preventDefault() || true))
+            search = null;
+
+
         if (!search) {
             search = this.extractSearch()
 
@@ -1145,6 +1170,7 @@ class NMSCE {
         this.entries["Search-Results"] = []
 
         this.executeSearch(search, "Search Results", display)
+        return false;
     }
 
     saveSearch() {
@@ -1157,7 +1183,7 @@ class NMSCE {
 
         if (!bhs.user.uid || !bhs.isPatreon(2)) {
             if (typeof (Storage) !== "undefined") {
-                window.localStorage.setItem('nmsce-galaxy', $("#btn-Galaxy").text().stripNumber())
+                window.localStorage.setItem('nmsce-galaxy', $("#btn-Galaxy").val().stripNumber())
 
                 search.uid = window.localStorage.getItem('nmsce-tempuid')
                 if (!search.uid) {
@@ -1292,7 +1318,7 @@ class NMSCE {
     }
 
     extractSearch() {
-        let galaxy = $("#btn-Galaxy").text().stripNumber()
+        let galaxy = $("#btn-Galaxy").val().stripNumber()
         let s = {}
         s.search = []
         let search = s.search
@@ -1487,7 +1513,7 @@ class NMSCE {
     }
 
     openSearch() {
-        window.open("this.html?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
+        window.open("/?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
     }
 
     searchSystem(k) {
@@ -1590,7 +1616,7 @@ class NMSCE {
 
         u.version = latestversion
         u._name = loc.find("#id-Player").val()
-        u.galaxy = loc.find("#btn-Galaxy").text().stripNumber()
+        u.galaxy = loc.find("#btn-Galaxy").val().stripNumber()
 
         loc = loc.find("#id-Platform :checked")
         if (loc.length > 0)
@@ -2568,7 +2594,7 @@ class NMSCE {
         let file = evt.files[0]
         let reader = new FileReader()
 
-        reader.onload = function () {
+        reader.onload = () => {
             let img = new Image()
             img.crossOrigin = "anonymous"
             img.onload = this.onLoadLogo.bind(this);
@@ -2652,12 +2678,12 @@ class NMSCE {
                 if (edit) {
                     var xhr = new XMLHttpRequest()
                     xhr.responseType = 'blob'
-                    xhr.onload = function (event) {
+                    xhr.onload = (event) => {
                         this.screenshot = new Image()
                         this.screenshot.crossOrigin = "anonymous"
                         this.screenshot.src = url
 
-                        this.screenshot.onload = function () {
+                        this.screenshot.onload = () => {
                             this.restoreImageText(null, true)
                             this.scaleGlyphLocation()
 
@@ -2911,7 +2937,7 @@ class NMSCE {
         let e = this.last
 
         if (e && bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin"))) {
-            let link = "/cedata.html?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
+            let link = "/upload?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
             window.open(link, "_self")
         }
     }
@@ -2946,10 +2972,10 @@ class NMSCE {
                 username: reddit.client_id,
                 password: "",
                 crossDomain: true,
-                beforeSend: function (xhr) {
+                beforeSend: (xhr) => {
                     xhr.setRequestHeader('Authorization', 'Basic ' + btoa(reddit.client_id + ":"))
                 },
-                success(res) {
+                success: (res) => {
                     if (res.access_token) {
                         window.localStorage.setItem('nmsce-reddit-access-token', res.access_token)
                         window.localStorage.setItem('nmsce-reddit-expires', new Date().getTime() + res.expires_in * 1000)
@@ -2959,7 +2985,8 @@ class NMSCE {
                             this.redditCreate(state, res.access_token)
                     }
                 },
-                error(err) {
+                error: (err) => {
+                    console.error(err);
                     this.postStatus(err.message)
                 },
             })
@@ -3091,11 +3118,19 @@ class NMSCE {
                 success(res) {
                     this.subReddits = []
                     for (let s of res.data.children)
+                    {
+                        let data = s.data;
+
+                        if(data.over18 || data.subreddit_type == 'user')
+                            continue;
+
                         this.subReddits.push({
-                            name: s.data.title,
-                            url: s.data.url,
-                            link: s.data.name
+                            name: data.display_name_prefixed,
+                            url: data.url,
+                            link: data.name
                         })
+
+                    }
                     bhs.buildMenu($("#redditPost"), "SubReddit", this.subReddits, this.setSubReddit, {
                         required: true,
                         labelsize: "col-4",
@@ -3177,7 +3212,7 @@ class NMSCE {
         window.localStorage.setItem('nmsce-reddit-title', title)
 
         let e = this.last
-        let link = `/preview.html?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
         window.localStorage.setItem('nmsce-reddit-plink', link)
 
         link = `/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
@@ -3675,13 +3710,13 @@ class NMSCE {
             let docRef = doc(bhs.fs, "nmsce/" + entry.galaxy + "/" + entry.type + "/" + entry.id)
 
             let vref = collection(docRef, "votes")
-            vref.get().then(snapshot => {
+            getDocs(vref).then(snapshot => {
                 for (let doc of snapshot.docs)
                     deleteDoc(doc.ref);
             })
 
             vref = collection(docRef, "nmsceCommon")
-            vref.get().then(snapshot => {
+            getDocs(vref).then(snapshot => {
                 for (let doc of snapshot.docs)
                     deleteDoc(doc.ref);
             })
@@ -3693,13 +3728,13 @@ class NMSCE {
                 $("#delete-item").prop("disabled", true)
 
                 let vref = collection(docRef, "votes")
-                vref.get().then(snapshot => {
+                getDocs(vref).then(snapshot => {
                     for (let doc of snapshot.docs)
                         deleteDoc(doc.ref);
                 })
 
                 vref = collection(docRef, "nmsceCommon")
-                vref.get().then(snapshot => {
+                getDocs(vref).then(snapshot => {
                     for (let doc of snapshot.docs)
                         delete (doc.ref);
                 })
@@ -4470,7 +4505,7 @@ class NMSCE {
             })
         }
 
-        let link = `/preview.html?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
         $("[id|='permalink']").attr("href", link)
 
         let idx = getIndex(objectList, "name", e.type)
@@ -4911,20 +4946,6 @@ class NMSCE {
                 this.displaySingle(doc.data())
         })
     }
-
-    newDARC(evt) {
-        let addr = $(evt).text()
-
-        if (typeof (Storage) !== "undefined")
-            window.localStorage.setItem('nmsce-addr', addr)
-
-        var win = window.open('darc.html', '_blank')
-        if (win) {
-            win.focus()
-        } else {
-            alert('Please allow popups for this website')
-        }
-    }
 }
 
 let txtcanvas = document.createElement('canvas');
@@ -4955,9 +4976,30 @@ const mapColors = {
     error: "#ff0000",
 }
 
+
+const clientIds = {
+    prod: "8oDpVp9JDDN7ng",
+    beta: "9Ukymj_MbqxWglSLm0kQqw",
+    alpha: "8DNnTDRJMlG9ZecGVV44Ew",
+    local: "vCekWEy1EPnRIy2zpu3EeA"
+}
+const currentLocation = location.href.split("?")[0];
+
+let client_id = clientIds.prod;
+
+if(currentLocation.includes("beta.nmsce.com"))
+    client_id = clientIds.beta;
+
+if(currentLocation.includes("localhost"))
+    client_id = clientIds.local;
+
+if(currentLocation.includes("web.app"))
+    client_id = clientIds.alpha;
+
+
 const reddit = {
-    client_id: "8oDpVp9JDDN7ng",
-    redirect_url: "http://nmsce.com/cedata.html",
+    client_id: client_id,
+    redirect_url: currentLocation,
     scope: "identity,submit,mysubreddits,flair",
     auth_url: "https://www.reddit.com/api/v1/authorize",
     token_url: "https://ssl.reddit.com/api/v1/access_token",
@@ -5023,7 +5065,7 @@ function getPlanet(evt) {
     if (!fcedata)
         return
 
-    let gal = $("#btn-Galaxy").text().stripNumber()
+    let gal = $("#btn-Galaxy").val().stripNumber()
     let addr = $("#panels #id-addr").val()
     let planet = $(evt.target ? evt.target : evt).val()
 
@@ -5057,13 +5099,13 @@ function getEntry() {
     let addr = $("#panels #id-addr").val()
     let name = $(this).val()
     let type = $("#typePanels .active").prop("id").stripID()
-    let gal = $("#btn-Galaxy").text().stripNumber()
+    let gal = $("#btn-Galaxy").val().stripNumber()
 
     if (gal && type && addr && name) {
         let q = query(collection(bhs.fs, "nmsce/" + gal + "/" + type), where("Name", "==", name), where("addr", "==", addr))
         getDocs(q).then(snapshot => {
             if (!snapshot.empty) {
-                this.displaySingle(snapshot.docs[0].data())
+                nmsce.displaySingle(snapshot.docs[0].data())
                 $("#typePanels .active #row-Name .fa-check").show()
             }
         })
