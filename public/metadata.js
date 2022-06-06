@@ -14,8 +14,7 @@ export const ChangeLog = [
             "Fixed issue with which the app was impossible to debug without firebase cli",
             "Fixed Error with loading Overlay when uploading",
             "Improved Reddit interaction fixing it for alpha,beta and local dev environments",
-            "Fixed Galaxy selector removing unordered list and converting to text input",
-            "Added validation to the Galaxy input",
+            "Improved Galaxy Input",
             "Fixed System Search button in Preview",
             "Fixed Error when trying to delete a submission"
         ]
