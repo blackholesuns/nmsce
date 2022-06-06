@@ -10,6 +10,7 @@ import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
 import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, GetThumbnailUrl, UploadImages } from "./storage.js";
 import { BuildGalaxyMenu } from "./tmputil.js";
+import { GetAuthUrl, GetTokenFromCode, TryCachedAuthentication } from "./reddit.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
@@ -2939,54 +2940,12 @@ class NMSCE {
         }
     }
 
-    redditLogin(state) {
-        let url = reddit.auth_url +
-            "?client_id=" + reddit.client_id +
-            "&response_type=code&state=" + state +
-            "&redirect_uri=" + reddit.redirect_url +
-            "&duration=permanent&scope=" + reddit.scope
-
-        window.open(url, "_self")
-    }
-
     redditLoggedIn(state, code) {
-        let accessToken = window.localStorage.getItem('nmsce-reddit-access-token')
-        if (accessToken)
-            this.redditCreate(state)
+        if(!TryCachedAuthentication())
+            GetTokenFromCode(code);
 
-        else
-            $.ajax({
-                type: "POST",
-                url: reddit.token_url,
-                data: {
-                    code: code,
-                    client_id: reddit.client_id,
-                    client_secret: "",
-                    redirect_uri: reddit.redirect_url,
-                    grant_type: 'authorization_code',
-                    state: state
-                },
-                username: reddit.client_id,
-                password: "",
-                crossDomain: true,
-                beforeSend: (xhr) => {
-                    xhr.setRequestHeader('Authorization', 'Basic ' + btoa(reddit.client_id + ":"))
-                },
-                success: (res) => {
-                    if (res.access_token) {
-                        window.localStorage.setItem('nmsce-reddit-access-token', res.access_token)
-                        window.localStorage.setItem('nmsce-reddit-expires', new Date().getTime() + res.expires_in * 1000)
-                        window.localStorage.setItem('nmsce-reddit-refresh-token', res.refresh_token)
-
-                        if (state.includes("post_"))
-                            this.redditCreate(state, res.access_token)
-                    }
-                },
-                error: (err) => {
-                    console.error(err);
-                    this.postStatus(err.message)
-                },
-            })
+        if (state.includes("post_"))
+            this.redditCreate(state, res.access_token);
     }
 
     getRedditToken(state) {
@@ -3001,7 +2960,7 @@ class NMSCE {
         }
 
         if (!accessToken || !expires || !refreshToken)
-            this.redditLogin(state) // no return
+            window.location.href = GetAuthUrl(state) // no return
 
         else if (new Date().getTime() > expires) {
             $.ajax({
@@ -3109,26 +3068,31 @@ class NMSCE {
                     Authorization: "Bearer " + accessToken,
                 },
                 data: {
-                    limit: 100,
+                    limit: 100000,
                 },
                 crossDomain: true,
                 success(res) {
+                    let SubredditMap = new Map();
                     this.subReddits = []
+
                     for (let s of res.data.children)
                     {
                         let data = s.data;
-
                         if(data.over18 || data.subreddit_type == 'user')
                             continue;
 
-                        this.subReddits.push({
+                        SubredditMap.set(data.display_name, {
                             name: data.display_name_prefixed,
                             url: data.url,
                             link: data.name
                         })
-
                     }
-                    bhs.buildMenu($("#redditPost"), "SubReddit", this.subReddits, this.setSubReddit, {
+
+                    const NMSCE = SubredditMap["NMSCoordinateExchange"];
+                    const NMSTG = SubredditMap["NoMansSkyTheGame"];
+                    
+
+                    bhs.buildMenu($("#redditPost"), "SubReddit", Array.from(SubredditMap.values()), this.setSubReddit, {
                         required: true,
                         labelsize: "col-4",
                         menusize: "col",
@@ -4951,41 +4915,6 @@ const mapColors = {
     enabled: "#00a000",
     error: "#ff0000",
 }
-
-
-const clientIds = {
-    prod: "8oDpVp9JDDN7ng",
-    beta: "9Ukymj_MbqxWglSLm0kQqw",
-    alpha: "8DNnTDRJMlG9ZecGVV44Ew",
-    local: "vCekWEy1EPnRIy2zpu3EeA"
-}
-const currentLocation = location.href.split("?")[0];
-
-let client_id = clientIds.prod;
-
-if(currentLocation.includes("beta.nmsce.com"))
-    client_id = clientIds.beta;
-
-if(currentLocation.includes("localhost"))
-    client_id = clientIds.local;
-
-if(currentLocation.includes("web.app"))
-    client_id = clientIds.alpha;
-
-
-const reddit = {
-    client_id: client_id,
-    redirect_url: currentLocation,
-    scope: "identity,submit,mysubreddits,flair",
-    auth_url: "https://www.reddit.com/api/v1/authorize",
-    token_url: "https://ssl.reddit.com/api/v1/access_token",
-    api_oauth_url: "https://oauth.reddit.com",
-    subscriber_endpt: "/subreddits/mine/subscriber",
-    user_endpt: "/api/v1/me",
-    getflair_endpt: "api/link_flair_v2",
-    submitLink_endpt: "/api/submit",
-    comment_endpt: "/api/comment",
-};
 
 function updateImageText() {
     this.restoreImageText(null, true)

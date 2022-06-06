@@ -1,0 +1,22 @@
+<html>
+    <script type="module">
+        import { GetUrlParameters } from "../util.js"
+        const params = GetUrlParameters();
+        console.log(params);
+        import { TryCachedAuthentication, UNSAFE__GetSnoowrap, GetAuthUrl, GetTokenFromCode } from "../reddit.js"
+        
+        if(!params.code)
+        {
+            let url = GetAuthUrl("test:this:is?with=content");
+            window.location.href = url;
+        }else{
+            await GetTokenFromCode(params.code);
+        }
+        // console.log(`Cached Authentication Result: ${TryCachedAuthentication()}`);
+        window.user = UNSAFE__GetSnoowrap();
+        console.log(window.user);
+    </script>
+    <body>
+        <h1>Redirecting...</h1>
+    </body>
+</html>
