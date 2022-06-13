@@ -6,6 +6,7 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-s
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-functions.js"
 import { buildGalaxyInfo, validateAddress, fcedata, fnmsce, fsearch, ftotals, mergeObjects } from "./commonNms.js";
 import { platformList } from "./constants.js";
+import { App, Auth, Firestore, Storage } from "./firebase.js";
 
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
@@ -88,16 +89,20 @@ export class blackHoleSuns {
     }
 
     initFirebase() {
-        try {
-            this.app = initializeApp(fbconfig)
-        } catch (err) {
-            if (!/already exists/.test(err.message))
-                console.error("Firebase initialization error raised", err.stack)
-        }
+        this.app = App
+        this.fbauth = Auth
+        this.fs = Firestore
+        this.fbstorage = Storage
+        // try {
+        //     this.app = initializeApp(fbconfig)
+        // } catch (err) {
+        //     if (!/already exists/.test(err.message))
+        //         console.error("Firebase initialization error raised", err.stack)
+        // }
     
-        this.fbauth = getAuth(this.app);
-        this.fs = getFirestore(this.app);
-        this.fbstorage = getStorage(this.app);
+        // this.fbauth = getAuth(this.app);
+        // this.fs = getFirestore(this.app);
+        // this.fbstorage = getStorage(this.app);
         // this.fs.settings({
         //     cacheSizeBytes: 1024 * 1024
         // })

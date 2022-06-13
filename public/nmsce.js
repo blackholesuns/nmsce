@@ -8,6 +8,7 @@ import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, 
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
+import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, UploadImages } from "./storage.js";
 import { BuildGalaxyMenu } from "./tmputil.js";
 
 if (window.location.hostname === "localhost")
@@ -746,7 +747,7 @@ class NMSCE {
         return ok ? entry : null
     }
 
-    extractEntry() {
+    async extractEntry() {
         let entry = this.extractSystem()
         let ok = entry !== null
 
@@ -882,10 +883,10 @@ class NMSCE {
                 if (typeof entry.id === "undefined")
                     entry.id = uuidv4()
 
-                this.entries[entry.type].push(entry)
+                this.entries[entry.type]?.push(entry)
                 this.displayListEntry(entry, true)
 
-                if (!(ok = this.updateScreenshot(entry)))
+                if (!(ok = await this.updateScreenshot(entry)))
                     bhs.status("Error: Photo required.")
                 else {
                     this.updateEntry(entry)
@@ -1558,7 +1559,7 @@ class NMSCE {
         })
     }
 
-    saveEntry() {
+    async saveEntry() {
         let ok = bhs.user.uid
 
         if (!this.last || this.last.uid === bhs.user.uid) {
@@ -1581,7 +1582,7 @@ class NMSCE {
             }
         }
 
-        if (ok && this.extractEntry())
+        if (ok && await this.extractEntry())
             this.clearPanel()
     }
 
@@ -2672,15 +2673,16 @@ class NMSCE {
         } else {
             let img = new Image()
             img.crossOrigin = "anonymous"
-
-            getDownloadURL(ref(bhs.fbstorage, (edit ? originalPath : displayPath) + fname)).then(url => {
+            
+            let urlFunc = edit ? GetOriginalUrl : GetDisplayUrl
+            // getDownloadURL(ref(bhs.fbstorage, (edit ? originalPath : displayPath) + fname)).then(url => {
                 if (edit) {
                     var xhr = new XMLHttpRequest()
                     xhr.responseType = 'blob'
                     xhr.onload = (event) => {
                         this.screenshot = new Image()
                         this.screenshot.crossOrigin = "anonymous"
-                        this.screenshot.src = url
+                        this.screenshot.src = urlFunc(fname);
 
                         this.screenshot.onload = () => {
                             this.restoreImageText(null, true)
@@ -2690,15 +2692,15 @@ class NMSCE {
                         }
                     }
 
-                    xhr.open('GET', url)
+                    xhr.open('GET', urlFunc(fname))
                     xhr.send()
                 } else {
-                    $("#id-ssImage").attr("src", url)
+                    $("#id-ssImage").attr("src", urlFunc(fname))
 
                     $("#openReddit").removeClass("disabled")
                     $("#openReddit").removeAttr("disabled")
                 }
-            })
+            // })
         }
     }
 
@@ -3217,10 +3219,10 @@ class NMSCE {
         link = `/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
         window.localStorage.setItem('nmsce-reddit-slink', link)
 
-        getDownloadURL(ref(bhs.fbstorage, displayPath + this.last.Photo)).then(url => {
-            window.localStorage.setItem('nmsce-reddit-link', url)
-            this.redditSubmit()
-        })
+        // getDownloadURL(ref(bhs.fbstorage, displayPath + this.last.Photo)).then(url => {
+        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(this.last.Photo));
+        this.redditSubmit()
+        // })
     }
 
     redditSubmit(accessToken) {
@@ -3720,7 +3722,7 @@ class NMSCE {
                     deleteDoc(doc.ref);
             })
 
-            deleteDoc(docRef).then(() => {
+            deleteDoc(docRef).then(async () => {
                 bhs.status(entry.id + " deleted.")
                 $("#save").text("Save All")
                 $("#delete-item").addClass("disabled")
@@ -3737,12 +3739,19 @@ class NMSCE {
                     for (let doc of snapshot.docs)
                         delete (doc.ref);
                 })
+                
+                let ImagePaths = [
+                    GetDisplayPath,
+                    GetOriginalPath,
+                    GetThumbnailPath
+                ].map(func => func(entry.Photo));
 
-                deleteObject(ref(bhs.fbstorage, originalPath + entry.Photo));
+                await DeleteImages(ImagePaths);
+                // deleteObject(ref(bhs.fbstorage, originalPath + entry.Photo));
 
-                deleteObject(ref(bhs.fbstorage, displayPath + entry.Photo));
+                // deleteObject(ref(bhs.fbstorage, displayPath + entry.Photo));
 
-                deleteObject(ref(bhs.fbstorage, thumbPath + entry.Photo));
+                // deleteObject(ref(bhs.fbstorage, thumbPath + entry.Photo));
 
             }).catch(err => {
                 bhs.status("ERROR: " + err.code)
@@ -3760,7 +3769,7 @@ class NMSCE {
         }
     }
 
-    updateScreenshot(entry) {
+    async updateScreenshot(entry) {
         if (!$("#imgtable").is(":visible"))
             return null
 
@@ -3768,33 +3777,38 @@ class NMSCE {
             if (typeof entry.Photo === "undefined")
                 entry.Photo = entry.type + "-" + entry.id + ".jpg"
 
+            /** @type {{path: string, blob: Blob}[]} */
+            const images = []
+
             let disp = document.createElement('canvas')
             this.drawText(disp, 1024)
-            disp.toBlob(blob => {
-                uploadBytes(ref(bhs.fbstorage, displayPath + entry.Photo), blob).then(() => {
-                    // bhs.status("Saved " + displayPath + entry.Photo)
-                })
-            }, "image/jpeg", 0.9)
+
+            images.push({
+                path: GetDisplayPath(entry.Photo),
+                blob: await new Promise(resolve => disp.toBlob(resolve, "image/jpeg", 0.9))
+            });
 
             let thumb = document.createElement('canvas')
             this.drawText(thumb, 400)
-            thumb.toBlob(blob => {
-                this.saved = blob
-                uploadBytes(ref(bhs.fbstorage, thumbPath + entry.Photo), blob).then(() => {
-                    // bhs.status("Saved " + thumbPath + entry.Photo)
-                })
-            }, "image/jpeg", 0.8)
+
+            images.push({
+                path: GetThumbnailPath(entry.Photo),
+                blob: await new Promise(resolve => thumb.toBlob(resolve, "image/jpeg", 0.8))
+            });
 
             let orig = document.createElement('canvas')
             let ctx = orig.getContext("2d")
             orig.width = Math.min(2048, this.screenshot.width)
             orig.height = parseInt(this.screenshot.height * orig.width / this.screenshot.width)
             ctx.drawImage(this.screenshot, 0, 0, orig.width, orig.height)
-            orig.toBlob(blob => {
-                uploadBytes(ref(bhs.fbstorage, originalPath + entry.Photo), blob).then(() => {
-                    // bhs.status("Saved " + originalPath + entry.Photo)
-                })
-            }, "image/jpeg", 0.9)
+
+            images.push({
+                path: GetOriginalPath(entry.Photo),
+                blob: await new Promise(resolve => orig.toBlob(resolve, "image/jpeg", 0.9))
+            });
+
+
+            UploadImages(images);
 
             $("#dltab-" + entry.type).click()
 
