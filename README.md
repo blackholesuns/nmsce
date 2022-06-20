@@ -9,7 +9,7 @@ Maintainers: [@CEbbinghaus](https://github.com/CEbbinghaus) [@Spiper](https://gi
 # Contributing
 As of V1.1.0 it is now possible to work on it locally with nothing more than npm installed. 
 
-Do do that checkout the Repository
+To do that checkout the Repository
 ```
 $ git checkout https://github.com/blackholesuns/nmsce
 ```
