@@ -1,14 +1,14 @@
 'use strict'
-import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
 
+import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
 import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
+import { ref } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
-import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, UploadImages } from "./storage.js";
+import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, GetThumbnailUrl, UploadImages } from "./storage.js";
 import { BuildGalaxyMenu } from "./tmputil.js";
 
 if (window.location.hostname === "localhost")
@@ -20,11 +20,6 @@ if (window.location.hostname === "localhost")
 var nmsce;
 // Does nothing. Purely for consistency
 window.nmsce = nmsce;
-
-const baseUrl = "https://cdn.nmsce.com"
-const displayPath = "/nmsce/disp/"
-const originalPath = "/nmsce/orig/"
-const thumbPath = "/nmsce/disp/thumb/"
 
 $(document).ready(() => {
     startUp();
@@ -50,6 +45,7 @@ $(document).ready(() => {
             loc.css("border-width", "3px")
         }
     })
+
     // Bad hack. Should not be used
     window.nmsce = nmsce = new NMSCE()
     nmsce.last = null
@@ -2674,33 +2670,33 @@ class NMSCE {
             let img = new Image()
             img.crossOrigin = "anonymous"
             
-            let urlFunc = edit ? GetOriginalUrl : GetDisplayUrl
-            // getDownloadURL(ref(bhs.fbstorage, (edit ? originalPath : displayPath) + fname)).then(url => {
-                if (edit) {
-                    var xhr = new XMLHttpRequest()
-                    xhr.responseType = 'blob'
-                    xhr.onload = (event) => {
-                        this.screenshot = new Image()
-                        this.screenshot.crossOrigin = "anonymous"
-                        this.screenshot.src = urlFunc(fname);
+            // Get Original or Display URL depending on if we are editing it
+            let url = (edit ? GetOriginalUrl : GetDisplayUrl)(fname);
 
-                        this.screenshot.onload = () => {
-                            this.restoreImageText(null, true)
-                            this.scaleGlyphLocation()
+            if (edit) {
+                var xhr = new XMLHttpRequest()
+                xhr.responseType = 'blob'
+                xhr.onload = (event) => {
+                    this.screenshot = new Image()
+                    this.screenshot.crossOrigin = "anonymous"
+                    this.screenshot.src = url;
 
-                            $("body")[0].style.cursor = "default"
-                        }
+                    this.screenshot.onload = () => {
+                        this.restoreImageText(null, true)
+                        this.scaleGlyphLocation()
+
+                        $("body")[0].style.cursor = "default"
                     }
-
-                    xhr.open('GET', urlFunc(fname))
-                    xhr.send()
-                } else {
-                    $("#id-ssImage").attr("src", urlFunc(fname))
-
-                    $("#openReddit").removeClass("disabled")
-                    $("#openReddit").removeAttr("disabled")
                 }
-            // })
+
+                xhr.open('GET', url)
+                xhr.send()
+            } else {
+                $("#id-ssImage").attr("src", url)
+
+                $("#openReddit").removeClass("disabled")
+                $("#openReddit").removeAttr("disabled")
+            }
         }
     }
 
@@ -3219,10 +3215,8 @@ class NMSCE {
         link = `/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
         window.localStorage.setItem('nmsce-reddit-slink', link)
 
-        // getDownloadURL(ref(bhs.fbstorage, displayPath + this.last.Photo)).then(url => {
         window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(this.last.Photo));
         this.redditSubmit()
-        // })
     }
 
     redditSubmit(accessToken) {
@@ -3740,6 +3734,7 @@ class NMSCE {
                         delete (doc.ref);
                 })
                 
+                // Little trick to get array of all different paths
                 let ImagePaths = [
                     GetDisplayPath,
                     GetOriginalPath,
@@ -3747,12 +3742,6 @@ class NMSCE {
                 ].map(func => func(entry.Photo));
 
                 await DeleteImages(ImagePaths);
-                // deleteObject(ref(bhs.fbstorage, originalPath + entry.Photo));
-
-                // deleteObject(ref(bhs.fbstorage, displayPath + entry.Photo));
-
-                // deleteObject(ref(bhs.fbstorage, thumbPath + entry.Photo));
-
             }).catch(err => {
                 bhs.status("ERROR: " + err.code)
                 console.log(err)
@@ -4396,7 +4385,7 @@ class NMSCE {
 
             let l = /idname/g[Symbol.replace](resultsItem, e.id)
             l = /galaxy/[Symbol.replace](l, e.galaxy)
-            l = /imgsrc/[Symbol.replace](l, baseUrl + thumbPath + e.Photo)
+            l = /imgsrc/[Symbol.replace](l, GetThumbnailUrl(e.Photo))
             l = /byname/[Symbol.replace](l, e._name)
             l = /date/[Symbol.replace](l, e.created ? e.created.toDate().toDateLocalTimeString() : "")
 
@@ -4507,7 +4496,7 @@ class NMSCE {
         let idx = getIndex(objectList, "name", e.type)
         let obj = objectList[idx]
 
-        $("#dispimage").prop("src", baseUrl + displayPath + e.Photo)
+        $("#dispimage").prop("src", GetDisplayUrl(e.Photo))
 
         let loc = $("#imagedata")
         loc.empty()
@@ -4793,7 +4782,7 @@ class NMSCE {
                 h = /black/[Symbol.replace](h, "black bkg-yellow")
             h = /idname/[Symbol.replace](h, e.id)
             h = /eid/[Symbol.replace](h, e.id)
-            h = /imgsrc/[Symbol.replace](h, baseUrl + thumbPath + e.Photo)
+            h = /imgsrc/[Symbol.replace](h, GetThumbnailUrl(e.Photo))
         }
 
         if (type === "All" || type === "Search Results") {
@@ -4879,7 +4868,7 @@ class NMSCE {
             loc.append(h)
             loc = loc.find("#row-" + e.id + " img")
 
-            loc.attr("src", baseUrl + thumbPath + e.Photo)
+            loc.attr("src", GetThumbnailUrl(e.Photo))
         }
     }
 

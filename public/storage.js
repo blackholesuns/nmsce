@@ -1,5 +1,4 @@
-import { ref, uploadBytes, getDownloadURL, deleteObject, getStorage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
-import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
+import { ref, uploadBytes, deleteObject, getStorage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
 import { App } from "./firebase.js";
 
 // Buckets we want to upload to
@@ -82,8 +81,8 @@ export function GetThumbnailUrl(filename) {
  * Uploads an image to the Firebase blob storage
  * 
  * @export
- * @param {any} path 
- * @param {any} blob 
+ * @param {string} path 
+ * @param {Blob} blob 
  */
 export async function UploadImage(path, blob) {
     // All Upload Tasks
@@ -116,7 +115,7 @@ export async function UploadImages(images) {
  * Deletes an image from the Firebase blob storage
  * 
  * @export
- * @param {any} path 
+ * @param {string} path 
  */
 export async function DeleteImage(path) {
     // All Delete Tasks

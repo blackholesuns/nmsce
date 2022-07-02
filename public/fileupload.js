@@ -180,6 +180,7 @@ blackHoleSuns.prototype.readTextFile = function (f, id) {
         log.path = "fileupload/" + uuidv4() + file.name.replace(/.*(\..*)$/, "$1")
         log.log = ""
 
+        // TODO: Last remaining reference to bhs.fbstorage
         if (!check)
             uploadBytes(ref(bhs.fbstorage, log.path), file)
 
