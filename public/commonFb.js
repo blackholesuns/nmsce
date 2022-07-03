@@ -6,6 +6,7 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-s
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-functions.js"
 import { buildGalaxyInfo, validateAddress, fcedata, fnmsce, fsearch, ftotals, mergeObjects } from "./commonNms.js";
 import { platformList } from "./constants.js";
+import { App, Auth, Firestore, Storage } from "./firebase.js";
 
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
@@ -88,43 +89,10 @@ export class blackHoleSuns {
     }
 
     initFirebase() {
-        try {
-            this.app = initializeApp(fbconfig)
-        } catch (err) {
-            if (!/already exists/.test(err.message))
-                console.error("Firebase initialization error raised", err.stack)
-        }
-    
-        this.fbauth = getAuth(this.app);
-        this.fs = getFirestore(this.app);
-        this.fbstorage = getStorage(this.app);
-        // this.fs.settings({
-        //     cacheSizeBytes: 1024 * 1024
-        // })
-
-        // enableIndexedDbPersistence(this.fs);
-        /*
-        {
-            synchronizeTabs: true
-        }
-        */
-    
-        //TODO: Does this need to exist? there are some problems with it
-        // getRedirectResult().then(result => {
-        //     if (result.credential) {
-        //         var token = result.credential.accessToken
-        //     }
-    
-        //     var user = result.user
-        //     this.onAuthStateChanged(user)
-        // }).catch(error => {
-        //     var errorCode = error.code
-        //     var errorMessage = error.message
-        //     var email = error.email
-        //     var credential = error.credential
-    
-        //     $("#loggedout").html("<h4>" + errorMessage + "</h4>")
-        // })
+        this.app = App
+        this.fbauth = Auth
+        this.fs = Firestore
+        this.fbstorage = Storage
     
         this.fbauth.onAuthStateChanged(this.onAuthStateChanged.bind(this))
     }

@@ -37,10 +37,5 @@ export function BuildGalaxyMenu(JElement, ElementName, List, Callback, { tip, re
 
     locElement.empty();
     locElement.append(`<div class="row">${titleHtml}${inputHtml}<div>`);
-    let el = locElement.find(`#btn-${id}`);
-
-    window.test = () => el.get(0).setCustomValidity("Invalid field.");
-
-    console.log(el)
 }
 

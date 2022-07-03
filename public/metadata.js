@@ -1,7 +1,18 @@
-export const Version = "1.1.0"
+export const Version = "1.1.1"
 
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
+    {
+        Version: "1.1.1",
+        Title: "Godspeed",
+        Authors: ["CEbbinghaus"],
+        Changes: [
+            "Moved entire site to Cloudflare (sorry for the outage)",
+            "Added better image storing with dedicated subdomain", 
+            "Decreased Latency by Caching images on the edge",
+            "Decreased Load times by skipping querying the URL"
+        ]
+    },
     {
         Version: "1.1.0",
         Title: "Weight Shedding",

@@ -1,13 +1,14 @@
 'use strict'
-import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
 
+import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
 import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
+import { ref } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
+import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, GetThumbnailUrl, UploadImages } from "./storage.js";
 import { BuildGalaxyMenu } from "./tmputil.js";
 
 if (window.location.hostname === "localhost")
@@ -19,10 +20,6 @@ if (window.location.hostname === "localhost")
 var nmsce;
 // Does nothing. Purely for consistency
 window.nmsce = nmsce;
-
-const displayPath = "/nmsce/disp/"
-const originalPath = "/nmsce/orig/"
-const thumbPath = "/nmsce/disp/thumb/"
 
 $(document).ready(() => {
     startUp();
@@ -48,6 +45,7 @@ $(document).ready(() => {
             loc.css("border-width", "3px")
         }
     })
+
     // Bad hack. Should not be used
     window.nmsce = nmsce = new NMSCE()
     nmsce.last = null
@@ -212,11 +210,9 @@ const resultsItem = `
         byname<br>
         date<br>
         <div class="pl-5 pr-5" style="min-height:20px">
-            <img id="img-idname" data-thumb="ethumb"
-            onload="imageLoaded(this, $(this).parent().width(), $(this).parent().height(), true)">
+            <img id="img-idname" src="imgsrc" style="width: 100%;">
         </div>
     </div>`;
-
 
 function showLatLong() {
     let loc = $("#typePanels #hdr-Ship")
@@ -747,7 +743,7 @@ class NMSCE {
         return ok ? entry : null
     }
 
-    extractEntry() {
+    async extractEntry() {
         let entry = this.extractSystem()
         let ok = entry !== null
 
@@ -883,10 +879,10 @@ class NMSCE {
                 if (typeof entry.id === "undefined")
                     entry.id = uuidv4()
 
-                this.entries[entry.type].push(entry)
+                this.entries[entry.type]?.push(entry)
                 this.displayListEntry(entry, true)
 
-                if (!(ok = this.updateScreenshot(entry)))
+                if (!(ok = await this.updateScreenshot(entry)))
                     bhs.status("Error: Photo required.")
                 else {
                     this.updateEntry(entry)
@@ -1559,7 +1555,7 @@ class NMSCE {
         })
     }
 
-    saveEntry() {
+    async saveEntry() {
         let ok = bhs.user.uid
 
         if (!this.last || this.last.uid === bhs.user.uid) {
@@ -1582,7 +1578,7 @@ class NMSCE {
             }
         }
 
-        if (ok && this.extractEntry())
+        if (ok && await this.extractEntry())
             this.clearPanel()
     }
 
@@ -2673,33 +2669,34 @@ class NMSCE {
         } else {
             let img = new Image()
             img.crossOrigin = "anonymous"
+            
+            // Get Original or Display URL depending on if we are editing it
+            let url = (edit ? GetOriginalUrl : GetDisplayUrl)(fname);
 
-            getDownloadURL(ref(bhs.fbstorage, (edit ? originalPath : displayPath) + fname)).then(url => {
-                if (edit) {
-                    var xhr = new XMLHttpRequest()
-                    xhr.responseType = 'blob'
-                    xhr.onload = (event) => {
-                        this.screenshot = new Image()
-                        this.screenshot.crossOrigin = "anonymous"
-                        this.screenshot.src = url
+            if (edit) {
+                var xhr = new XMLHttpRequest()
+                xhr.responseType = 'blob'
+                xhr.onload = (event) => {
+                    this.screenshot = new Image()
+                    this.screenshot.crossOrigin = "anonymous"
+                    this.screenshot.src = url;
 
-                        this.screenshot.onload = () => {
-                            this.restoreImageText(null, true)
-                            this.scaleGlyphLocation()
+                    this.screenshot.onload = () => {
+                        this.restoreImageText(null, true)
+                        this.scaleGlyphLocation()
 
-                            $("body")[0].style.cursor = "default"
-                        }
+                        $("body")[0].style.cursor = "default"
                     }
-
-                    xhr.open('GET', url)
-                    xhr.send()
-                } else {
-                    $("#id-ssImage").attr("src", url)
-
-                    $("#openReddit").removeClass("disabled")
-                    $("#openReddit").removeAttr("disabled")
                 }
-            })
+
+                xhr.open('GET', url)
+                xhr.send()
+            } else {
+                $("#id-ssImage").attr("src", url)
+
+                $("#openReddit").removeClass("disabled")
+                $("#openReddit").removeAttr("disabled")
+            }
         }
     }
 
@@ -3218,10 +3215,8 @@ class NMSCE {
         link = `/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
         window.localStorage.setItem('nmsce-reddit-slink', link)
 
-        getDownloadURL(ref(bhs.fbstorage, displayPath + this.last.Photo)).then(url => {
-            window.localStorage.setItem('nmsce-reddit-link', url)
-            this.redditSubmit()
-        })
+        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(this.last.Photo));
+        this.redditSubmit()
     }
 
     redditSubmit(accessToken) {
@@ -3721,7 +3716,7 @@ class NMSCE {
                     deleteDoc(doc.ref);
             })
 
-            deleteDoc(docRef).then(() => {
+            deleteDoc(docRef).then(async () => {
                 bhs.status(entry.id + " deleted.")
                 $("#save").text("Save All")
                 $("#delete-item").addClass("disabled")
@@ -3738,13 +3733,15 @@ class NMSCE {
                     for (let doc of snapshot.docs)
                         delete (doc.ref);
                 })
+                
+                // Little trick to get array of all different paths
+                let ImagePaths = [
+                    GetDisplayPath,
+                    GetOriginalPath,
+                    GetThumbnailPath
+                ].map(func => func(entry.Photo));
 
-                deleteObject(ref(bhs.fbstorage, originalPath + entry.Photo));
-
-                deleteObject(ref(bhs.fbstorage, displayPath + entry.Photo));
-
-                deleteObject(ref(bhs.fbstorage, thumbPath + entry.Photo));
-
+                await DeleteImages(ImagePaths);
             }).catch(err => {
                 bhs.status("ERROR: " + err.code)
                 console.log(err)
@@ -3761,7 +3758,7 @@ class NMSCE {
         }
     }
 
-    updateScreenshot(entry) {
+    async updateScreenshot(entry) {
         if (!$("#imgtable").is(":visible"))
             return null
 
@@ -3769,33 +3766,38 @@ class NMSCE {
             if (typeof entry.Photo === "undefined")
                 entry.Photo = entry.type + "-" + entry.id + ".jpg"
 
+            /** @type {{path: string, blob: Blob}[]} */
+            const images = []
+
             let disp = document.createElement('canvas')
             this.drawText(disp, 1024)
-            disp.toBlob(blob => {
-                uploadBytes(ref(bhs.fbstorage, displayPath + entry.Photo), blob).then(() => {
-                    // bhs.status("Saved " + displayPath + entry.Photo)
-                })
-            }, "image/jpeg", 0.9)
+
+            images.push({
+                path: GetDisplayPath(entry.Photo),
+                blob: await new Promise(resolve => disp.toBlob(resolve, "image/jpeg", 0.9))
+            });
 
             let thumb = document.createElement('canvas')
             this.drawText(thumb, 400)
-            thumb.toBlob(blob => {
-                this.saved = blob
-                uploadBytes(ref(bhs.fbstorage, thumbPath + entry.Photo), blob).then(() => {
-                    // bhs.status("Saved " + thumbPath + entry.Photo)
-                })
-            }, "image/jpeg", 0.8)
+
+            images.push({
+                path: GetThumbnailPath(entry.Photo),
+                blob: await new Promise(resolve => thumb.toBlob(resolve, "image/jpeg", 0.8))
+            });
 
             let orig = document.createElement('canvas')
             let ctx = orig.getContext("2d")
             orig.width = Math.min(2048, this.screenshot.width)
             orig.height = parseInt(this.screenshot.height * orig.width / this.screenshot.width)
             ctx.drawImage(this.screenshot, 0, 0, orig.width, orig.height)
-            orig.toBlob(blob => {
-                uploadBytes(ref(bhs.fbstorage, originalPath + entry.Photo), blob).then(() => {
-                    // bhs.status("Saved " + originalPath + entry.Photo)
-                })
-            }, "image/jpeg", 0.9)
+
+            images.push({
+                path: GetOriginalPath(entry.Photo),
+                blob: await new Promise(resolve => orig.toBlob(resolve, "image/jpeg", 0.9))
+            });
+
+
+            UploadImages(images);
 
             $("#dltab-" + entry.type).click()
 
@@ -4383,7 +4385,7 @@ class NMSCE {
 
             let l = /idname/g[Symbol.replace](resultsItem, e.id)
             l = /galaxy/[Symbol.replace](l, e.galaxy)
-            l = /ethumb/[Symbol.replace](l, thumbPath + e.Photo)
+            l = /imgsrc/[Symbol.replace](l, GetThumbnailUrl(e.Photo))
             l = /byname/[Symbol.replace](l, e._name)
             l = /date/[Symbol.replace](l, e.created ? e.created.toDate().toDateLocalTimeString() : "")
 
@@ -4394,23 +4396,6 @@ class NMSCE {
         }
 
         loc.append(h)
-        let imgs = loc.find("img")
-
-        for (let img of imgs) {
-            let data = $(img).data()
-
-            if (!data.src && !$(img).prop("src")) {
-                let storageRef = ref(bhs.fbstorage, data.thumb)
-                getDownloadURL(storageRef).then(url => {
-                    if ($(img).is(":visible"))
-                        $(img).attr("src", url)
-                    else
-                        $(img).data("src", url)
-                }).catch(err => {
-                    $(img).closest("[id|='row']").remove()
-                })
-            }
-        }
     }
 
     async vote(evt) {
@@ -4511,10 +4496,7 @@ class NMSCE {
         let idx = getIndex(objectList, "name", e.type)
         let obj = objectList[idx]
 
-        let storageRef = ref(bhs.fbstorage, displayPath + e.Photo)
-        getDownloadURL(storageRef).then(url => {
-            $("#dispimage").prop("src", url)
-        })
+        $("#dispimage").prop("src", GetDisplayUrl(e.Photo))
 
         let loc = $("#imagedata")
         loc.empty()
@@ -4780,8 +4762,7 @@ class NMSCE {
         const row = `     
         <div id="row-idname" class="col-md-p250 col-sm-p333 col-7 border border-black h6" >
             <div id="id-Photo" class="row pointer pl-10 pr-10" data-type="etype" data-id="eid" onclick="nmsce.selectList(this)" style="min-height:20px">
-                <img id="img-idname" data-thumb="ethumb"
-                onload="imageLoaded(this, $(this).parent().width(), $('#id-row').height(), false)">
+                <img id="img-idname" src="imgsrc" style="width: 100%">
             </div>
             <div class="row pl-10">`
         const item = `<div id="id-idname" class="col-md-7 col-14 border pointer">title</div>`
@@ -4801,7 +4782,7 @@ class NMSCE {
                 h = /black/[Symbol.replace](h, "black bkg-yellow")
             h = /idname/[Symbol.replace](h, e.id)
             h = /eid/[Symbol.replace](h, e.id)
-            h = /ethumb/[Symbol.replace](h, thumbPath + e.Photo)
+            h = /imgsrc/[Symbol.replace](h, GetThumbnailUrl(e.Photo))
         }
 
         if (type === "All" || type === "Search Results") {
@@ -4887,12 +4868,7 @@ class NMSCE {
             loc.append(h)
             loc = loc.find("#row-" + e.id + " img")
 
-            getDownloadURL(ref(bhs.fbstorage, thumbPath + e.Photo)).then(url => {
-                if (loc.is(":visible"))
-                    loc.attr("src", url)
-                else
-                    loc.data("src", url)
-            }).catch(err => console.log(err))
+            loc.attr("src", GetThumbnailUrl(e.Photo))
         }
     }
 
