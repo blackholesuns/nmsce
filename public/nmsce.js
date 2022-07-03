@@ -267,7 +267,6 @@ class NMSCE {
         addRadioList($("#id-Platform"), "Platform", platformListAll)
         
         BuildGalaxyMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
-            required: true,
             sort: true,
             labelsize: "col-md-6 col-4",
             menusize: "col",
@@ -340,7 +339,7 @@ class NMSCE {
 
     setGalaxy(evt) {
         bhs.updateUser({
-            galaxy: $(evt).text().stripNumber()
+            galaxy: ($(evt).text() || $(evt.target).val()).stripNumber()
         })
 
         this.getEntries(true)
@@ -538,7 +537,7 @@ class NMSCE {
             if (!bhs.user.uid && typeof (Storage) !== "undefined" && !bhs.user.galaxy)
                 bhs.user.galaxy = window.localStorage.getItem('nmsce-galaxy')
 
-            if (!bhs.user.galaxy)
+            if (bhs.user.galaxy == null || bhs.user.galaxy == undefined)
                 bhs.user.galaxy = "Euclid"
 
             if (bhs.user.uid && typeof this.entries["My Favorites"] === "undefined")
@@ -1081,7 +1080,11 @@ class NMSCE {
 
         $("#status").empty()
 
-        let ref = collection(bhs.fs, "nmsce/" + search.galaxy + "/" + search.type)
+        let ref;
+        if(search.galaxy)
+            ref = collection(bhs.fs, "nmsce/" + search.galaxy + "/" + search.type);
+        else
+            ref = collectionGroup(bhs.fs, search.type);
 
         let firstarray = 0;
         let arraylist = [];
@@ -1151,6 +1154,8 @@ class NMSCE {
                 return
             }
         }
+
+        window.localStorage.setItem('nmsce-galaxy', search.galaxy);
 
         let display = (list, type) => {
             $("#dltab-Search-Results").click()
@@ -1319,10 +1324,6 @@ class NMSCE {
         s.search = []
         let search = s.search
 
-        if (galaxy === "") {
-            bhs.status("No Galaxy Selected.")
-            return null
-        }
 
         let tab = $("#typeTabs .active").prop("id").stripID()
         let pnl = $("#typePanels #pnl-" + tab)
@@ -4246,7 +4247,7 @@ class NMSCE {
     }
 
     getWithObserver(evt, ref, type, cont, dispFcn, options) {
-        const getSnapshot = (obs) => {
+        const getSnapshot = async (obs) => {
             if (typeof obs.entryObserver === "undefined")
                 obs.entryObserver = this.fcnObserver($("#displayPanels"), this.getWithObserver.bind(this))
 
@@ -4262,32 +4263,39 @@ class NMSCE {
                 obs.run = false
                 // if (Atomics.compareExchange(obs.arr, 0, 0, 1) === 0)
                 // what the hell are obs.options supposed to do?
-                getDocs(ref).then(snapshot => {
-                    if (snapshot.empty) {
-                        obs.cont = false
-                        obs.dispFcn([], obs.type)
-                        return
+                let snapshot = null;
+
+                try{
+                    snapshot = await getDocs(ref);
+                }catch(err)
+                {
+                    console.error(err);
+                }
+
+                if (!snapshot || snapshot.empty) {
+                    obs.cont = false
+                    obs.dispFcn([], obs.type)
+                    return
+                }
+
+                let entries = []
+                for (let doc of snapshot.docs) {
+                    let e = doc.data()
+                    entries.push(e)
+                }
+
+                obs.dispFcn(entries, obs.type)
+                let loc = $("#list-" + obs.type)
+
+                for (let i of [0, 15, 30, 45])
+                    if (i < entries.length) {
+                        let rloc = loc.find("#row-" + entries[i].id)
+                        if (rloc.length > 0)
+                            obs.entryObserver.observe(rloc[0])
                     }
 
-                    let entries = []
-                    for (let doc of snapshot.docs) {
-                        let e = doc.data()
-                        entries.push(e)
-                    }
-
-                    obs.dispFcn(entries, obs.type)
-                    let loc = $("#list-" + obs.type)
-
-                    for (let i of [0, 15, 30, 45])
-                        if (i < entries.length) {
-                            let rloc = loc.find("#row-" + entries[i].id)
-                            if (rloc.length > 0)
-                                obs.entryObserver.observe(rloc[0])
-                        }
-
-                    obs.last = snapshot.docs[snapshot.size - 1]
-                    // Atomics.compareExchange(obs.arr, 0, 1, 0)
-                })
+                obs.last = snapshot.docs[snapshot.size - 1]
+                // Atomics.compareExchange(obs.arr, 0, 1, 0)
             }
         }
 

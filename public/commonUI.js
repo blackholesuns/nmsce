@@ -235,7 +235,9 @@ blackHoleSuns.prototype.displayUser = function (user, force) {
     if (
         typeof Storage !== "undefined"
     ) {
-        bhs.user.galaxy = bhs.user.galaxy || window.localStorage.getItem("galaxy");
+        bhs.user.galaxy = bhs.user.galaxy
+        if(bhs.user.galaxy == undefined || bhs.user.galaxy == null)
+            window.localStorage.getItem("galaxy");
         bhs.user.platform = bhs.user.platform || window.localStorage.getItem("platform");
     }
 

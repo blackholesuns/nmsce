@@ -1,6 +1,7 @@
 import { galaxyList } from "./constants.js";
 
-const galaxyRegex = `(${galaxyList.map(v => v.name).join("|")})`;
+// Matches either an Exact galaxy name or Nothing via an extra scope and |^$
+const galaxyRegex = `((${galaxyList.map(v => v.name).join("|")})|^$)`;
 
 /**
  * 
@@ -27,7 +28,7 @@ export function BuildGalaxyMenu(JElement, ElementName, List, Callback, { tip, re
     
     let inputHtml = `
     <div>
-        <input list="${id}-datalist" pattern="${galaxyRegex}" title="Valid Galaxy Name" id="btn-${id}" name="${id}" required/>
+        <input list="${id}-datalist" pattern="${galaxyRegex}" title="Valid Galaxy Name" id="btn-${id}" name="${id}" ${required ? "required" : ""}/>
         ${tipHtml}
         ${datalistHtml}
     </div>
