@@ -3,7 +3,7 @@ export const ChangeLog = [
     {
         Version: "1.1.2",
         Title: " ",
-        Authors: ["SPiper"],
+        Authors: ["spip01"],
         Changes: [
             "Added new NMS version names & numbers"
         ]
