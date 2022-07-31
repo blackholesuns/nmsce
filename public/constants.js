@@ -200,6 +200,14 @@ export const versionList = [
                 type: "ship/Shuttle"
             }
         ]
+    }, {
+        name: "leviathan",
+        version: 3.9,
+        date: "5/25/2022"
+    }, {
+        name: "endurance",
+        version: 3.94,
+        date: "7/20/2022"
     }
 ];
 
