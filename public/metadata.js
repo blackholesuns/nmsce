@@ -1,5 +1,3 @@
-export const Version = ChangeLog[0].Version
-
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
@@ -50,6 +48,7 @@ export const ChangeLog = [
     }
 ]
 
+export const Version = ChangeLog[0].Version
 
 export function CollateChangeLog(){
     let result = "";
