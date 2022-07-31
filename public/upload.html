@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>No Man's Sky Coordinate Exchange (NMSCE)</title>
+    <meta name="description" content="Data entry for No Man's Sky Coordinate Exchange (NMSCE)">
+    <meta name="subject" content="Coordinate exchange for the game No Man's Sky.">
+    <meta name="author" content="Stephen Piper">
+    <meta name="designer" content="Stephen Piper">
+    <meta name="copyright" content="Black Hole Suns">
+    <meta name="Classification" content="Game">
+    <meta name="keywords" content="nmsce,nms,coordinate exchange,no mans sky,reddit">
+
+    <meta property="og:title" content="No Man's Sky Coordinate Exchange App" />
+    <meta property="og:description"
+        content="Enter your discoveries for freighters, frigates, multi-tools, fauna, planets or bases." />
+    <meta property="og:url" content="https://nmsce.com/" />
+    <meta property="og:secure_url" content="https://nmsce.com/" />
+    <meta property="og:type" content="website" />
+
+    <meta property="og:image:url"
+        content="http://raw.githubusercontent.com/blackholesuns/nmsce/master/public/images/nmsce-ss.png" />
+    <meta property="og:image:secure_url" content="https://nmsce.com/images/nmsce-ss.png" />
+    <meta property="og:image:type" content="image/jpg" />
+    <meta property="og:image:alt" content="Screenshot of NMSCE App" />
+
+    <link rel="shortcut icon" href="images/nmsce.ico">
+    <script src="env.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-66007591-5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-66007591-5');
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="local.css">
+    <link rel="stylesheet" type="text/css" href="bootstrap-14.css">
+</head>
+
+<body>
+    <div id="cemenus"></div>
+
+    <div id="javascript">
+        <div class="row">
+            <div class="col-2">
+                <img itemprop="logo" src="images/nmsce-logo.png" alt="nmsce logo"
+                    style="top:10px; width:40px; height:40px">
+            </div>
+            <!--googleoff:all-->
+            <div class="text-danger h6 col-12">
+                <p>Unfortunately, this page cannot function without javasript. Please add this site to your "allowed"
+                    sites. For chrome it's located&nbsp;
+                    <a href="chrome://settings/content/javascript">here</a></p>
+                <p>This error message can also be caused by a page loading error.</p>
+            </div>
+            <!--googleon:all-->
+            <br>
+        </div>
+    </div>
+
+    <div id="jssite" class="container-fluid" style="display:none">
+        <div id="loggedout" class="row text-danger h4">
+            Welcome to the&nbsp;
+            <span itemprop="description">No Man's Sky Coordinate Exchange data entry page.</span>
+            <!--googleoff: all-->
+            Please login.
+            <!--googleon: all-->
+        </div>
+
+        <div class="card">
+            <!--div class="card-header bkg-def clr-cream h5 pointer"
+                onclick="nmsce.expandPanels($(this).find('.fa-caret-square-down').is(':visible'))">
+                Click <i id="hidden" class="far fa-caret-square-up btn-def h3" data-allowhide=true></i>
+                <i class="far fa-caret-square-down btn-def h3 hidden" data-hide=true
+                    onclick="nmsce.expandPanels(true)"></i> to
+                <span class="btn-def" data-allowhide=true>hide</span>
+                <span class="btn-def hidden" data-hide=true>show</span>
+                additional inputs.
+            </div-->
+            <div class="card-body bkg-white">
+                <div class="row">
+                    <form id="panels" onsubmit="nmsce.search(event)" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
+                        <div id="row-playerInput" class="row" data-allowhide=true>
+                            <div class="col-sm-4 col-6 txt-label-def">
+                                Player Name&nbsp;
+                                <span class="h5 text-danger">*</span>&nbsp;
+                            </div>
+                            <input id="id-Player" class="rounded col-md-6 col-8 txt-input-def" type="text">
+
+                            <div id="id-Galaxy" class="col-lg-6 col-14 pl-10"></div>
+                            <div id="id-Platform" class="col-lg-8 col-14 nopadding"></div>
+                        </div>
+
+                        <div id="row-playerDisplay" class="row txt-label-def h4" data-hide=true style="display:none">
+                            <div class="col-lg-4 col-md-5 col-14">Player: <span id="id-Player" class="clr-def"></span>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-7">Galaxy: <span id="id-Galaxy" class="clr-def"></span>
+                            </div>
+                            <div class="col">Platform: <span id="id-Platform" class="clr-def"></span></div>
+                        </div>
+
+                        <div class="row txt-def h5">System Info</div>
+                        <div id="row-glyphCanvas" class="row" style="display:none">
+                            <div class="col-sm-3">&nbsp;</div>
+                            <canvas id="id-glyphCanvas" class="col-7 border"></canvas>
+                        </div>
+
+                        <div id="id-addrInput">
+                            <div class="row">
+                                <div class="col-sm-3 col-5 txt-label-def">Coords
+                                    <span class="h5 text-danger">&nbsp;*</span>&nbsp;
+                                    <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
+                                        data-html="true" data-placement="bottom"
+                                        title="Coordinatess can be entered without leading zeros or as a 16 digit number without separators. 
+                                                A <span class='h5'>12</span> digit hex, 0-9 a-f, value can be entered directly in the field.  
+                                                The first 4 characters displayed on the signal booster are not part of the coordinates.">
+                                    </i>
+                                </div>
+                                <input id="id-addr" class="rounded col-lg-5 col-md-7 col-sm-4 col-9 txt-input-def"
+                                    type="text" placeholder="0000:0000:0000:0000" maxength=19
+                                    onchange="nmsce.changeAddr(this)">
+                                <div class="col">
+                                    <label class=" txt-label-def">
+                                        <input id="ck-glyphs" type="checkbox" onchange="nmsce.setGlyphInput(this)">
+                                        Input Glyphs&nbsp;
+                                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
+                                            data-html="true" data-placement="bottom"
+                                            title="Display glyph input buttons and show glyphs in input field.">
+                                        </i>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-2 col-3 txt-label-def">Glyphs</div>
+                                <div id="id-glyph" class="col-md-7 col-9 text-center txt-glyph-disp">
+                                </div>
+                                <div id="id-hex" class="col-md-4 col text-center txt-label-def"></div>
+                            </div>
+                        </div>
+
+                        <div id="id-glyphInput" class="hidden">
+                            <div class="row">
+                                <div class="col-md-2 col-sm-3 col-4 txt-label-def">
+                                    Glyph&nbsp;
+                                    <span class="text-danger">*</span>&nbsp;
+                                    <i class="far fa-question-circle text-danger" data-toggle="tooltip" data-html="true"
+                                        data-placement="bottom"
+                                        title="Enter value using the glyph buttons or a <span class='h5'>12</span> 
+                                                digit hex, 0-9 a-f, value can be entered directly in the field. 
+                                                The address field always shows 0 as the first digit. This is the planet index.">
+                                    </i>
+                                </div>
+                                <div class="col-lg-7 col-md-9 col-sm-8 col-10">
+                                    <input id="id-glyph" type="text" maxength="19" class="rounded row txt-glyph-disp"
+                                        placeholder="000000000000" onchange="nmsce.changeAddr(this)">
+                                    <div class="row text-danger">First glyph will always be displayed
+                                        as&nbsp&nbsp<span class="txt-glyph-disp">0</span>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label class=" txt-label-def">
+                                        <input id="ck-glyphs" type="checkbox" onchange="nmsce.setGlyphInput(this)">
+                                        Input Glyphs&nbsp;
+                                        <i class="far fa-question-circle text-danger" data-toggle="tooltip"
+                                            data-html="true" data-placement="bottom" title="Hide glyph input buttons.">
+                                        </i>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="glyphbuttons" class="row"></div>
+
+                            <div class="row">
+                                <div class="col-md-2 col-3 txt-label-def">Coords&nbsp;</div>
+                                <div id="id-addr" class="col-lg-4 col-md-5 col-sm-6 col-9 text-center txt-label-def">
+                                </div>
+                                <div id="id-hex" class="col-md-4 col text-center txt-label-def"></div>
+                            </div>
+                        </div>
+
+                        <div id="row-System" class="row" data-allowhide=true>
+                            <div class="col-md-2 col-sm-3 col-4 txt-label-def">System</div>
+                            <input id="id-sys" class="rounded col-lg-5 col-md-7 col-sm-5 col-7 txt-input-def">
+                            <div id="foundsys" class="col hidden">
+                                <div class="row">
+                                    <i class="fas fa-check text-success"></i>&nbsp;
+                                    <i class="far fa-question-circle text-danger" data-toggle="tooltip" data-html="true"
+                                        data-placement="bottom" title="System found in database.">
+                                    </i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="row-Region" class="row" data-allowhide=true>
+                            <div class="col-md-2 col-sm-3 col-4 txt-label-def">Region</div>
+                            <input id="id-reg" class="rounded col-lg-5 col-md-7 col-sm-5 col-7 txt-input-def">&nbsp
+                            <div id="foundreg" class="col hidden">
+                                <div class="row">
+                                    <i class="fas fa-check text-success"></i>&nbsp;
+                                    <i class="far fa-question-circle text-danger" data-toggle="tooltip" data-html="true"
+                                        data-placement="bottom" title="Region found in database.">
+                                    </i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="row-By" class="row" data-allowhide=true>
+                            <div class="col-md-5 col-sm-3 col-5 txt-label-def">Entered by&nbsp;</div>
+                            <div id="id-by" class="col txt-label-def"></div>
+                        </div>
+
+                        <div class="row">
+                            <div id="id-Lifeform" class="col-14"></div>
+                            <div id="id-Economy" class="col-14"></div>
+                        </div>
+
+                        <div class="row border-top">
+                            <button id="save-system" type="button" class="col-4 btn btn-sm btn-def"
+                                onclick="nmsce.saveSystem()">Save System</button>&nbsp;
+                            <button id="delete-system" type="button" class="col-4 btn btn-sm btn-def disabled" disabled
+                                onclick="nmsce.deleteSystem()">Delete System</button>&nbsp;
+                        </div>
+                        <br>
+
+                        <nav class="nav nav-tabs row" id="typeTabs" role="tablist"></nav>
+                        <div id="typePanels" class="tab-content border-top" style="border-color:black;"></div>
+
+                        <div id="entrybuttons" style="border-color:black;">
+                            <div class="row">
+                                <div class="col-lg-5 col-14 pl-10">
+                                    <div class="row" style="padding-top:2px;">
+                                        <button id="save" type="button" class="col-6 btn btn-sm btn-def"
+                                            onclick="nmsce.saveEntry()">Save All</button>&nbsp;
+                                        <button id="delete-item" type="button" class="col-6 btn btn-sm btn-def disabled"
+                                            disabled onclick="nmsce.deleteEntry()">Delete Item</button>&nbsp;
+                                    </div>
+                                    <div id="updatenext" class="row hidden">
+                                        <button type="button" class="col-6 btn btn-sm btn-def">Update +
+                                            Next</button>
+                                    </div>
+                                    <div id="updateScreenshot" class="row" style="padding-top:2px; display:none">
+                                        <input id="ck-updateScreenshot" type="checkbox">
+                                        <label for="ck-updateScreenshot" class=" txt-label-def">Update
+                                            Screenshot</label>&nbsp;
+                                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
+                                            data-html="true" data-placement="bottom"
+                                            title="Select wether to overwrite currently saved screenshot with the updated one below.">
+                                        </i>
+                                    </div>
+                                    <div class="row" style="padding-top:2px;">
+                                        <button id="cancel" type="button" class="col-6 btn btn-def  btn-sm"
+                                            onclick="nmsce.clearPanel()">Clear Item</button>&nbsp;
+                                        <button id="clear" type="button" class="col-6 btn btn-sm btn-def"
+                                            onclick="nmsce.clearPanel(true)">Clear All</button>&nbsp;
+                                    </div>
+                                    <div class="row">
+                                        <label id="id-private" class="txt-label-def hidden">
+                                            Private&nbsp;
+                                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
+                                                data-html="true" data-placement="bottom"
+                                                title="Make this entry private. It won't show up in any search or lists except for you and moderators. Posting to reddit or using the shared link will still work normally.">
+                                            </i>&nbsp;
+                                            <input id="ck-private" type="checkbox">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col">
+                                    <div class="row">
+                                        <div id="status" class="border text-danger scrollbar container h6"
+                                            style="overflow-y: scroll; height: 70px"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="text-danger h6">
+                                            <span>*</span>&nbsp;Required Entry,&nbsp;
+                                            <i id="ttipmsg" class="far fa-question-circle">&nbsp;Tool Tip</i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row txt-def rounded h4 pointer" onclick="nmsce.toggleSearch(this)">
+                                &nbsp;
+                                <i class="far fa-caret-square-up hidden h3"></i>
+                                <i class="far fa-caret-square-down h3"></i>
+                                &nbsp;Player Entries Search
+                            </div>
+                            <span id="searchPanel" class="hidden">
+                                <div class="row">
+                                    <button id="search" type="submit" class="col-6 btn btn-sm btn-def">Search</button>
+                                </div>
+                                <div class="row">
+                                    <div id="id-Saved" class="col-lg-4 col-md-6 col-14"></div>
+                                    <label class="col-lg-7 col-md-8 col-14 txt-label-def">
+                                        Name&nbsp;
+                                        <input id="searchname" class="col-10" type="text"
+                                            placeholder="Search Name">&nbsp;
+                                    </label>
+                                    <label id="id-notifySearch" class="col-lg-3 col-md-7 col-14 txt-label-def hidden">
+                                        <input id="ck-notify" type="checkbox">
+                                        Notify&nbsp;
+                                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
+                                            data-html="true" data-placement="bottom"
+                                            title="Check box and save to receive an email for future matches of this search. To disable uncheck and re-save.">
+                                        </i>
+                                    </label>
+                                </div>
+                                <div class="row">
+                                    <button id="savesearch" type="button" class="col-6 btn btn-sm btn-def"
+                                        onclick="nmsce.saveSearch()">Save Search</button>&nbsp;&nbsp;
+                                    <button id="deletesearch" type="button" class="col-6 btn btn-sm btn-def"
+                                        onclick="nmsce.deleteSearch()">Delete Search</button>&nbsp;
+                                </div>
+                            </span>
+                        </div>
+                        <br>
+                    </form>
+
+                    <div id="pnl-map" class="col-md-5 col-14 pl-15"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="imgtable" class="card card-body hidden">
+            <div class="row">
+                <div id="id-img" class="col-lg-10 col-md-9 col-14 border">
+                    <canvas id="id-canvas"></canvas>
+                    <img id="id-ssImage" style="width: 100%;"
+                        onload="$('body')[0].style.cursor = 'default';" />
+                </div>
+
+                <div class="col-lg-4 col-md-5 col-14 pl-15">
+                    <div id="editScreenshot" class="hidden">
+                        <a id="permalink" class="row h4" href="">
+                            Shareable Link&nbsp;
+                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                                data-placement="bottom"
+                                title="Share this link for direct access this entry. Just use the browsers copy link address.">&nbsp;
+                            </i>
+                        </a>
+
+                        <div class="row">
+                            <button class="col-4 btn btn-sm btn-def"
+                                onclick="nmsce.editScreenshot(true)">Edit</button>&nbsp;
+                        </div>
+                        <br>
+
+                        <div class="row border-top">
+                            <button id="openReddit" class="col-2 btn btn-sm border" style="box-shadow:4px 4px gray;"
+                                onclick="nmsce.redditCreate()">
+                                <img src="images/reddit.png" style="width:30px; height:30px"
+                                    alt="Create Reddit Post"></button>
+
+                            <div id="posted" class="col-10 text-danger h5"></div>
+                        </div>
+
+                        <div class="row">
+                            <label class="col-14 txt-label-def">Reddit Link&nbsp;
+                                <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                                    data-placement="bottom"
+                                    title="If you make the post from the app then this field will be auto-filled. If you make the post manually then copy the post url here.">
+                                </i>&nbsp;
+                                <input id="redditlink" class="col-12" type="text">
+                            </label>
+                        </div>
+
+                        <div id="redditPost" class="row">
+                            <div id="id-SubReddit" class="col-14"></div>
+                            <div id="id-Flair" class="col-14"></div>
+                            <label class="col-14 txt-label-def">Title&nbsp;
+                                <span class="h5 text-danger">*</span>&nbsp;
+                                <input id="id-Title" class="col-12" type="text" maxength=300>
+                            </label>
+                            <button class="col-2 btn btn-sm btn-def" onclick="nmsce.redditPost()">Post</button>&nbsp;
+                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                                data-placement="bottom"
+                                title="Post to selected SubReddit. When successful the post link will be entered in the 'Reddit Link' field above.">
+                            </i>
+                        </div>
+                        <br>
+                    </div>
+
+                    <div id="editingScreenshot" class="border-top hidden">
+                        <div class="row">
+                            <button type="button" class="col-5 btn btn-def btn-sm" onclick="nmsce.extractGlyphs()">
+                                Scan Glyphs
+                            </button>&nbsp;
+                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                                data-placement="bottom"
+                                title="<span class='h5 text-danger'>Always</span> double-check glyph output. For best results take a high contrast clear background for glyph processing.">
+                            </i>
+                        </div>
+                        <br>
+
+                        <div class="row">
+                            <div id="id-Font" class="col-14"></div>
+                        </div>
+
+                        <label class="row txt-label-def">Size&nbsp;
+                            <input id="sel-size" class="col-4" onchange="nmsce.setSize(this)" type="number" value=18
+                                min=0>
+                        </label>
+
+                        <label class="row txt-label-def">Font Color&nbsp;
+                            <input type="text" class="col-2 border border-3 bdr-black rounded h6" id="color-font">
+                        </label>
+                        <label class="row txt-label-def">Background Color&nbsp;
+                            <input type="text" class="col-2 border border-3 bdr-black rounded h6" id="color-background">
+                        </label>
+                        <div clss="row" style="padding-top:0px;">
+                            <button class="btn btn-sm btn-def col-5"
+                                onclick="nmsce.restoreImageText(null, true)">Redraw</button>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                                data-placement="top" title="Align selected items.">
+                            </i>&nbsp;
+                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('left')">
+                                <i class="fas fa-align-left"></i>
+                            </button>&nbsp;
+                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('right')">
+                                <i class="fas fa-align-right"></i>
+                            </button>&nbsp;
+                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('top')">
+                                <i class="fas fa-align-left" style="transform: rotate(90deg);"></i>
+                            </button>&nbsp;
+                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('bottom')">
+                                <i class="fas fa-align-left" style="transform: rotate(270deg);"></i>
+                            </button>
+                            <!--button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('justify')">
+                            <i class="fas fa-align-justify"></i>
+                            </button-->
+                        </div>
+                        <br>
+                        <p class="border-top text-danger">You can select information to add to the screenshot using the
+                            checkboxes
+                            below. Use click & drag to reposition and resize items displayed. Shift click to select
+                            multiple items.</p>
+                        <p class="text-danger">Once the item is saved you can click on the image in the list below to
+                            edit or post to reddit.</p>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <div id="imageTextBlock" class="hidden">
+                <div id="img-text" class="container-fluid row txt-label-def container-fluid">
+                </div>
+
+                <button id="editreset" class="btn btn-sm btn-def col-md-3 col-7"
+                    onclick="nmsce.buildImageText()">Reset</button>&nbsp;
+                <button id="editrestore" class="btn btn-sm btn-def col-md-3 col-7"
+                    onclick="nmsce.restoreImageText(bhs.user.imageText, true)">Restore Saved</button>&nbsp;
+            </div>
+            <br>
+        </div>
+
+        <div id="id-table" class="card">
+            <nav class="nav nav-tabs row pl-15" id="displayTabs" role="tablist"></nav>
+            <div id="displayPanels" class="tab-content border-top" style="border-color:black;"></div>
+        </div>
+    </div>
+    <br>
+
+    <div id="footer"></div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+    <script src="https://kit.fontawesome.com/4c24999109.js" crossorigin="anonymous"></script>
+
+    <!-- <script src="/__/firebase/8.3.2/firebase-app.js"></script>
+    <script src="/__/firebase/8.3.2/firebase-auth.js"></script>
+    <script src="/__/firebase/8.3.2/firebase-firestore.js"></script>
+    <script src="/__/firebase/8.3.2/firebase-storage.js"></script>
+    <script src="/__/firebase/8.3.2/firebase-functions.js"></script>
+    <script src="/__/firebase/init.js"></script> -->
+
+    <script src="commonFb.js" type="module"></script>
+    <script src="commonUI.js" type="module"></script>
+    <script src="commonNms.js" type="module"></script>
+    <script src="nmsce.js" type="module"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css?family=Redressed|Sedgwick+Ave+Display|Kaushan+Script|Permanent+Marker|Notable|Great+Vibes|Merienda+One|Inknut+Antiqua|Berkshire+Swash|Caveat+Brush|Amatic+SC&display=auto"
+        rel="stylesheet">
+
+    <!--link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2
+        ?family=Redressed
+        &family=Notable
+        &family=Permanent+Marker
+        &family=Merienda+One
+        &family=Inknut+Antiqua
+        &family=Kaushan+Script
+        &family=Sedgwick+Ave+Display
+        &family=Bangers
+        &family=Berkshire+Swash
+        &family=Caveat+Brush
+        &family=Amatic+SC
+        &family=Great+Vibes
+        &family=Kaushan+Script
+        &family=Limelight
+        &family=Monoton
+        &family=Poiret+One
+        &family=Ultra
+        &display=swap" rel="stylesheet"-->
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/js/bootstrap-colorpicker.min.js">
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-colorpicker/3.2.0/css/bootstrap-colorpicker.min.css"
+        rel="stylesheet">
+</body>
+
+</html>
