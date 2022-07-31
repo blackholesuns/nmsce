@@ -3,6 +3,13 @@ export const Version = "1.1.1"
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.1.2",
+        Title: " ",
+        Authors: ["SPiper"],
+        Changes: [
+            "Added new NMS version names & numbers"
+        ]
+    },    {
         Version: "1.1.1",
         Title: "Godspeed",
         Authors: ["CEbbinghaus"],
