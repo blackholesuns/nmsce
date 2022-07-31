@@ -1,4 +1,4 @@
-export const Version = "1.1.1"
+export const Version = ChangeLog[0].Version
 
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
