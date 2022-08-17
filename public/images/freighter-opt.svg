@@ -2090,7 +2090,6 @@
   <path id="path1294-7" d="m24.266 98.706s.351.284.467.46c.194.295.298.631.36.964.052.269.028.544.013.816-.019.327-.126.977-.126.977" fill="none" stroke="#00f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".115"/>
  </g>
  <path id="bdr-h22" d="m4.0743 187.91-3.633 7.087.6 5.044 25.881-.18.72-5.885-4.082-5.704z" fill-opacity="0" stroke="#00f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".351"/>
- <path id="path832-53" d="m88.959 160.75-6.76.005" fill-opacity="0" stroke="#00f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".11"/>
  <g id="map-h23" transform="translate(-.38769 110.51)" fill-opacity="0" stroke="#00f">
   <desc id="desc9486">{"group":[1,13], "okGroup":[2,8,9,14,11]}</desc>
   <path id="path820-0" d="m87.283 38.325-.289 3.171.973 16.704.415.09-.018 1.153 1.009.703.667-22.524-.631.108-1.207.559z" fill-opacity="0" stroke="#00f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".388"/>
@@ -3247,7 +3246,6 @@
  <text id="text5738" x="-17.974918" y="10.489371" font-family="Arial" font-size="7.0667px" letter-spacing="0px" stroke-width=".265" word-spacing="0px" style="line-height:1.25" xml:space="preserve"/>
  <text id="text5750" x="104.57067" y="72.794846" font-family="Arial" font-size="7.0667px" letter-spacing="0px" stroke-width=".265" word-spacing="0px" style="line-height:1.25" xml:space="preserve"/>
  <g id="g4230" fill-opacity="0" stroke="#00f">
-  <path id="path832-53-5" d="m87.693 41.263-6.76.005" stroke-linecap="round" stroke-linejoin="round" stroke-width=".11"/>
   <g id="map-h42" transform="translate(-1.6541 -8.972)">
    <desc id="desc9486-1">{"group":[1,15], "okGroup":[6,3]}</desc>
    <path id="path820-0-3" d="m87.283 38.325-.289 3.171.973 16.704.415.09-.018 1.153 1.009.703.667-22.524-.631.108-1.207.559z" fill-opacity="0" stroke="#00f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".388"/>
