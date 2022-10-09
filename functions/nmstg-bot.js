@@ -324,7 +324,7 @@ async function checkPostLimits(posts, postList, limit, time, reason) {
                 continue
 
             if (!post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video") && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered") && typeof post.secure_media !== "undefined" && post.secure_media &&
-                (typeof post.secure_media.reddit_video !== "undefined" || typeof post.secure_media.oembed !== "undefined" && post.secure_media.oembed.type === "video")) {
+                (typeof post.secure_media.reddit_video !== "undefined" || typeof post.secure_media.oembed !== "undefined" && (post.secure_media.oembed.type === "video" || post.secure_media.type === "twitch.tv"))) {
 
                 addList(userVideos, post)
                 console.log("video flair: https://reddit.com" + post.permalink)
@@ -397,5 +397,5 @@ function error(n, err) {
 const removePost = 'Thank You for posting to r/NoMansSkyTheGame. Your post has been removed because it violates the following rules for posting:\n\n'
 const botSig = "\n\n*This action was taken by the nmstgBot. If you have any questions please contact the [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*"
 const postLimit = "Posting limit exceded: OP is allowed to make 2 post/hour"
-const videoLimit = "Posting limits exceded: OP is allowed to make 1 video post/week"
+const videoLimit = "Posting limits exceded: OP is allowed to make 2 video post/week"
 const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community! Since this is your first post to r/NoMansSkyTheGame it has been sent for moderator approval. This is one of the anti-spam measures we're forced to use. In the meantime checkout our posting rules listed in the sidebar.\n\nSince moderators are not always available *please* be patient and don't contact them about when your post will be approved."

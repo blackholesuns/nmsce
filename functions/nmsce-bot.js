@@ -23,7 +23,7 @@ var sub = null
 var mods = []
 var rules = {}
 var lastPost = {}
-const version = 3.94
+const version = 4.00
 
 // main()
 // async function main() {
@@ -499,9 +499,9 @@ function validatePosts(posts, modqueue) {
                 }
             }
 
-            if ((!flair.sclass || !post.title.match(/s\bclass/i) || post.title.match(/crash|sunk/i)) &&
-                (flair.name !== "Starship" || !post.title.match(/black/i)) && // !post.is_gallery && post.domain !== "imgur.com" &&
-                (!flair.station || !post.title.match(/rare|unique|ultra|trade(ing|rs)?.?(post|station)|\bss\b|\btp\b|space.?station|\bwave\b|\bx.?box|ps4|\bpc\b|normal|creative|\bpd\b|survival|perma.?death/i)) &&
+            if (//(!flair.sclass || !post.title.match(/s\bclass/i) || post.title.match(/crash|sunk/i)) &&
+                //(flair.name !== "Starship" || !post.title.match(/black/i)) && 
+               // (!flair.station || !post.title.match(/rare|unique|ultra|trade(ing|rs)?.?(post|station)|\bss\b|\btp\b|space.?station|\bwave\b|\bx.?box|ps4|\bpc\b|normal|creative|\bpd\b|survival|perma.?death/i)) &&
                 (post.banned_by && post.banned_by.name === "nmsceBot" || post.removed_by_category === "automod_filtered" ||
                     post.removed_by_category === "reddit" || post.mod_reports.length > 0)) {
 

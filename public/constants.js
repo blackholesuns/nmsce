@@ -208,6 +208,10 @@ export const versionList = [
         name: "endurance",
         version: 3.94,
         date: "7/20/2022"
+    }, {
+        name: "waypoint",
+        version: 4.00,
+        date: "10/7/2022"
     }
 ];
 
