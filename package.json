@@ -1,7 +1,7 @@
 {
   "name": "nmsce",
   "version": "1.0.0",
-  "description": "A web app to search all of the NMSCE submissions",
+  "description": "A web app to search all of the NMSGE submissions",
   "main": "index.js",
   "scripts": {
     "dev:old": "firebase serve --only hosting",

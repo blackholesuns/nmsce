@@ -9,7 +9,7 @@ async function main() {
     r.config({
         continueAfterRatelimitError: true
     })
-    let sub = await r.getSubreddit('NMSCoordinateExchange')
+    let sub = await r.getSubreddit('NMSGlyphExchange')
 
     let settings = await sub.widget()
     console.log(JSON.stringify(settings))

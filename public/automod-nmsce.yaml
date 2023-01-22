@@ -69,7 +69,7 @@ comment_stickied: true
 comment: |
     Thank You for posting to /r/{{subreddit}}
 
-    We currently only allow requests for Ships and Multi-Tools to be posted to /r/{{subreddit}}. For other requests please see this post for more information on [searching](https://www.reddit.com/r/NMSCoordinateExchange/comments/cygpkq/psa_the_coordinate_exchange_has_a_search_bar/) /r/{{subreddit}} or use the [NMSCE app](https://nmsce.com).
+    We currently only allow requests for Ships and Multi-Tools to be posted to /r/{{subreddit}}. For other requests please see this post for more information on [searching](https://www.reddit.com/r/NMSGlyphExchange/comments/10ddz00/how_to_navigate_the_search_bar/) /r/{{subreddit}} or use the [NMSGE app](https://nmsce.com).
 
     **If this post was removed in error please provide a link to the moderators for review.**
 modmail: |
@@ -166,7 +166,7 @@ comment: |
 
     It will take a couple of minutes for the bot to approve the post after your reply so please be patient. Answering yes when it is obvious that you have not searched will result in the removal of your post.
 
-    Here is a detailed [post](https://www.reddit.com/r/NMSCoordinateExchange/comments/cygpkq/psa_the_coordinate_exchange_has_a_search_bar/) on how to use the Reddit search bar.
+    Here is a detailed [post](https://www.reddit.com/r/NMSGlyphExchange/comments/10ddz00/how_to_navigate_the_search_bar/) on how to use the Reddit search bar.
 ---
 type: submission
 is_edited: false 
@@ -187,7 +187,7 @@ flair_text (includes): "multitool request"
 comment_locked: true
 comment_stickied: true
 comment: |
-    If You haven't already done so please try your search using the search bar. Here is a detailed [post](https://www.reddit.com/r/NMSCoordinateExchange/comments/cygpkq/psa_the_coordinate_exchange_has_a_search_bar/). Also try searching the [NMSCE app](https://nmsce.com).
+    If You haven't already done so please try your search using the search bar. Here is a detailed [post](https://www.reddit.com/r/NMSGlyphExchange/comments/10ddz00/how_to_navigate_the_search_bar/). Also try searching the [NMSGE app](https://nmsce.com).
 
 ---
 type: submission
@@ -201,7 +201,7 @@ comment: |
 
     **System Freighters** (15-19 inventory slots) can be found by traveling via portal using the coordinates provided in this post. Once you are in the right system, pulse around in space until the correct system freighter spawns.
 
-    **Capital Freighters** (24-34 inventory slots) are slightly more complex to find using member submitted coordinates. See [this guide](https://www.reddit.com/r/NMSCoordinateExchange/comments/j5grbr/finding_capital_freighters_with_coordinates_is/) for more information.
+    **Capital Freighters** (24-34 inventory slots) are slightly more complex to find using member submitted coordinates. See [this guide](https://www.reddit.com/r/NMSGlyphExchange/comments/zmpc8w/how_to_acquire_capital_freighters_from_member/) for more information.
 
 ---
 type: submission
@@ -212,7 +212,7 @@ comment_stickied: true
 comment: |
     Thank You for posting to /r/{{subreddit}} and adding this **{{match}}** to our catalogue!
 
-    Read this [post](https://www.reddit.com/r/NMSCoordinateExchange/comments/foicwe/requirements_to_post_living_ships_and_how_to_find/) on how to find **Living Ships** using member submitted coordinates.
+    Read this [post](https://www.reddit.com/r/NMSGlyphExchange/comments/zmoac7/guide_to_finding_your_next_living_ship_using/) on how to find **Living Ships** using member submitted coordinates.
 
 ---
 type: submission
@@ -296,7 +296,7 @@ message: |
 comment_locked: true
 comment_stickied: true
 comment: |
-    If You haven't already done so please try your search using the search bar. Here is a detailed [post](https://www.reddit.com/r/NMSCoordinateExchange/comments/cygpkq/psa_the_coordinate_exchange_has_a_search_bar/). You can also try searching the [NMSCE app](https://nmsce.com).
+    If You haven't already done so please try your search using the search bar. Here is a detailed [post](https://www.reddit.com/r/NMSGlyphExchange/comments/10ddz00/how_to_navigate_the_search_bar/). You can also try searching the [NMSGE app](https://nmsce.com).
 
     * Please do not contact the moderators to ask when your post will be approved. Moderators are not always available to approve a post so please be patient.
 ---
@@ -319,7 +319,7 @@ comment: |
 
     **System Freighters** (15-19 inventory slots) can be found by traveling via portal using the coordinates provided in this post. Once you are in the right system, pulse around in space until the correct system freighter spawns.
 
-    **Capital Freighters** (24-34 inventory slots) are slightly more complex to find using member submitted coordinates. See [this guide](https://www.reddit.com/r/NMSCoordinateExchange/comments/j5grbr/finding_capital_freighters_with_coordinates_is/) for more information.
+    **Capital Freighters** (24-34 inventory slots) are slightly more complex to find using member submitted coordinates. See [this guide](https://www.reddit.com/r/NMSGlyphExchange/comments/zmpc8w/how_to_acquire_capital_freighters_from_member/) for more information.
 
 ---
 type: submission
@@ -339,7 +339,7 @@ comment_stickied: true
 comment: |
     Thank You for posting to /r/{{subreddit}} and adding this **{{match}}** to our catalogue!
 
-    Read this [post](https://www.reddit.com/r/NMSCoordinateExchange/comments/foicwe/requirements_to_post_living_ships_and_how_to_find/) on how to find **Living Ships** using member submitted coordinates.
+    Read this [post](https://www.reddit.com/r/NMSGlyphExchange/comments/zmoac7/guide_to_finding_your_next_living_ship_using/) on how to find **Living Ships** using member submitted coordinates.
 
 ---
 type: submission

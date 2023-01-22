@@ -9,7 +9,7 @@ var sub = null
 main()
 async function main() {
 
-    sub = await r.getSubreddit("nmsCoordinateExchange")
+    sub = await r.getSubreddit("nmsGlyphExchange")
     let user = await r.getUser("nmsceBot")
 
     await user.getComments({

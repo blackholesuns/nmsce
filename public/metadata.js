@@ -25,7 +25,7 @@ export const ChangeLog = [
         Changes: [
             "Added This Changelog you are looking at :3",
             "Deleted BHS files and references to them",
-            "Moved NMSCE app to root and renamed cedata to upload",
+            "Moved NMSGE app to root and renamed cedata to upload",
             "Changed to use clean names without .html",
             "Fixed issue with which the app was impossible to debug without firebase cli",
             "Fixed Error with loading Overlay when uploading",
