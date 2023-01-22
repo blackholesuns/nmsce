@@ -113,7 +113,7 @@ exports.checkSearch = async function (e) {
                 let mailOptions = {
                     from: '<bhsapp.testing@gmail.com>',
                     to: s.email,
-                    subject: 'NMSCE Saved Search Match: ' + s.name,
+                    subject: 'NMSGE Saved Search Match: ' + s.name,
                     html: '<a href="' + link + '">Type: ' + e.type + ' Name: ' + e.Name + '<br><img src="' + url + '"/></a>'
                 }
 

@@ -47,7 +47,7 @@ $(document).ready(() => {
     })
 
     // Bad hack. Should not be used
-    window.nmsce = nmsce = new NMSCE()
+    window.nmsce = nmsce = new NMSGE()
     nmsce.last = null
 
     if (!fpreview) {
@@ -231,7 +231,7 @@ function showLatLong() {
     }
 }
 
-class NMSCE {
+class NMSGE {
 
     buildPanels() {
         const addRadioList = function (loc, label, list, ttip) {
@@ -3234,7 +3234,7 @@ class NMSCE {
 
             let plink = window.localStorage.getItem('nmsce-reddit-plink')
             let slink = window.localStorage.getItem('nmsce-reddit-slink')
-            let title = window.localStorage.getItem('nmsce-reddit-title') // + " <a href="+plink+">NMSCE app link</a>"
+            let title = window.localStorage.getItem('nmsce-reddit-title') // + " <a href="+plink+">NMSGE app link</a>"
             let link = window.localStorage.getItem('nmsce-reddit-link')
 
             let url = reddit.api_oauth_url + reddit.submitLink_endpt
@@ -3275,7 +3275,7 @@ class NMSCE {
                                     },
                                     data: {
                                         thing_id: t,
-                                        text: "This was posted from the [NMSCE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything in this system."
+                                        text: "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything in this system."
                                     },
                                     crossDomain: true,
                                 })

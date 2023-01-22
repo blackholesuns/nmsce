@@ -6,10 +6,10 @@ const r = new snoowrap(login)
 
 main()
 async function main() {
-    let sub = await r.getSubreddit('NMSCoordinateExchange')
+    let sub = await r.getSubreddit('NMSGlyphExchange')
 
     sub.search({
-        query: "subreddit:nmscoordinateexchange flair:community",
+        query: "subreddit:nmsglyphexchange flair:community",
         limit: 1000,
         time: "month"
     }).then(posts => {

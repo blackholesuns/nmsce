@@ -9,19 +9,19 @@ This bug was corrected in 3.89. If you’re viewing this ship in 3.89 or later, 
 the sail and/or color may vary in-game vs the picture here\n\n\
 ----\n\n\
 r/OP, If you have checked this ship using version 3.89 or it was actually posted from version 3.89 please
-replace the flair with the appropriate version 3.89 flair. Thank You, NMSCE Mods`
+replace the flair with the appropriate version 3.89 flair. Thank You, NMSGE Mods`
 
 main()
 async function main() {
     let p = []
 
-    let sub = await r.getSubreddit('NMSCoordinateExchange')
+    let sub = await r.getSubreddit('NMSGlyphExchange')
     r.config({
         continueAfterRatelimitError: true
     })
 
     p.push(sub.search({
-        query: "subreddit:nmscoordinateexchange flair:3.88 solar",
+        query: "subreddit:nmsglyphexchange flair:3.88 solar",
         limit: 1000
     }).then(async posts => {
         console.log("post", posts.length)
