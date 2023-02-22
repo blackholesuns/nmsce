@@ -115,6 +115,7 @@ async function reapproveBotComments(posts) {
 }
 
 var posters = []
+var firsttime = []
 
 async function checkNewPosters(posts, limit) {
     let p = []
@@ -133,7 +134,8 @@ async function checkNewPosters(posts, limit) {
             if (posts.length > 0) {
                 if (posts.length === 2 || posts[0].approved_by)
                     posters.push(posts[0].author.name)
-                else {
+                else if (!firsttime.includes(posts[0].name)) {
+                    firsttime.push(posts[0].name)
                     console.log("new poster", posts[0].author.name)
                     posts[0].reply("!filter-First Post")
                     r.composeMessage({

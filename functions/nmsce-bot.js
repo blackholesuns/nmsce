@@ -32,12 +32,12 @@ exports.nmsceBot = async function () {
 
     if (!sub) {
         console.log("new instance")
-    r.config({
-        continueAfterRatelimitError: true
-    })  
+        r.config({
+            continueAfterRatelimitError: true
+        })
 
         sub = await r.getSubreddit('NMSCoordinateExchange')
-  }
+    }
 
 
     let date = new Date().valueOf() / 1000
@@ -365,8 +365,8 @@ async function checkComments(posts, mods) {
     }
 }
 
-
 var posters = []
+var firsttime = []
 
 async function checkNewPosters(posts, limit) {
     let p = []
@@ -385,7 +385,8 @@ async function checkNewPosters(posts, limit) {
             if (posts.length > 0) {
                 if (posts.length === 2 || posts[0].approved_by)
                     posters.push(posts[0].author.name)
-                else {
+                else if (!firsttime.includes(posts[0].name)) {
+                    firsttime.push(posts[0].name)
                     console.log("new poster", posts[0].author.name)
                     posts[0].reply("!filter-First Post")
                     // r.composeMessage({
@@ -499,9 +500,9 @@ function validatePosts(posts, modqueue) {
                 }
             }
 
-            if (//(!flair.sclass || !post.title.match(/s\bclass/i) || post.title.match(/crash|sunk/i)) &&
+            if ( //(!flair.sclass || !post.title.match(/s\bclass/i) || post.title.match(/crash|sunk/i)) &&
                 //(flair.name !== "Starship" || !post.title.match(/black/i)) && 
-               // (!flair.station || !post.title.match(/rare|unique|ultra|trade(ing|rs)?.?(post|station)|\bss\b|\btp\b|space.?station|\bwave\b|\bx.?box|ps4|\bpc\b|normal|creative|\bpd\b|survival|perma.?death/i)) &&
+                // (!flair.station || !post.title.match(/rare|unique|ultra|trade(ing|rs)?.?(post|station)|\bss\b|\btp\b|space.?station|\bwave\b|\bx.?box|ps4|\bpc\b|normal|creative|\bpd\b|survival|perma.?death/i)) &&
                 (post.banned_by && post.banned_by.name === "nmsceBot" || post.removed_by_category === "automod_filtered" ||
                     post.removed_by_category === "reddit" || post.mod_reports.length > 0)) {
 
