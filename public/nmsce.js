@@ -2274,7 +2274,7 @@ class NMSCE {
         let img = new Image()
         img.crossOrigin = "anonymous"
         img.onload = this.onLoadLogo.bind(this);
-        img.src = "/images/app-logo.png"
+        img.src = "/images/nmsge-app-logo.png"
 
         this.initImageText("Text")
         this.initImageText("myLogo")
@@ -2571,7 +2571,7 @@ class NMSCE {
     }
 
     onLoadLogo(evt) {
-        let text = evt.currentTarget.src.includes("app-logo") ? this.imageText.logo : this.imageText.myLogo
+        let text = evt.currentTarget.src.includes("nmsge-app-logo") ? this.imageText.logo : this.imageText.myLogo
         let img = text.img = evt.currentTarget
 
         let scale = text.right ? Math.min(text.right / img.naturalWidth, text.decent / img.naturalHeight) : 0.1
