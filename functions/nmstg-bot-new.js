@@ -597,12 +597,12 @@ function setupAdvertiser(post, op) {
 
 function listAdvertisers(post, op) {
     const buildAd = function (ad) {
-        let text = "flair: '" + ad.flair
-        text += "' contacts: "
+        let text = "flair: '" + ad.flair +"  \n"
+        text += "    contacts: "
         for (let c of ad.contacts)
             text += c.uid + ", "
 
-        return text.slice(0, text.length - 1) + "  \n"
+        return text.slice(0, text.length - 1) + "  \n\n"
     }
 
     let text = "!-Authorized advertisers  \n"
@@ -1053,6 +1053,6 @@ const removedPost = 'Your post has been removed because it violates the followin
 const postLimit = "Posting limit exceded: OP is allowed to make "
 const contestLimit = "Contest limit exceded: OP is allowed to make "
 const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*"
-const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime checkout our posting rules listed in the sidebar.  \n\nSince moderators are not always immediately available *please* be patient for your post to be approved."
+const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime checkout our posting rules listed in the sidebar.  \n\n*Since moderators are not always immediately available please be patient for your post to be approved.*"
 const permaLinkHdr = "https://reddit.com"
-const civFlair = "Please contact [moderators](https://www.reddit.com/message/compose?to=/r/NoMansSkyTheGame) before using this flair.  \n\n"
+const civFlair = "-Please contact the [moderators](https://www.reddit.com/message/compose?to=/r/NoMansSkyTheGame) for an applicaion before using this flair.  \n-If you have already applied and been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the \"Civ Advertisement\" flair to replace it with your unique flair.  \n-If you just forgot to edit the flair you can repost this using the correct flair. Alternatively you can edit the flair and wait for a moderator to reapprove your post.  \n"
