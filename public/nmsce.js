@@ -2274,7 +2274,7 @@ class NMSCE {
         let img = new Image()
         img.crossOrigin = "anonymous"
         img.onload = this.onLoadLogo.bind(this);
-        img.src = "/images/nmsge-app-logo.png"
+        img.src = "/images/nmsge-app-logo-abrev.png"
 
         this.initImageText("Text")
         this.initImageText("myLogo")
