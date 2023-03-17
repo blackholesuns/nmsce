@@ -215,7 +215,7 @@ export const versionList = [
     }, {
         name: "fractal",
         version: 4.10,
-        date: "1/22/2023"
+        date: "2/22/2023"
     }
 ];
 
