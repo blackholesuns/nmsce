@@ -581,7 +581,7 @@ class NMSCE {
                 else if (type === "radio") {
                     $(this).prop("checked", false)
                     $(this).data("last", false)
-                } else
+                } else if (id != "Galaxy")
                     $(this).val("")
             })
 

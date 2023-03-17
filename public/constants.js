@@ -197,7 +197,7 @@ export const versionList = [
         date: "4/13/2022",
         changed: [
             {
-                type: "ship/Shuttle"
+                type: "Ship"
             }
         ]
     }, {
