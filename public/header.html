@@ -7,36 +7,17 @@
 
 <div class="container">
     <div class="row">
-        <div id="menulogo" class="col-sm-2 col-3">
-            <img id="menuimg" src="images/nmsge-app-logo.png" alt="nmsge logo" style="width:80px; height:80px">
+        <div id="menulogo" class="col-md-1 col-sm-2 col-3">
+            <img id="menuimg" class="float-left" src="images/nmsge-app-logo.png" alt="nmsge logo"
+                style="width:80px; height:80px">
         </div>
         <br>
+        <div class="col-1"></div>
 
-        <div class="col-sm-12 col-11">
-            <br>
+        <div class="col">
             <div class="row">
-                <div class="col-lg-2 col-md-2 col-5">
-                    <a id="searchpage" class="btn btn-sm btn-def" href="/">Search</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-9">
-                    <a id="entrypage" class="btn btn-sm btn-def" href="upload">Post Discoveries</a>
-                </div>
-                <div class="col-lg-3 col-md-4 col-7">
-                    <div class="dropdown">
-                        <button type="button" class="btn-def h5 text-center no-border dropdown-toggle"
-                            data-toggle="dropdown">
-                            Site Navigation
-                        </button>
-                        <div class="dropdown-menu bkg-def h5">
-                            <a class="no-border dropdown-item btn-def h5" href="/">NMSGE Search</a>
-                            <a class="no-border dropdown-item btn-def h5" href="upload">NMSGE Data Entry</a>
-                            <a class="no-border dropdown-item btn-def h5" href="glyph">Glyph Converter</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="row">
+                <div class="col-5">
+                    <div class="row float-center">
                         <div id="full-usermenu">
                             <button id="login" type="button" class="btn-def no-border h5" onclick="bhs.logIn()">
                                 Login
@@ -65,13 +46,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="version float-right" style="align-content: center;">
-                    <p id="version-number" style="color: white;margin: auto;text-align: center;">Loading...</p>
-                    <button id="changelog" class="btn-def h5 text-center no-border" style="color: white;">Changelog</button>
+
+                <div class="col">
+                    <div class="version float-right" style="align-content: center;">
+                        <p id="version-number" style="color: white;margin: auto;text-align: center;">Loading...</p>
+                        <button id="changelog" class="btn-def h5 text-center no-border"
+                            style="color: white;">Changelog</button>
+                    </div>
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-lg-2 col-md-3 col-sm-3 col-4">
+                    <a id="searchpage" class="btn btn-sm btn-def" href="/">Search</a>
+                </div>
+                <div class="col-lg-3 col-md-5 col-sm-6 col-9">
+                    <a id="entrypage" class="btn btn-sm btn-def" href="upload">Post Discoveries</a>
+                </div>
+                <div class="col">
+                    <a id="glyphpage" class="btn btn-sm btn-def" href="glyph">Glyph Converter</a>
+                </div>
+            </div>
+            <br>
         </div>
     </div>
+</div>
 </div>
 
 <div class="row border-top">
@@ -92,16 +91,21 @@
             title="Please support this site on Ko-fi. Ko-fi keeps 0% of donations. Donations go to site hosting and development.">
         </i>
     </a>
-    <a class="col-2 text-center clr-cream h5" href="https://www.patreon.com/bePatron?u=28538540">Support us on Patreon&nbsp;
+    <a class="col-2 text-center clr-cream h5" href="https://www.patreon.com/bePatron?u=28538540">Support us on
+        Patreon&nbsp;
         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true" data-placement="bottom"
             title="Please support this site on Patreon. Donations go to site hosting and development.">
         </i>
     </a>
 </div>
 
-<div id="changelogpnl" style="z-index: 20; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px; backdrop-filter: blur(20px); background: #0005; display: none">
-    <div id="changelogpnlexit" style="font-size: xx-large; font-weight: 900; color: white; position: absolute; top: 0px; right: 13px; cursor: pointer;">X</div>
-    <div id="changelogpnlcontent" style="overflow-x: hidden; width: max(50%, min(800px, 100%)); margin: auto; margin-top: 3rem; padding: 2rem; background: white;">
+<div id="changelogpnl"
+    style="z-index: 20; width: 100%; height: 100%; position: absolute; top: 0px; left: 0px; backdrop-filter: blur(20px); background: #0005; display: none">
+    <div id="changelogpnlexit"
+        style="font-size: xx-large; font-weight: 900; color: white; position: absolute; top: 0px; right: 13px; cursor: pointer;">
+        X</div>
+    <div id="changelogpnlcontent"
+        style="overflow-x: hidden; width: max(50%, min(800px, 100%)); margin: auto; margin-top: 3rem; padding: 2rem; background: white;">
 
     </div>
 </div>
