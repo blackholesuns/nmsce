@@ -265,7 +265,7 @@ class NMSCE {
         addRadioList($("#id-Economy"), "Economy", economyListTier)
         addRadioList($("#id-Lifeform"), "Lifeform", lifeformList)
         addRadioList($("#id-Platform"), "Platform", platformListAll)
-        
+
         BuildGalaxyMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
             required: true,
             sort: true,
@@ -1139,7 +1139,7 @@ class NMSCE {
     }
 
     search(search) {
-        if(search && search.preventDefault && (search.preventDefault() || true))
+        if (search && search.preventDefault && (search.preventDefault() || true))
             search = null;
 
 
@@ -1567,7 +1567,7 @@ class NMSCE {
 
             if (ok) {
                 bhs.user = mergeObjects(bhs.user, user)
-                bhs.user.imageText = this.extractImageText()
+                // bhs.user.imageText = this.extractImageText()
 
                 let ref = bhs.getUsersColRef(bhs.user.uid)
                 setDoc(ref, bhs.user, {
@@ -1580,6 +1580,33 @@ class NMSCE {
 
         if (ok && await this.extractEntry())
             this.clearPanel()
+    }
+
+    saveUserImageText() {
+        if (!this.last || this.last.uid === bhs.user.uid) {
+            let user = this.extractUser()
+
+            if (bhs.validateUser(user)) {
+                bhs.user = mergeObjects(bhs.user, user)
+                bhs.user.imageText = this.extractImageText()
+
+                let ref = bhs.getUsersColRef(bhs.user.uid)
+                setDoc(ref, bhs.user, {
+                    merge: true
+                }).then().catch(err => {
+                    bhs.status("ERROR: " + err)
+                })
+            }
+        }
+    }
+
+    loadUserImageText() {
+        let ref = bhs.getUsersColRef(bhs.user.uid)
+        getDoc(ref).then(doc => {
+            this.restoreImageText(doc.data().imageText, true)
+        }).catch(err => {
+            bhs.status("ERROR: " + err)
+        })
     }
 
     saveSystem() {
@@ -2669,7 +2696,7 @@ class NMSCE {
         } else {
             let img = new Image()
             img.crossOrigin = "anonymous"
-            
+
             // Get Original or Display URL depending on if we are editing it
             let url = (edit ? GetOriginalUrl : GetDisplayUrl)(fname);
 
@@ -3114,11 +3141,10 @@ class NMSCE {
                 crossDomain: true,
                 success(res) {
                     this.subReddits = []
-                    for (let s of res.data.children)
-                    {
+                    for (let s of res.data.children) {
                         let data = s.data;
 
-                        if(data.over18 || data.subreddit_type == 'user')
+                        if (data.over18 || data.subreddit_type == 'user')
                             continue;
 
                         this.subReddits.push({
@@ -3733,7 +3759,7 @@ class NMSCE {
                     for (let doc of snapshot.docs)
                         delete (doc.ref);
                 })
-                
+
                 // Little trick to get array of all different paths
                 let ImagePaths = [
                     GetDisplayPath,
@@ -3795,7 +3821,6 @@ class NMSCE {
                 path: GetOriginalPath(entry.Photo),
                 blob: await new Promise(resolve => orig.toBlob(resolve, "image/jpeg", 0.9))
             });
-
 
             UploadImages(images);
 
@@ -4407,7 +4432,7 @@ class NMSCE {
             let ref = doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)
 
             let res = await getDoc(doc(collection(ref, "votes"), bhs.user.uid));
-            
+
             e = {}
 
             if (res.exists()) {
@@ -4963,13 +4988,13 @@ const currentLocation = location.href.split("?")[0];
 
 let client_id = clientIds.prod;
 
-if(currentLocation.includes("beta.nmsce.com"))
+if (currentLocation.includes("beta.nmsce.com"))
     client_id = clientIds.beta;
 
-if(currentLocation.includes("localhost"))
+if (currentLocation.includes("localhost"))
     client_id = clientIds.local;
 
-if(currentLocation.includes("web.app"))
+if (currentLocation.includes("web.app"))
     client_id = clientIds.alpha;
 
 
