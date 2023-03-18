@@ -75,7 +75,7 @@ async function main() {
 
     setInterval(async () => {
         let start = new Date()
-        console.log("start", start.toUTCString())
+        // console.log("start", start.toUTCString())
 
         let date = parseInt(start.valueOf() / 1000)  // reddit time does not include ms so === epoch / 1000
         const recheck = 30 * 60   // timeout jic we get a bad lastPost.name so it should be set to possible time between posts
@@ -88,7 +88,7 @@ async function main() {
         } : {
             before: lastPost.name
         }).then(async posts => {
-            console.log("post", posts.length)
+            // console.log("post", posts.length)
             let p = []
 
             if (!lastPost.name || lastPost.full + recheck < date)
@@ -124,7 +124,7 @@ async function main() {
             } : {
                 before: lastComment.name
             }).then(posts => {
-                console.log("comments", posts.length)
+                // console.log("comments", posts.length)
                 if (!lastComment.name || lastComment.full + recheck < date)
                     console.log(posts.length, "comments / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
 
@@ -149,7 +149,7 @@ async function main() {
         await Promise.all(p)
 
         let end = new Date().valueOf()
-        console.log("done", end - start.valueOf(), "ms")
+        console.log(start.toUTCString(), end - start.valueOf(), "ms")
     }, 30000)
 }
 
@@ -289,7 +289,7 @@ async function checkPostLimits(posts) {
             if (typeof limit.contacts !== "undefined" && !limit.contacts.find(x => x.uid === post.author.name) && !commentedList.includes(post.id)) {
                 commentedList.push(post.id)
 
-                p.push(post.reply(thankYou + removedPost + civFlair + rules[4] + "  \n\n" + botSig)
+                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo-1] + "  \n\n" + botSig)
                     .distinguish({
                         status: true
                     }).lock()
@@ -303,7 +303,7 @@ async function checkPostLimits(posts) {
         }
         else {
             if (post.link_flair_template_id === "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" || post.link_flair_text === "Civ Advertisement") {
-                p.push(post.reply(thankYou + removedPost + civFlair + rules[4] + "  \n\n" + botSig)
+                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo-1] + "  \n\n" + botSig)
                     .distinguish({
                         status: true
                     }).lock()
@@ -1045,7 +1045,7 @@ function getTopComments(op) {
 }
 
 function error(err) {
-    console.error(new Date().toUTCString(), err.name, err.message)
+    console.log(new Date().toUTCString(), err.name, err.message)
 }
 
 const thankYou = 'Thank You for posting to r/NoMansSkyTheGame. '
