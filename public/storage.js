@@ -3,7 +3,6 @@ import { App } from "./firebase.js";
 
 // Buckets we want to upload to
 const buckets = [
-    "gs://nms-bhs.appspot.com",
     "gs://cdn.nmsce.com"
 ]
 

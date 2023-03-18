@@ -67,9 +67,10 @@ export const Version = ChangeLog[0].Version
 export function CollateChangeLog() {
     let result = "";
     for (let change of ChangeLog) {
+        let title = (change.Title && `: ${change.Title}`) || "";
         result += `
         <article>
-            <h3 style="font-weight: bold;">v${change.Version}: ${change.Title}</h3>
+            <h3 style="font-weight: bold;">v${change.Version}${title}</h3>
             ${change.Authors.map(v => `<a style="font-size: 1rem;" href="https://github.com/${v}">@${v}</a>`).join("\n")}
             <ul id="changes">
             ${change.Changes.map(v =>
