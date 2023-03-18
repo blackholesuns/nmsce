@@ -1,26 +1,33 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.1.4",
+        Title: " ",
+        Authors: ["CEbbinghaus"],
+        Changes: [
+            "Fixed bug allowing invalid Galaxy names to be submitted."
+        ]
+    }, {
         Version: "1.1.3",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Start rebranding to NMSGE"
         ]
-    },  {
+    }, {
         Version: "1.1.2",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Added new NMS version names & numbers"
         ]
-    },    {
+    }, {
         Version: "1.1.1",
         Title: "Godspeed",
         Authors: ["CEbbinghaus"],
         Changes: [
             "Moved entire site to Cloudflare (sorry for the outage)",
-            "Added better image storing with dedicated subdomain", 
+            "Added better image storing with dedicated subdomain",
             "Decreased Latency by Caching images on the edge",
             "Decreased Load times by skipping querying the URL"
         ]
@@ -57,18 +64,17 @@ export const ChangeLog = [
 
 export const Version = ChangeLog[0].Version
 
-export function CollateChangeLog(){
+export function CollateChangeLog() {
     let result = "";
-    for(let change of ChangeLog)
-    {
+    for (let change of ChangeLog) {
         result += `
         <article>
             <h3 style="font-weight: bold;">v${change.Version}: ${change.Title}</h3>
             ${change.Authors.map(v => `<a style="font-size: 1rem;" href="https://github.com/${v}">@${v}</a>`).join("\n")}
             <ul id="changes">
-            ${change.Changes.map(v => 
-                `<li><p style="font-size: .85rem; margin-bottom: 5px;">${v}</p></li>`
-                ).join("\n")
+            ${change.Changes.map(v =>
+            `<li><p style="font-size: .85rem; margin-bottom: 5px;">${v}</p></li>`
+        ).join("\n")
             }
             </ul>
         </article>
