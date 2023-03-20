@@ -1,6 +1,13 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.1.5",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Added save/reload button for image settings. Fixed galaxy display on image."
+        ]
+    },  {
         Version: "1.1.4",
         Title: " ",
         Authors: ["CEbbinghaus"],
