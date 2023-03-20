@@ -16,7 +16,6 @@ if (window.location.hostname === "localhost")
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
 
-
 var nmsce;
 // Does nothing. Purely for consistency
 window.nmsce = nmsce;
@@ -79,7 +78,7 @@ $(document).ready(() => {
     for (let p of param) {
         if (p) {
             let obj = p.split("=")
-            passed[unescape(obj[0])] = obj[1] ? unescape(obj[1]) : true
+            passed[decodeURI(obj[0])] = obj[1] ? decodeURI(obj[1]) : true
             if (obj[0] === 'g') {
                 let i = getIndex(galaxyList, "name", passed.g.idToName())
                 passed.g = galaxyList[i].name
@@ -2091,7 +2090,6 @@ class NMSCE {
         })
     }
 
-
     selectMap(evt, set) {
         let evtid = $(evt).prop("id").stripID()
         let type = $(evt).closest("[id|='slist']")
@@ -2298,6 +2296,31 @@ class NMSCE {
         this.imageText = {}
         this.initImageText("logo")
 
+        // function drawInlineSVG(ctx, rawSVG, callback) {
+        //     /// create Blob of inlined SVG
+        //     svg = new Blob([rawSVG], { type: "image/svg+xml;charset=utf-8" }),
+        //         /// create URL (handle prefixed version)
+        //         domURL = self.URL || self.webkitURL || self,
+        //         url = domURL.createObjectURL(svg),
+        //         /// create Image
+        //         img = new Image;
+
+        //     /// handle image loading
+        //     img.onload = function () {
+        //         /// draw SVG to canvas
+        //         ctx.drawImage(this, 0, 0);
+        //         domURL.revokeObjectURL(url);
+        //         callback(this);
+        //     };
+
+        //     img.src = url;
+        // }
+
+        // var rawSVG = '<svg ... >';
+        // drawInlineSVG(ctx, rawSVG, function (img) {
+        //     console.log('done!');
+        // });
+
         let img = new Image()
         img.crossOrigin = "anonymous"
         img.onload = this.onLoadLogo.bind(this);
@@ -2455,7 +2478,7 @@ class NMSCE {
             switch (data.type) {
                 case "menu":
                     loc = loc.find("[id|='btn']")
-                    text = loc.text().stripNumber()
+                    text = (loc.prop("nodeName") === "INPUT" ? loc.val() : loc.text()).stripNumber()
                     break
                 case "tags":
                     loc = loc.find("[id|='tag']")

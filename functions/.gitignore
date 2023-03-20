@@ -1,4 +1,5 @@
 node_modules/
 nms-bhs-*.json
 redditpost*.json
+*bot*.json
 thumb/

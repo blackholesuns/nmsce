@@ -139,7 +139,7 @@ async function main() {
             }).catch(err => error(err)))
 
         p.push(sub.getModqueue().then(posts => {
-            console.log("queue", posts.length)
+            // console.log("queue", posts.length)
             let p = []
             p.push(modCommands(posts, mods))
             p.push(reapproveBotComments(posts)) // idiots reporting bot & automod comments
@@ -344,9 +344,7 @@ async function checkPostLimits(posts) {
                         console.log("deleted post", post.link_flair_text, post.author.name, permaLinkHdr + post.permalink)
                 }
 
-                console.log("history", user.history.length)
                 user.history = user.history.filter(x => x.selftext !== "[deleted]" && !x.banned_by)
-                console.log("filtered", user.history.length, limit.length)
             }
 
             if (user.history.length > 1)
@@ -371,7 +369,6 @@ async function checkPostLimits(posts) {
                 message += contestLimit + limit.limit + " This post may be reposted using a different flair.  \n" + botSig
 
             console.log("over limit", permaLinkHdr + post.permalink)
-            console.log(message)
 
             if (!commentedList.includes(post.id)) {
                 commentedList.push(post.id)

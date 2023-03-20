@@ -44,7 +44,7 @@ $(document).ready(() => {
     for (let p of param) {
         if (p) {
             let obj = p.split("=")
-            passed[unescape(obj[0])] = obj[1] ? unescape(obj[1]) : true
+            passed[decodeURI(obj[0])] = obj[1] ? decodeURI(obj[1]) : true
             if (obj[0] === 'a') {
                 displayAll(passed.a)
             }
