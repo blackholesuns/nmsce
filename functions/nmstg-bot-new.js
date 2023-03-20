@@ -264,7 +264,7 @@ async function checkPostLimits(posts) {
             continue
 
         // check for videos not using video flair
-        if (!post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video") && !post.link_flair_text.includes("Question")
+        if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" && !post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video") && !post.link_flair_text.includes("Question")
             && !post.link_flair_text.includes("Answered") && !post.link_flair_text.includes("Contest")
             && typeof post.secure_media !== "undefined" && post.secure_media
             && (typeof post.secure_media.reddit_video !== "undefined" || typeof post.secure_media.oembed !== "undefined"

@@ -1,15 +1,12 @@
 'use strict'
 
+const { setTimeout: setTimeoutPromise } = require('node:timers/promises')
 const login = require('./personalBot.json')
 const snoowrap = require('snoowrap')
 const r = new snoowrap(login)
 
-const message = `Please don't repost this to NMSCE. I can not reply to any comments made on this post so if you have questions please pm me. Follow me to r/NMSGlyphExchange.`
-
 main()
 async function main() {
-    let p = []
-
     r.config({
         continueAfterRatelimitError: true,
         requestTimeout: 90000
@@ -21,36 +18,37 @@ async function main() {
         limit: 1000,
         type: "links",
         sort: "new",
-        after: "t3_ubj44o"
+        // after: "t3_gl7l0k"
     }).catch(err => console.log(err.message))
 
     if (posts.length > 0) {
         console.log("post", posts.length)
-        // // let last = {}
-        // // let found = false
+        let found = 0
 
-        // for (let post of posts) {
-        //     if (post.subreddit_name_prefixed === "r/NMSCoordinateExchange") {
-        //         let fullPost = await post.fetch()
+        for (let post of posts) {
+            if (post.subreddit_name_prefixed === "r/NMSCoordinateExchange") {
+                let fullPost = await post.fetch()
+                
+                for (let comment of fullPost.comments) {
+                    if (comment.author.name === 'spiper01' && comment.body.includes("NMSCE web app")) {
+                        let c = await r.getComment(comment.id).fetch()
+                        let m = c.body.match(/.*preview.html\?(.*?)\)/)
+                        
+                        // await c.edit(statement + (m ? m[1] : ""))
+                        console.log("https://reddit.com" + post.permalink)
 
-        //         for (let comment of fullPost.comments) {
-        //             if (comment.author.name === 'spiper01' && comment.body.includes("NMSCE web app")) {
-        //                 let c = await r.getComment(comment.id).fetch()
-        //                 await c.edit("I can no longer reply to comments on this post so please follow all the previous top posters that used to post here to their new home at r/NMSGlyphExchange.  \n\nThank you for your support all these years!  -Bad Wolf")
-        //                 // found = true
-        //                 break
-        //             }
-        //         }
+                        // await setTimeoutPromise(4000)
+                        ++found
+                        break
+                    }
+                }
+            }
 
-        //         // if (found)
-        //         //     break
-        //     }
+            if (found)break
+        }
 
-        //     // last = post
-        // }
-
-        // // console.log(last.name)
+        console.log("replaced" + found)
     }
-
-    return Promise.all(p)
 }
+
+const statement = "I can no longer reply to comments on this post so please follow all the previous top posters that used to post here to their new home at r/NMSGlyphExchange.  \n\nThank you for your support all these years!  \n-Bad Wolf  \n\n\n"
