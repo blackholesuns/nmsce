@@ -13,17 +13,6 @@ import { App, Auth, Firestore, Storage } from "./firebase.js";
 
 export var bhs;
 
-
-var fbconfig = {
-    apiKey: FIREBASE_API,
-    authDomain: "nms-bhs.firebaseapp.com",
-    databaseURL: "https://nms-bhs.firebaseio.com",
-    projectId: "nms-bhs",
-    storageBucket: "nms-bhs.appspot.com",
-    messagingSenderId: FIREBASE_MSGID,
-};
-
-
 var starsCol = "stars5"
 const usersCol = "users"
 

@@ -5,13 +5,14 @@ var serviceAccount = require("./nms-bhs-8025d3f3c02d.json")
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 })
-const bucket = admin.storage().bucket('gs://nms-bhs.appspot.com')
+const bucket = admin.storage().bucket('gs://cdn.nmsce.com')
 require('events').EventEmitter.defaultMaxListeners = 0
 const thumbPath = "nmsce/disp/thumb/"
 
 function main() {
     let ref = admin.firestore().collectionGroup("nmsceCommon")
     ref = ref.where("type", "==", "Ship")
+    ref = ref.where("_name", "==", "Bad Wolf")
     ref.get().then(async snapshot => {
         for (let doc of snapshot.docs) {
             let e = doc.data()
