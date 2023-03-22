@@ -329,165 +329,164 @@
                         </div>
                         <br>
                     </div>
-
-                    <div id="pnl-map" class="col-md-5 col-14 pl-15"></div>
                 </div>
+
+                <div id="pnl-map" class="col-md-5 col-14 pl-15"></div>
             </div>
         </div>
+    </div>
 
-        <div id="imgtable" class="card card-body hidden">
-            <div class="row">
-                <div id="id-img" class="col-lg-10 col-md-9 col-14 border">
-                    <canvas id="id-canvas"></canvas>
-                    <img id="id-ssImage" style="width: 100%;"
-                        onload="$('body')[0].style.cursor = 'default';" />
-                </div>
+    <div id="imgtable" class="card card-body hidden">
+        <div class="row">
+            <div id="id-img" class="col-lg-10 col-md-9 col-14 border">
+                <canvas id="id-canvas"></canvas>
+                <img id="id-ssImage" style="width: 100%;" onload="$('body')[0].style.cursor = 'default';" />
+            </div>
 
-                <div class="col-lg-4 col-md-5 col-14 pl-15">
-                    <div id="editScreenshot" class="hidden">
-                        <a id="permalink" class="row h4" href="">
-                            Shareable Link&nbsp;
-                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
-                                data-placement="bottom"
-                                title="Share this link for direct access this entry. Just use the browsers copy link address.">&nbsp;
-                            </i>
-                        </a>
+            <div class="col-lg-4 col-md-5 col-14 pl-15">
+                <div id="editScreenshot" class="hidden">
+                    <a id="permalink" class="row h4" href="">
+                        Shareable Link&nbsp;
+                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                            data-placement="bottom"
+                            title="Share this link for direct access this entry. Just use the browsers copy link address.">&nbsp;
+                        </i>
+                    </a>
 
-                        <div class="row">
-                            <button class="col-4 btn btn-sm btn-def"
-                                onclick="nmsce.editScreenshot(true)">Edit</button>&nbsp;
-                        </div>
-                        <br>
+                    <div class="row">
+                        <button class="col-4 btn btn-sm btn-def"
+                            onclick="nmsce.editScreenshot(true)">Edit</button>&nbsp;
+                    </div>
+                    <br>
 
-                        <div class="row border-top">
-                            <button id="openReddit" class="col-2 btn btn-sm border" style="box-shadow:4px 4px gray;"
-                                onclick="nmsce.redditCreate()">
-                                <img src="images/reddit.png" style="width:30px; height:30px"
-                                    alt="Create Reddit Post"></button>
+                    <div class="row border-top">
+                        <button id="openReddit" class="col-2 btn btn-sm border" style="box-shadow:4px 4px gray;"
+                            onclick="nmsce.redditCreate()">
+                            <img src="images/reddit.png" style="width:30px; height:30px"
+                                alt="Create Reddit Post"></button>
 
-                            <div id="posted" class="col-10 text-danger h5"></div>
-                        </div>
-
-                        <div class="row">
-                            <label class="col-14 txt-label-def">Reddit Link&nbsp;
-                                <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
-                                    data-placement="bottom"
-                                    title="If you make the post from the app then this field will be auto-filled. If you make the post manually then copy the post url here.">
-                                </i>&nbsp;
-                                <input id="redditlink" class="col-12" type="text">
-                            </label>
-                        </div>
-
-                        <div id="redditPost" class="row">
-                            <div id="id-SubReddit" class="col-14"></div>
-                            <div id="id-Flair" class="col-14"></div>
-                            <label class="col-14 txt-label-def">Title&nbsp;
-                                <span class="h5 text-danger">*</span>&nbsp;
-                                <input id="id-Title" class="col-12" type="text" maxength=300>
-                            </label>
-                            <button class="col-2 btn btn-sm btn-def" onclick="nmsce.redditPost()">Post</button>&nbsp;
-                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
-                                data-placement="bottom"
-                                title="Post to selected SubReddit. When successful the post link will be entered in the 'Reddit Link' field above.">
-                            </i>
-                        </div>
-                        <br>
+                        <div id="posted" class="col-10 text-danger h5"></div>
                     </div>
 
-                    <div id="editingScreenshot" class="border-top hidden">
-                        <div class="row">
-                            <button type="button" class="col-5 btn btn-def btn-sm" onclick="nmsce.extractGlyphs()">
-                                Scan Glyphs
-                            </button>&nbsp;
+                    <div class="row">
+                        <label class="col-14 txt-label-def">Reddit Link&nbsp;
                             <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                                 data-placement="bottom"
-                                title="<span class='h5 text-danger'>Always</span> double-check glyph output. For best results take a high contrast clear background for glyph processing.">
-                            </i>
-                        </div>
-                        <br>
-
-                        <div class="row">
-                            <button type="button" class="col-5 btn btn-def btn-sm" onclick="nmsce.saveUserImageText()">
-                                Save Settings
-                            </button>&nbsp;
-                            <button type="button" class="col-5 btn btn-def btn-sm" onclick="nmsce.loadUserImageText()">
-                                Reload Settings
-                            </button>&nbsp;
-                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
-                                data-placement="bottom"
-                                title="Save all image settings to my profile. These will be my defaults whenever the page is reloaded.">
-                            </i>
-                        </div>
-                        <br>
-
-                        <div class="row">
-                            <div id="id-Font" class="col-14"></div>
-                        </div>
-
-                        <label class="row txt-label-def">Size&nbsp;
-                            <input id="sel-size" class="col-4" onchange="nmsce.setSize(this)" type="number" value=18
-                                min=0>
-                        </label>
-
-                        <label class="row txt-label-def">Font Color&nbsp;
-                            <input type="text" class="col-2 border border-3 bdr-black rounded h6" id="color-font">
-                        </label>
-                        <label class="row txt-label-def">Background Color&nbsp;
-                            <input type="text" class="col-2 border border-3 bdr-black rounded h6" id="color-background">
-                        </label>
-                        <div clss="row" style="padding-top:0px;">
-                            <button class="btn btn-sm btn-def col-5"
-                                onclick="nmsce.restoreImageText(null, true)">Redraw</button>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
-                                data-placement="top" title="Align selected items.">
+                                title="If you make the post from the app then this field will be auto-filled. If you make the post manually then copy the post url here.">
                             </i>&nbsp;
-                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('left')">
-                                <i class="fas fa-align-left"></i>
-                            </button>&nbsp;
-                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('right')">
-                                <i class="fas fa-align-right"></i>
-                            </button>&nbsp;
-                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('top')">
-                                <i class="fas fa-align-left" style="transform: rotate(90deg);"></i>
-                            </button>&nbsp;
-                            <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('bottom')">
-                                <i class="fas fa-align-left" style="transform: rotate(270deg);"></i>
-                            </button>
-                            <!--button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('justify')">
+                            <input id="redditlink" class="col-12" type="text">
+                        </label>
+                    </div>
+
+                    <div id="redditPost" class="row">
+                        <div id="id-SubReddit" class="col-14"></div>
+                        <div id="id-Flair" class="col-14"></div>
+                        <label class="col-14 txt-label-def">Title&nbsp;
+                            <span class="h5 text-danger">*</span>&nbsp;
+                            <input id="id-Title" class="col-12" type="text" maxength=300>
+                        </label>
+                        <button class="col-2 btn btn-sm btn-def" onclick="nmsce.redditPost()">Post</button>&nbsp;
+                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                            data-placement="bottom"
+                            title="Post to selected SubReddit. When successful the post link will be entered in the 'Reddit Link' field above.">
+                        </i>
+                    </div>
+                    <br>
+                </div>
+
+                <div id="editingScreenshot" class="border-top hidden">
+                    <div class="row">
+                        <button type="button" class="col-5 btn btn-def btn-sm" onclick="nmsce.extractGlyphs()">
+                            Scan Glyphs
+                        </button>&nbsp;
+                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                            data-placement="bottom"
+                            title="<span class='h5 text-danger'>Always</span> double-check glyph output. For best results take a high contrast clear background for glyph processing.">
+                        </i>
+                    </div>
+                    <br>
+
+                    <div class="row">
+                        <button type="button" class="col-5 btn btn-def btn-sm" onclick="nmsce.saveUserImageText()">
+                            Save Settings
+                        </button>&nbsp;
+                        <button type="button" class="col-5 btn btn-def btn-sm" onclick="nmsce.loadUserImageText()">
+                            Reload Settings
+                        </button>&nbsp;
+                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                            data-placement="bottom"
+                            title="Save all image settings to my profile. These will be my defaults whenever the page is reloaded.">
+                        </i>
+                    </div>
+                    <br>
+
+                    <div class="row">
+                        <div id="id-Font" class="col-14"></div>
+                    </div>
+
+                    <label class="row txt-label-def">Size&nbsp;
+                        <input id="sel-size" class="col-4" onchange="nmsce.setSize(this)" type="number" value=18 min=0>
+                    </label>
+
+                    <label class="row txt-label-def">Font Color&nbsp;
+                        <input type="text" class="col-2 border border-3 bdr-black rounded h6" id="color-font">
+                    </label>
+                    <label class="row txt-label-def">Background Color&nbsp;
+                        <input type="text" class="col-2 border border-3 bdr-black rounded h6" id="color-background">
+                    </label>
+                    <div clss="row" style="padding-top:0px;">
+                        <button class="btn btn-sm btn-def col-5"
+                            onclick="nmsce.restoreImageText(null, true)">Redraw</button>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                            data-placement="top" title="Align selected items.">
+                        </i>&nbsp;
+                        <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('left')">
+                            <i class="fas fa-align-left"></i>
+                        </button>&nbsp;
+                        <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('right')">
+                            <i class="fas fa-align-right"></i>
+                        </button>&nbsp;
+                        <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('top')">
+                            <i class="fas fa-align-left" style="transform: rotate(90deg);"></i>
+                        </button>&nbsp;
+                        <button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('bottom')">
+                            <i class="fas fa-align-left" style="transform: rotate(270deg);"></i>
+                        </button>
+                        <!--button class="btn btn-sm col-2 btn-def" onclick="nmsce.alignText('justify')">
                             <i class="fas fa-align-justify"></i>
                             </button-->
-                        </div>
-                        <br>
-                        <p class="border-top text-danger">You can select information to add to the screenshot using the
-                            checkboxes
-                            below. Use click & drag to reposition and resize items displayed. Shift click to select
-                            multiple items.</p>
-                        <p class="text-danger">Once the item is saved you can click on the image in the list below to
-                            edit or post to reddit.</p>
                     </div>
+                    <br>
+                    <p class="border-top text-danger">You can select information to add to the screenshot using the
+                        checkboxes
+                        below. Use click & drag to reposition and resize items displayed. Shift click to select
+                        multiple items.</p>
+                    <p class="text-danger">Once the item is saved you can click on the image in the list below to
+                        edit or post to reddit.</p>
                 </div>
             </div>
-            <br>
+        </div>
+        <br>
 
-            <div id="imageTextBlock" class="hidden">
-                <div id="img-text" class="container-fluid row txt-label-def container-fluid">
-                </div>
-
-                <button id="editreset" class="btn btn-sm btn-def col-md-3 col-7"
-                    onclick="nmsce.buildImageText()">Reset</button>&nbsp;
-                <button id="editrestore" class="btn btn-sm btn-def col-md-3 col-7"
-                    onclick="nmsce.restoreImageText(bhs.user.imageText, true)">Restore Saved</button>&nbsp;
+        <div id="imageTextBlock" class="hidden">
+            <div id="img-text" class="container-fluid row txt-label-def container-fluid">
             </div>
-            <br>
-        </div>
 
-        <div id="id-table" class="card">
-            <nav class="nav nav-tabs row pl-15" id="displayTabs" role="tablist"></nav>
-            <div id="displayPanels" class="tab-content border-top" style="border-color:black;"></div>
+            <button id="editreset" class="btn btn-sm btn-def col-md-3 col-7"
+                onclick="nmsce.buildImageText()">Reset</button>&nbsp;
+            <button id="editrestore" class="btn btn-sm btn-def col-md-3 col-7"
+                onclick="nmsce.restoreImageText(bhs.user.imageText, true)">Restore Saved</button>&nbsp;
         </div>
+        <br>
+    </div>
+
+    <div id="id-table" class="card">
+        <nav class="nav nav-tabs row pl-15" id="displayTabs" role="tablist"></nav>
+        <div id="displayPanels" class="tab-content border-top" style="border-color:black;"></div>
+    </div>
     </div>
     <br>
 
