@@ -289,7 +289,7 @@ async function checkPostLimits(posts) {
             if (typeof limit.contacts !== "undefined" && !limit.contacts.find(x => x.uid === post.author.name) && !commentedList.includes(post.id)) {
                 commentedList.push(post.id)
 
-                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo-1] + "  \n\n" + botSig)
+                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo - 1] + "  \n\n" + botSig)
                     .distinguish({
                         status: true
                     }).lock()
@@ -303,7 +303,7 @@ async function checkPostLimits(posts) {
         }
         else {
             if (post.link_flair_template_id === "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" || post.link_flair_text === "Civ Advertisement") {
-                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo-1] + "  \n\n" + botSig)
+                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo - 1] + "  \n\n" + botSig)
                     .distinguish({
                         status: true
                     }).lock()
@@ -372,7 +372,7 @@ async function checkPostLimits(posts) {
 
             if (!commentedList.includes(post.id)) {
                 commentedList.push(post.id)
-                
+
                 p.push(post.reply(message)
                     .distinguish({
                         status: true
@@ -523,8 +523,8 @@ function setupAdvertiser(post, op) {
     let p = []
     let ad = {
         flair: null,
-        limit: null,
-        timeStr: null,
+        limit: 2,
+        timeStr: "week",
         url: null,
         contacts: []
     }
@@ -558,43 +558,35 @@ function setupAdvertiser(post, op) {
         }
     }
 
-    if (opts.length === 1 || opts[1] !== "list") {
+    if (ad.flair) {
         let ads = settings.ads.find(x => x.flair === ad.flair)
+
         if (!ads && !settings.ads[0].flair)
             ads = settings.ads[0]
 
-        if (ads) {
-            ads.flair = ad.flair
-            ads.limit = ad.limit ? ad.limit : ads.limit ? ads.limit : 2
-            ads.timeStr = ad.timeStr ? ad.timeStr : ads.timeStr ? ads.timeStr : "week"
-
-            if (ad.contacts.length > 0) {
-                ads.contacts = []
-
-                for (let c of ad.contacts)
-                    ads.contacts.push(c)
-            }
-
-            if (!ads.limit || !ads.timeStr || !ads.flair || ads.contacts.length === 0)
-                p.push(post.reply("!-incomplete ad").catch(err => error(err)))
-        }
-        else
+        if (!ads)
             settings.ads.push(ad)
+        else {
+            ads.flair = ad.flair
+            ads.limit = ad.limit
+            ads.timeStr = ad.timeStr
+            ads.contacts = []
 
-
-        console.log(JSON.stringify(settings.ads))
+            for (let c of ad.contacts)
+                ads.contacts.push(c)
+        }
 
         p.push(updateSettings())
     }
 
-    p.push(listAdvertisers(post, op))
+    p.push(listAdvertisers(post, ad.flair))
 
     return Promise.all(p)
 }
 
-function listAdvertisers(post, op) {
+function listAdvertisers(post, flair) {
     const buildAd = function (ad) {
-        let text = "flair: '" + ad.flair +"  \n"
+        let text = "flair: '" + ad.flair + "  \n"
         text += "    contacts: "
         for (let c of ad.contacts)
             text += c.uid + ", "
@@ -608,7 +600,8 @@ function listAdvertisers(post, op) {
         text = "!-No Authorized advertisers  \n"
     else
         for (let ad of settings.ads)
-            text += buildAd(ad)
+            if (!ad.flair || ad.flair === flair)
+                text += buildAd(ad)
 
     return post.reply(text).catch(err => error(err))
 }
