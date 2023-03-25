@@ -252,12 +252,16 @@ blackHoleSuns.prototype.displayUser = function (user, force) {
 
     if (bhs.user.galaxy && bhs.user.galaxy !== "") {
         let i = galaxyList[getIndex(galaxyList, "name", bhs.user.galaxy)];
-        let btn = pnl.find("#btn-Galaxy");
-        btn.val(bhs.user.galaxy)
-        btn.attr(
-            "style",
-            "background-color: " + i.color + ";"
-        );
+        if(!i) {
+            bhs.user.galaxy = null;
+        } else {   
+            let btn = pnl.find("#btn-Galaxy");
+            btn.val(bhs.user.galaxy)
+            btn.attr(
+                "style",
+                "background-color: " + i.color + ";"
+                );
+        }
     } else pnl.find("#btn-Galaxy").val("");
 
     if (fdarc) bhs.updateDarcSettings();
