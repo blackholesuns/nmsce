@@ -1,6 +1,15 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.1.6",
+        Title: " ",
+        Authors: ["CEbbinghaus"],
+        Changes: [
+            "Fixed the submissions triggering page reload due to form.",
+            "Prevented overflow in the Horizontal causing needless scrollbars",
+            "Added scrollbar to update notes & restricted panel height"
+        ]
+    },  {
         Version: "1.1.5",
         Title: " ",
         Authors: ["spip01"],

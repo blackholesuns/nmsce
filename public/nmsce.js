@@ -10,6 +10,7 @@ import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
 import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, GetThumbnailUrl, UploadImages } from "./storage.js";
 import { BuildGalaxyMenu } from "./tmputil.js";
+import { GetClosestParentElement } from "./util.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
@@ -1138,8 +1139,11 @@ class NMSCE {
     }
 
     search(search) {
-        if (search && search.preventDefault && (search.preventDefault() || true))
+        if(!NMSCE.EnsureValidForm(search))
+            return false;
+        else
             search = null;
+            
 
 
         if (!search) {
@@ -1554,7 +1558,53 @@ class NMSCE {
         })
     }
 
-    async saveEntry() {
+    /**
+     * Ensures form is valid before returning true or false.
+     * @static
+     * @param {Event} evt 
+     * @returns {boolean}
+     * 
+     * @memberOf NMSCE
+     */
+    static EnsureValidForm(evt) {
+
+        /** @type {HTMLFormElement} */
+        const parentForm = GetClosestParentElement(evt.target, "form");
+
+        evt.preventDefault();
+
+        if (!parentForm)
+            console.error("No HTML form could be found to validate.");
+        else {
+            if (!parentForm.reportValidity()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Prevents the submission of any form. Will instead 
+     * @param {Event} evt 
+     * 
+     * @memberOf NMSCE
+     */
+    static preventSubmit(evt) {
+        evt.preventDefault();
+        return false;
+    }
+
+    /**
+     * 
+     * 
+     * @param {Event} evt 
+     * 
+     * @memberOf NMSCE
+     */
+    saveEntry(evt) {
+        if (!NMSCE.EnsureValidForm(evt))
+            return false;
+
         let ok = bhs.user.uid
 
         if (!this.last || this.last.uid === bhs.user.uid) {
@@ -1577,8 +1627,11 @@ class NMSCE {
             }
         }
 
-        if (ok && await this.extractEntry())
-            this.clearPanel()
+        if (ok) {
+            this.extractEntry().then(() => {
+                this.clearPanel();
+            });
+        }
     }
 
     saveUserImageText() {
@@ -1608,7 +1661,10 @@ class NMSCE {
         })
     }
 
-    saveSystem() {
+    saveSystem(evt) {
+        if (!NMSCE.EnsureValidForm(evt))
+            return false;
+
         let ok = bhs.user.uid
 
         if (!this.last || this.last.uid === bhs.user.uid) {

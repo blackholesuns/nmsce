@@ -40,6 +40,12 @@
         gtag('config', 'UA-66007591-5');
     </script>
 
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+    </style>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
 
@@ -92,7 +98,7 @@
             </div-->
             <div class="card-body bkg-white">
                 <div class="row">
-                    <form id="panels" onsubmit="nmsce.search(event)" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
+                    <form id="panels" onsubmit="NMSCE.preventSubmit(event)" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
                         <div id="row-playerInput" class="row" data-allowhide=true>
                             <div class="col-sm-4 col-6 txt-label-def">
                                 Player Name&nbsp;
@@ -229,10 +235,10 @@
                         </div>
 
                         <div class="row border-top">
-                            <button id="save-system" type="button" class="col-4 btn btn-sm btn-def"
-                                onclick="nmsce.saveSystem()">Save System</button>&nbsp;
-                            <button id="delete-system" type="button" class="col-4 btn btn-sm btn-def disabled" disabled
-                                onclick="nmsce.deleteSystem()">Delete System</button>&nbsp;
+                            <button id="save-system" type="submit" class="col-4 btn btn-sm btn-def"
+                                onclick="nmsce.saveSystem(event)">Save System</button>&nbsp;
+                            <button id="delete-system" type="submit" class="col-4 btn btn-sm btn-def disabled" disabled
+                                onclick="nmsce.deleteSystem(event)">Delete System</button>&nbsp;
                         </div>
                         <br>
 
@@ -243,10 +249,10 @@
                             <div class="row">
                                 <div class="col-lg-5 col-14 pl-10">
                                     <div class="row" style="padding-top:2px;">
-                                        <button id="save" type="button" class="col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.saveEntry()">Save All</button>&nbsp;
-                                        <button id="delete-item" type="button" class="col-6 btn btn-sm btn-def disabled"
-                                            disabled onclick="nmsce.deleteEntry()">Delete Item</button>&nbsp;
+                                        <button id="save" type="submit" class="col-6 btn btn-sm btn-def"
+                                            onclick="nmsce.saveEntry(event)">Save All</button>&nbsp;
+                                        <button id="delete-item" type="submit" class="col-6 btn btn-sm btn-def disabled"
+                                            disabled onclick="nmsce.deleteEntry(event)">Delete Item</button>&nbsp;
                                     </div>
                                     <div id="updatenext" class="row hidden">
                                         <button type="button" class="col-6 btn btn-sm btn-def">Update +
