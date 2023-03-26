@@ -723,60 +723,57 @@ function clearWatch(post, op) {
 }
 
 function setupContest(post, op) {
-    let update = null
-    let contest = null
     let p = []
-
-    for (let c of settings.contest)
-        if (c.flair === op.link_flair_text || !c.flair) {
-            update = c
-            contest = c
-            break
-        }
-
-    if (update === null)
-        contest = { // default values
-            end: 30,
-            tz: 0,
-            limit: 3,
-            repost: [-1, -3],
-            comments: false,
-            type: "post"
-        }
-
-    contest.flair = op.link_flair_text
-    contest.link = permaLinkHdr + op.permalink
 
     let opts = post.body.split(" ")
     console.log(opts)
 
-    for (let o of opts) {
-        let l = o.split(":")
-        console.log(l)
+    if (opts.length > 1) {
 
-        if (l[0].match(/(end|tz|limit)/))
-            contest[l[0]] = parseInt(l[1])
-        else if (l[0].match(/(type|start)/))
-            contest[l[0]] = l[1]
-        else if (l[0] === "comment")
-            contest[l[0]] = l[1] === "true"
-        else if (l[0] === "repost") {
-            contest[l[0]] = []
-            let d = l[1].split(",")
-            console.log(d)
-            for (let x of d)
-                contest[l[0]].push(parseInt(x))
+        let update = settings.contest.find(c => c.flair === op.link_flair_text || !c.flair)
+        let contest = update
+
+        if (typeof update === "undefined")
+            contest = { // default values
+                end: 14,
+                tz: 0,
+                limit: 3,
+                repost: [-1, -3],
+                comments: false,
+                type: "post"
+            }
+
+        contest.flair = op.link_flair_text
+        contest.flairID = op.link_flair_template_id
+        contest.link = permaLinkHdr + op.permalink
+
+        for (let o of opts) {
+            let l = o.split(":")
+            console.log(l)
+
+            if (l[0].match(/(end|tz|limit)/))
+                contest[l[0]] = parseInt(l[1])
+            else if (l[0].match(/(type|start)/))
+                contest[l[0]] = l[1]
+            else if (l[0] === "comment")
+                contest[l[0]] = l[1] === "true"
+            else if (l[0] === "repost") {
+                contest[l[0]] = []
+                let d = l[1].split(",")
+                console.log(d)
+                for (let x of d)
+                    contest[l[0]].push(parseInt(x))
+            }
         }
+
+        if (update)
+            update = contest
+        else
+            settings.contest.push(contest)
+
+        p.push(updateSettings())
     }
 
-    if (update)
-        update = contest
-    else
-        settings.contest.push(contest)
-
-    console.log("contest", settings.contest)
-
-    p.push(updateSettings())
     p.push(listContest(post, op))
 
     return Promise.all(p)
@@ -784,17 +781,19 @@ function setupContest(post, op) {
 
 async function listContest(post, op) {
     let today = new Date()
-    let text = "!-Upcoming & current contest \n"
+    let text = "!-Contest  \n"
 
     let contest = await settings.contest.filter(x => {
-        let start = new Date(x.start)
+        let start = new Date(x.start).valueOf()
         let end = start + x.end * 1000 * 60 * 60 * 24
 
-        return start > today && today < end
+        return today < end
     })
 
     for (let c of contest)
-        text += "start: " + c.start + " flair: " + c.flair + " [post](" + c.link + ") \n"
+        text += "start: " + c.start + " flair: " + c.flair + " [post](" + c.link + ")  \n"
+
+    console.log(text)
 
     return post.reply(text).catch(err => error(err))
 }
