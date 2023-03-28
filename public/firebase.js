@@ -6,7 +6,7 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-s
 
 var fbconfig = {
     apiKey: FIREBASE_API,
-    authDomain: "nmsce.com",
+    authDomain: "nms-bhs.firebaseapp.com",
     databaseURL: "https://nms-bhs.firebaseio.com",
     projectId: "nms-bhs",
     storageBucket: "cdn.nmsce.com",
