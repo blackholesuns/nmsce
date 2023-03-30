@@ -142,7 +142,7 @@ async function main() {
             // console.log("queue", posts.length)
             let p = []
             p.push(modCommands(posts, mods))
-            p.push(reapproveBotComments(posts)) // idiots reporting bot & automod comments
+            p.push(checkReported(posts))
             return Promise.all(p)
         }).catch(err => error(err)))
 
@@ -436,11 +436,17 @@ function checkNewPosters(posts) {
     return Promise.all(p)
 }
 
-function reapproveBotComments(posts) {
+function checkReported(posts) {
     let p = []
-    for (let post of posts)
+    for (let post of posts) {
         if (post.author.name === "AutoModerator" || post.author.name === "nmsceBot")
-            p.push(post.approve())
+            p.push(post.approve())  // idiots reporting automod & bot comments
+
+        if (post.name.startsWith("t1"))
+            for (let r of post.user_reports)
+                if (r[0].includes("poiler"))
+                    p.push(post.reply("!Filter-Spoiler").catch(err => error(err)))
+    }
 
     return Promise.all(p)
 }
@@ -888,7 +894,7 @@ async function checkWatched(posts) {
                     reason: "Watch " + post.author.name + " " + watch.reason
                 }).catch(err => error(err)))
             else
-                p.push(post.reply("!filter watched user '" + watch.reason + "'").catch(err => error(err)))
+                p.push(post.reply("!filter-watched user '" + watch.reason + "'").catch(err => error(err)))
         }
     }
 
