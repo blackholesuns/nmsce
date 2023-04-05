@@ -216,6 +216,10 @@ export const versionList = [
         name: "fractal",
         version: 4.10,
         date: "2/22/2023"
+    }, {
+        name: "interceptor",
+        version: 4.20,
+        date: "4/5/2023"
     }
 ];
 
