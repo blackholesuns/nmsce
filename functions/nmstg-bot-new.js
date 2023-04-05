@@ -1,5 +1,7 @@
 'use strict'
 
+const { setTimeout: setTimeoutPromise } = require('node:timers/promises')
+
 const login = require('./nmsce-bot.json')
 const snoowrap = require('snoowrap')
 const reddit = new snoowrap(login)
@@ -10,6 +12,7 @@ var lastComment = {}
 var rules = []
 var settings = {}
 var mods = []
+var entries = []
 
 var flairPostLimit = []
 var anyPostLimit = {}
@@ -27,15 +30,131 @@ async function main() {
     sub = await reddit.getSubreddit('NoMansSkyTheGame')
 
     await loadSettings()
+    getWeekly()
 
-    // await sub.getModqueue().then(posts => {
-    //     console.log("queue", posts.length)
-    //     let p = []
-    //     p.push(modCommands(posts, mods))
-    //     return Promise.all(p)
-    // }).catch(err => error(err))
-    // return
+    setInterval(() => getComments(), 30 * 1000)     // for watched comments
+    setInterval(() => getModqueue(), 10 * 1000)     // for moderator commands
+    setInterval(() => getNew(), 15 * 1000)          // post limits, etc.
+    setInterval(() => getContest(), 5 * 60 * 1000)  // update contest wiki
+}
 
+async function getContest() {
+    let start = new Date()
+
+    for (let contest of settings.contest)
+        if (contest.active) {
+            let posts = await sub.search({
+                query: 'flair_name:"' + contest.flair + '"',
+                time: "month",
+                limit: 1000,
+                sort: "new"
+            })
+
+            if (posts.length > 0)
+                checkContest(posts, contest)
+
+            break
+        }
+
+    let end = new Date().valueOf()
+    console.log("contest", start.toUTCString(), end - start.valueOf(), "ms")
+}
+
+async function getNew() {
+    let start = new Date()
+    let date = parseInt(start.valueOf() / 1000)  // reddit time does not include ms so === epoch / 1000
+    const recheck = 30 * 60   // timeout jic we get a bad lastPost.name so it should be set to possible time between posts
+    let p = []
+
+    p.push(sub.getNew(!lastPost.name ? {
+        limit: 100 // day
+    } : lastPost.full + recheck < date ? {
+        limit: 10 // hour
+    } : {
+        before: lastPost.name
+    }).then(async posts => {
+        let p = []
+
+        if (!lastPost.name || lastPost.full + recheck < date)
+            console.log(posts.length, "posts / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
+
+        if (posts.length > 0) {
+            lastPost = posts[0]
+            posts = posts.sort((a, b) => a.created_utc - b.created_utc)
+
+            p.push(checkNewPosters(posts))  // Only time critical function. Limits how much time first time post is visible on sub.
+            p.push(checkPostLimits(posts))
+            p.push(updateWikiThreads(posts))
+            checkWatched(posts)
+        }
+
+        if (posts.length > 0 || !lastPost.full || lastPost.full + recheck < date)
+            lastPost.full = date            // read all if we go past recheck timeout, lastPost was probably deleted
+
+        if (posts.length === 0)
+            p.push(lastPost.refresh().then(post => {
+                if (post.selftext === "[Deleted]" || post.banned_by) {
+                    lastPost.full = 0       // post was deleted so force reread of last 10 post
+                }
+            }))
+
+        return Promise.all(p)
+    }).catch(err => error(err)))
+
+    await Promise.all(p)
+
+    let end = new Date().valueOf()
+    console.log("posts", start.toUTCString(), end - start.valueOf(), "ms")
+}
+
+async function getModqueue() {
+    let start = new Date()
+    let p = []
+
+    p.push(sub.getModqueue().then(posts => {
+        let p = []
+        p.push(modCommands(posts, mods))
+        p.push(checkReported(posts))
+        return Promise.all(p)
+    }).catch(err => error(err)))
+
+    await Promise.all(p)
+
+    let end = new Date().valueOf()
+    console.log("modqueue", start.toUTCString(), end - start.valueOf(), "ms")
+}
+
+async function getComments() {
+    let start = new Date()
+    let date = parseInt(start.valueOf() / 1000)  // reddit time does not include ms so === epoch / 1000
+    const recheck = 30 * 60   // timeout jic we get a bad lastPost.name so it should be set to possible time between posts
+
+    if (settings.watch.find(x => x.active === true && x.comments === true)) {
+        let posts = await sub.getNewComments(!lastComment.name || lastComment.full + recheck < date ? {
+            limit: 20 // if startup misses a few nbd
+        } : {
+            before: lastComment.name
+        }).catch(err => error(err))
+
+        if (!lastComment.name || lastComment.full + recheck < date)
+            console.log(posts.length, "comments / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
+
+        if (lastComment.length > 0 || !lastComment.full || lastComment.full + recheck < date)
+            lastComment.full = date    // read all if we go past recheck timeout
+
+        if (posts.length > 0) {
+            posts = posts.sort((a, b) => a.created_utc - b.created_utc)
+            lastComment.name = posts[posts.length - 1].name
+
+            checkWatched(posts)
+        }
+
+        let end = new Date().valueOf()
+        console.log("comments", start.toUTCString(), end - start.valueOf(), "ms")
+    }
+}
+
+function getWeekly() {
     // single searches at startup to get post for long posting limits
     let search = ""
     for (let l of flairPostLimit)
@@ -55,104 +174,7 @@ async function main() {
             checkPostLimits(posts)
         }
     })
-
-    for (let contest of settings.contest)
-        if (contest.active)
-            sub.search({
-                query: "flair_text:" + contest.flair,
-                time: "month",
-                limit: 1000,
-                sort: "new"
-            }).then(posts => {
-                console.log("Contest", posts.length)
-
-                if (posts.length > 0) {
-                    posts = posts.sort((a, b) => a.created_utc - b.created_utc)
-                    checkPostLimits(posts)
-                    // checkContest(posts)
-                }
-            })
-
-    setInterval(async () => {
-        let start = new Date()
-        // console.log("start", start.toUTCString())
-
-        let date = parseInt(start.valueOf() / 1000)  // reddit time does not include ms so === epoch / 1000
-        const recheck = 30 * 60   // timeout jic we get a bad lastPost.name so it should be set to possible time between posts
-        let p = []
-
-        p.push(sub.getNew(!lastPost.name ? {
-            limit: 100 // day
-        } : lastPost.full + recheck < date ? {
-            limit: 10 // hour
-        } : {
-            before: lastPost.name
-        }).then(async posts => {
-            // console.log("post", posts.length)
-            let p = []
-
-            if (!lastPost.name || lastPost.full + recheck < date)
-                console.log(posts.length, "posts / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
-
-            if (posts.length > 0) {
-                lastPost = posts[0]
-                posts = posts.sort((a, b) => a.created_utc - b.created_utc)
-
-                p.push(checkPostLimits(posts))
-                p.push(checkWatched(posts))
-                p.push(checkNewPosters(posts))  // Only time critical function. Limits how much time first time post is visible on sub.
-                p.push(updateWikiThreads(posts))
-                // p.push(checkContest(posts))
-            }
-
-            if (posts.length > 0 || !lastPost.full || lastPost.full + recheck < date)
-                lastPost.full = date            // read all if we go past recheck timeout, lastPost was probably deleted
-
-            if (posts.length === 0)
-                p.push(lastPost.refresh().then(post => {
-                    if (post.selftext === "[Deleted]" || post.banned_by) {
-                        lastPost.full = 0       // post was deleted so force reread of last 10 post
-                    }
-                }))
-
-            return Promise.all(p)
-        }).catch(err => error(err)))
-
-        if (settings.watch.find(x => x.active === true && x.comments === true))
-            p.push(sub.getNewComments(!lastComment.name || lastComment.full + recheck < date ? {
-                limit: 20 // if startup misses a few nbd
-            } : {
-                before: lastComment.name
-            }).then(posts => {
-                // console.log("comments", posts.length)
-                if (!lastComment.name || lastComment.full + recheck < date)
-                    console.log(posts.length, "comments / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
-
-                if (lastComment.length > 0 || !lastComment.full || lastComment.full + recheck < date)
-                    lastComment.full = date    // read all if we go past recheck timeout
-
-                if (posts.length > 0) {
-                    posts = posts.sort((a, b) => a.created_utc - b.created_utc)
-                    lastComment.name = posts[posts.length - 1].name
-                    return checkWatched(posts)
-                }
-            }).catch(err => error(err)))
-
-        p.push(sub.getModqueue().then(posts => {
-            // console.log("queue", posts.length)
-            let p = []
-            p.push(modCommands(posts, mods))
-            p.push(checkReported(posts))
-            return Promise.all(p)
-        }).catch(err => error(err)))
-
-        await Promise.all(p)
-
-        let end = new Date().valueOf()
-        console.log(start.toUTCString(), end - start.valueOf(), "ms")
-    }, 30000)
 }
-
 
 async function loadSettings(post) {
     const calcTime = function (length) {
@@ -193,19 +215,22 @@ async function loadSettings(post) {
 
         for (let e of settings.contest) {
             if (e.flair) {
-                let limit = {}
-                limit.flair = e.flair
-                limit.limit = e.limit
+                let start = Date.parse(e.start).valueOf() + e.tz * 60 * 60 * 1000
+                let end = start + e.end * 24 * 60 * 60 * 1000 + e.tz * 60 * 60 * 1000
 
-                limit.start_utc = new Date(e.start + e.tz * 60 * 60 * 1000).valueOf()
-                limit.end_utc = new Date(limit.start_utc + e.end * 24 * 60 * 60 * 1000 + e.tz * 60 * 60 * 1000).valueOf()
+                e.endUTC = new Date(end).toUTCString()
+                e.active = now > start && now < end
 
-                limit.active = now > limit.start_utc && now < limit.end_utc
-                limit.start_utc /= 1000 // used for reddit post created_utc which doesn't include ms
-                limit.end_utc /= 1000
+                if (e.active) {
+                    entries = []
 
-                flairPostLimit.push(limit)
-                allPost[e.flair] = []
+                    let limit = {}
+                    limit.flair = e.flair
+                    limit.limit = e.limit
+                    flairPostLimit.push(limit)
+                    allPost[e.flair] = []
+                    break
+                }
             }
         }
 
@@ -264,8 +289,8 @@ async function checkPostLimits(posts) {
             continue
 
         // check for videos not using video flair
-        if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" && !post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video") && !post.link_flair_text.includes("Question")
-            && !post.link_flair_text.includes("Answered") && !post.link_flair_text.includes("Contest")
+        if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" && !post.link_flair_text.includes("Bug")
+            && !post.link_flair_text.includes("Video") && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")
             && typeof post.secure_media !== "undefined" && post.secure_media
             && (typeof post.secure_media.reddit_video !== "undefined" || typeof post.secure_media.oembed !== "undefined"
                 && (post.secure_media.oembed.type === "video" || post.secure_media.type === "twitch.tv"))) {
@@ -302,7 +327,9 @@ async function checkPostLimits(posts) {
             }
         }
         else {
-            if (post.link_flair_template_id === "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" || post.link_flair_text === "Civ Advertisement") {
+            if (!commentedList.includes(post.id) && (post.link_flair_template_id === "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" || post.link_flair_text === "Civ Advertisement")) {
+                commentedList.push(post.id)
+
                 p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo - 1] + "  \n\n" + botSig)
                     .distinguish({
                         status: true
@@ -506,15 +533,15 @@ async function modCommands(posts, mods) {
                     op = await reddit.getSubmission(post.parent_id).fetch()
 
                 switch (match[1]) {
-                    case "r": p.push(removePost(post, op)); break
-                    case "c": p.push(sendComment(post, op)); break
-                    case "pm": p.push(sendMessage(post, op)); break
-                    case "ad": p.push(setupAdvertiser(post, op)); break
-                    case "watch": p.push(setupWatch(post, op)); break
+                    case "r": p.push(removePost(post, op)); break           // remove post
+                    case "c": p.push(sendComment(post, op)); break          // comment
+                    case "pm": p.push(sendMessage(post, op)); break         // pm op
+                    case "ad": p.push(setupAdvertiser(post, op)); break     // setup ad permission
+                    case "watch": p.push(setupWatch(post, op)); break       // send ops post to modqueue
                     case "unwatch": p.push(clearWatch(post, op)); break
-                    case "contest": p.push(setupContest(post, op)); break
-                    case "reload": p.push(loadSettings(post, op)); break
-                    case "check": p.push(botStats(post, op)); break
+                    case "contest": p.push(setupContest(post, op)); break   // setup contest
+                    case "reload": p.push(loadSettings(post, op)); break    // reload settings from wiki
+                    case "check": p.push(botStats(post, op)); break         // am I running?
                 }
 
                 p.push(post.remove().catch(err => error(err)))
@@ -901,146 +928,67 @@ async function checkWatched(posts) {
     if (needsUpdate)
         p.push(updateSettings())
 
-    return Promise.all(p)
+    await Promise.all(p)
 }
 
-function getVotes(op) {
-    let scanReplies = function (post, replies, voted) {
-        let votes = 0
+async function checkContest(posts, contest) {
+    let total = 0
+    let entries = []
 
-        for (let r of replies) {
-            if (r.author.name !== post.author.name) {
-                if (!voted.includes(r.author.name)) {
-                    voted.push(r.author.name)
-                    votes++
+    for (let post of posts) {
+        if (post.link_flair_text !== contest.flair)
+            continue
+
+        await setTimeoutPromise(1000)
+
+        let replies = await post.expandReplies().comments
+        let comments = 0
+        let skip = false
+
+        if (replies.length)
+            for (let r of replies) {  // top level comments only
+                if (r.body.match(/!contest/i)) { // announcement post
+                    skip = true
+                    break
                 }
-            } else
-                votes += r.ups - r.downs - 1
 
-            if (r.replies.length > 0)
-                votes += scanReplies(post, r.replies, voted)
+                if (r.author_fullname !== post.author_fullname)
+                    comments++// += r.ups + r.downs
+            }
+
+        if (!skip) {
+            total += post.ups + post.downs + post.total_awards_received + comments
+
+            entries.push({
+                link: post.permalink,
+                id: post.id,
+                votes: post.ups + post.downs + post.total_awards_received + comments,
+                title: post.title,
+            })
         }
-
-        return votes
     }
 
-    return op.remove().then(() => {
-        let month = op.body.match(/!votes\s+(.*)/)
+    let text = "Contest: " + contest.flair + "  \n"
+    text += "[Announcement & rules post](" + contest.link + ")  \n"
+    text += "Updated: " + new Date().toUTCString() + "  \n"
+    text += "Total Entries: " + entries.length + "  \n"
+    text += "Total Votes: " + total + "  \n"
+    text += "Contest Ends: " + contest.endUTC + "  \n\n"
+    text += "Position|Votes|Link\n---|---|---\n"
 
-        if (month && month.length > 1)
-            month = month[1]
-        else
-            return op.reply("!-votes [month] e.g. !votes Feb").catch(err => error(err))
+    entries.sort((a, b) => b.votes - a.votes)
+    for (let i = 0; i < 6 && i < entries.length; ++i)
+        text += (i + 1) + "| " + entries[i].votes + "| [" + entries[i].title + "](" + permaLinkHdr + entries[i].link + ")  \n"
 
-        return sub.search({
-            query: "subreddit:nomansskythegame flair:contest",
-            limit: 1000,
-            time: "month"
-        }).then(async posts => {
-            let p = []
-            let total = 0
-
-            for (let post of posts) {
-                if (!post.link_flair_text.includes(month))
-                    continue
-
-                let replies = await post.expandReplies()
-
-                let voted = []
-                let votes = scanReplies(post, replies.comments, voted)
-
-                p.push({
-                    link: post.permalink,
-                    votes: post.ups + post.downs + post.total_awards_received + votes,
-                    title: post.title,
-                })
-
-                total += post.ups + post.downs + post.total_awards_received + votes
-            }
-
-            p.sort((a, b) => a.votes >= b.votes ? -1 : 1)
-
-            let text = "!-Total entries: " + posts.length + " Total votes: " + total + "  \n"
-            for (let i = 0; i < 10; ++i)
-                text += p[i].votes + ": [" + p[i].title + "](https://reddit.com" + p[i].link + ")  \n"
-
-            return op.reply(text).catch(err => error(err))
-        }).catch(err => { error(err) })
-    }).catch(err => error(err))
-}
-
-function getTopComments(op) {
-    return op.remove().then(() => {
-
-        let month = op.body.match(/!comments?\s+(.*)/)
-        if (month && month.length > 1) {
-            month = month[1]
-        } else {
-            return reddit.composeMessage({
-                to: op.author,
-                subject: "Top Comment count needs month",
-                text: "!comments [month] e.g. '!comments Feb'"
-            }).catch(err => error(err))
-        }
-
-        return sub.search({
-            query: "subreddit:nomansskythegame flair:contest",
-            limit: 1000,
-            time: "month"
-        }).then(async posts => {
-            let p = []
-            let c = []
-            let total = 0
-
-            for (let post of posts) {
-                if (!post.link_flair_text.includes(month))
-                    continue
-
-                let replies = await post.expandReplies()
-                console.log("got", replies.comments.length)
-                if (replies.comments.length > 0) {
-                    for (let r of replies.comments)
-                        c.push({
-                            link: r.permalink,
-                            votes: r.ups + r.downs,
-                            title: r.body,
-                            oplink: post.permalink,
-                            optitle: post.title,
-                        })
-
-                    p.push({
-                        link: post.permalink,
-                        votes: replies.comments.length,
-                        title: post.title,
-                    })
-
-                    total += replies.comments.length
-                }
-            }
-
-            c.sort((a, b) => a.votes >= b.votes ? -1 : 1)
-            p.sort((a, b) => a.votes >= b.votes ? -1 : 1)
-
-            let text = "Total entries: " + posts.length + " Total comments: " + total + "  \n"
-            for (let i = 0; i < 10; ++i)
-                text += p[i].votes + ": [" + p[i].title + "](https://reddit.com" + p[i].link + ")  \n"
-
-            text += "  \n\n"
-
-            for (let i = 0; i < 10; ++i)
-                text += c[i].votes + ": [" + c[i].title + "](https://reddit.com" + c[i].link + "): [" + c[i].optitle + "](https://reddit.com" + c[i].oplink + ")  \n"
-
-            return reddit.composeMessage({
-                to: op.author,
-                subject: "NMSTG contest results for " + month,
-                text: text
-            }).catch(err => error(err))
-        }).catch(err => error(err))
+    await sub.getWikiPage("conteststats").edit({
+        text: text,
+        reason: "bot-update"
     }).catch(err => error(err))
 }
 
 function error(err) {
     console.log(new Date().toUTCString(), err.name, err.message)
+    // console.log(err)
 }
 
 const thankYou = 'Thank You for posting to r/NoMansSkyTheGame. '
