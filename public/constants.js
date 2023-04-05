@@ -2001,6 +2001,8 @@ export const sentinelList = [{
     name: "High"
 }, {
     name: "Aggressive"
+}, {
+    name: "Corrupted"
 }]
 
 export const faunaList = [{
