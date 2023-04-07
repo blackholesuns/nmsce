@@ -158,7 +158,7 @@ const tNumber = `
 const tFloat = `
     <div id="row-idname" data-type="float" data-allowhide="ihide" data-req="ifreq" data-search="stype" class="row">
         <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
-        <input id="id-idname" type="number" class="rounded col-lg-7 col-9" step=0.1 max=range value=-1>
+        <input id="id-idname" type="number" class="rounded col-lg-7 col-9" step=0.01 max=range value=-1>
     </div>`;
 const tTags = `
     <div id="row-idname" class="row pl-10 pr-10" data-type="tags" data-allowhide="ihide" data-req="ifreq">
@@ -5824,13 +5824,14 @@ const objectList = [{
         max: 6,
         imgText: true,
         search: true,
+        inputHide: false,
     }, {
         name: "Tags",
         type: "tags",
         max: 4,
         imgText: true,
         search: true,
-        inputHide: true,
+        inputHide: false,
     }, {
         name: "Photo",
         type: "img",
