@@ -1718,6 +1718,9 @@ export const mapList = [{
 }, {
     name: "Solar-Ship",
     map: "/images/solar-opt.svg",
+}, {
+    name: "Interceptor",
+    map: "/images/interceptor.svg",
 }
 ]
 
@@ -1768,6 +1771,10 @@ export const shipList = [{
     name: "Solar",
     bodies: "/images/solar-opt.svg",
     includeColor: true
+}, {
+    name: "Interceptor",
+    bodies: "/images/interceptor.svg",
+    includeColor: false
 }
 ]
 

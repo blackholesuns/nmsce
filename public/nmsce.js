@@ -5280,15 +5280,7 @@ const objectList = [{
         ttip: "Select ship type to select ship size and parts.",
         required: true,
         search: true,
-        sublist: [{
-            name: "Sail",
-            ttip: "Translucent sail color.",
-            type: "tags",
-            search: true,
-            list: colorList,
-            max: 1,
-            ckIncludeColor: true
-        }, {
+        sublist: [ {
             name: "Slots",
             type: "radio",
             ttip: "slotTtip",
@@ -5321,6 +5313,14 @@ const objectList = [{
             type: "map",
             sub: "wings",
             search: true,
+        },{
+            name: "Sail",
+            ttip: "Translucent sail color.",
+            type: "tags",
+            search: true,
+            list: colorList,
+            max: 1,
+            ckIncludeColor: true
         }]
     }, {
         //     name: "Frequency",

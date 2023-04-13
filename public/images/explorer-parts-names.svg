@@ -7,7 +7,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)"
    sodipodi:docname="explorer-parts-names.svg"
    viewBox="0 0 139.3315 213.59"
    version="1.1"
@@ -63,10 +63,10 @@
   </metadata>
   <sodipodi:namedview
      inkscape:document-rotation="0"
-     inkscape:current-layer="g6027"
-     inkscape:cy="480.62073"
-     inkscape:cx="354.65595"
-     inkscape:zoom="0.95107"
+     inkscape:current-layer="explorer"
+     inkscape:cy="322.44588"
+     inkscape:cx="346.97405"
+     inkscape:zoom="1.3450161"
      showgrid="false"
      id="namedview1409"
      inkscape:window-height="880"
@@ -3542,27 +3542,21 @@
      id="path3136-7"
      inkscape:export-xdpi="300"
      inkscape:export-ydpi="300" />
-  <path
-     style="fill:none;stroke:#000000;stroke-width:0.305135px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     d="M 107.23806,64.485998 V 95.321143"
-     id="path3264"
-     inkscape:export-xdpi="300"
-     inkscape:export-ydpi="300" />
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:5.65333px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265"
-     x="16.778774"
-     y="68.901451"
+     x="41.716476"
+     y="69.876671"
      id="text3579"
      inkscape:export-xdpi="300"
      inkscape:export-ydpi="300"><tspan
        sodipodi:role="line"
        id="tspan3577"
-       x="16.778774"
-       y="68.901451"
-       style="font-size:5.65333px;stroke-width:0.265">Ships with these are <tspan
-   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
-   id="tspan3883">T2</tspan></tspan></text>
+       x="41.716476"
+       y="69.876671"
+       style="font-size:5.65333px;stroke-width:0.265"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+         id="tspan3883">T2</tspan></tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:5.65333px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265"
@@ -4876,4 +4870,32 @@
      id="path3136-9"
      inkscape:export-xdpi="300"
      inkscape:export-ydpi="300" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:5.65333px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265"
+     x="4.8923159"
+     y="69.805862"
+     id="text3579-6"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300"><tspan
+       sodipodi:role="line"
+       id="tspan3577-99"
+       x="4.8923159"
+       y="69.805862"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.65333px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';stroke-width:0.265">T1</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:5.65333px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265"
+     x="84.442192"
+     y="69.805862"
+     id="text3579-64"
+     inkscape:export-xdpi="300"
+     inkscape:export-ydpi="300"><tspan
+       sodipodi:role="line"
+       id="tspan3577-8"
+       x="84.442192"
+       y="69.805862"
+       style="font-size:5.65333px;stroke-width:0.265"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+         id="tspan3883-3">T1</tspan></tspan></text>
 </svg>
