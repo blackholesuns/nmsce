@@ -336,7 +336,8 @@ async function checkPostLimits(posts) {
                     }).lock()
                     .catch(err => error(err)))
 
-                p.push(post.report({ reason: "Flair needs editing" }).catch(err => error(err)))
+                p.push(post.remove().catch(err => error(err)))
+                // p.push(post.report({ reason: "Flair needs editing" }).catch(err => error(err)))
 
                 console.log("Ad flair doesn't match:", post.author.name, permaLinkHdr + post.permalink)
                 continue
