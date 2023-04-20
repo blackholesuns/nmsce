@@ -455,10 +455,10 @@ function checkNewPosters(posts) {
                     let p = []
                     p.push(post.reply("!filter-First Post").catch(err => error(err)))
 
-                    if (!commentedList.includes(post.name)) {
-                        commentedList.push(post.name)
-                        p.push(post.reply(firstPost+botSig).catch(err => error(err)))
-                    }
+                    // if (!commentedList.includes(post.name)) {
+                    //     commentedList.push(post.name)
+                    //     p.push(post.reply(firstPost+botSig).catch(err => error(err)))
+                    // }
 
                     return Promise.all(p)
                 }
@@ -1045,6 +1045,6 @@ const removedPost = 'Your post has been removed because it violates the followin
 const postLimit = "Posting limit exceded: OP is allowed to make "
 const contestLimit = "Contest limit exceded: OP is allowed to make "
 const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*"
-const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime checkout our posting rules listed in the sidebar.  \n\n*You can approve this post yourself if you have read the rules for posting and reply to this comment with '!agree'*  \n\n"
+// const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime checkout our posting rules listed in the sidebar.  \n\n*You can approve this post yourself if you have read the rules for posting and reply to this comment with '!agree'*  \n\n"
 const permaLinkHdr = "https://reddit.com"
 const civFlair = "-Please complete this [applicaion](https://forms.gle/wE3vtTWtJH1bZaQg7) before using this flair. Please contact the moderators when its completed so we don't miss it.  \n-If you have already applied and been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the \"Civ Advertisement\" flair to replace it with your unique flair.  \n-If you just forgot to edit the flair use '!flair:Your Unique Flair' and the flair will be edited and post automatically approved.\n"

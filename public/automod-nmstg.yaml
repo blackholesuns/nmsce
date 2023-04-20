@@ -1,7 +1,129 @@
- type: comment
- id: [60640g]
- is_top_level: true
- action: remove 
+---
+# comment on certain posts to advertise screenshot contest (Comment out after event) - 04/16/22 - Apex
+#type: submission
+#flair_text (includes): "screenshot" #["screenshot", "discussion", "information", "meme"]
+#~flair_text (includes): "contest"
+#comment_locked: true
+#comment: |
+#    r/NoMansSkyTheGame is hosting a screenshot contest from May 15th until May 31st. The theme is "NMS Fan Art". Please, read this [post]#(https://www.reddit.com/r/NoMansSkyTheGame/comments/uidvrg/in_may_we_are_looking_for_your_no_mans_sky/) for complete contest rules *before* posting your entry.
+
+---
+# comment on contest post to remind contest rules (Comment out after event) - 04/16/22 - Apex
+#type: submission
+#flair_text (includes): "contest"
+#comment_locked: true
+#comment: |
+    #Thank you for contributing to our April 2022 Screenshot contest. Here are a few reminders for this contest: 
+    #- Submissions must be related to pirate combat in some way.
+    #- Only one photo per submission is allowed, gallery posts will be disqualified.
+    #- Only one submission per person is allowed for each contest.
+    #- You can only submit your own screenshots. No stealing photos from your fellow interlopers.
+
+---
+# ad rule change notification - 3/2/23 - sp
+#type: submission
+#flair_text: "Civ Advertisement"
+#action: remove
+#comment_locked: true
+#comment: |
+#    The rules for advertising have changed:  
+#    -If you have already been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have #multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the #"Advertisement" flair to replace it with your assigned flair.   
+#    -If you have not applied please contact the moderators for an application.  
+#    -If you just forgot to edit the flair you can repost using the correct flair.  
+#    
+#    ---
+#    Posting by in game groups, game related sites and other related social media is available by application only
+
+#    Must contact the moderators for an application and be approved before advertising
+#    Must use the flair specified with your approval  
+#    Posting is limited to 2 post/week  
+#    Group members violating sub rules can void privileges  
+
+---
+type: crosspost submission
+crosspost_subreddit:
+  name: [NMSCoordinateExchange]
+#action: remove
+comment_locked: true
+comment: |
+    You can also find other cool starships, multitools, creatures, planets and more over at [r/NMSGlyphExchange](https://www.reddit.com/r/NMSGlyphExchange/)!
+
+---
+type: comment
+body (regex, includes): [“nmsce”, 'coord(inate)?.?exchange']
+#action: remove
+comment_locked: true
+comment: |
+    You can also find other cool starships, multitools, creatures, planets and more over at [r/NMSGlyphExchange](https://www.reddit.com/r/NMSGlyphExchange/)!
+
+---
+# moderator mention filter - 12/28/21 - sp
+body (regex, includes): ["barky", "unamatrix.?zero.?one", "spiper", "lift.?heavy", "apex.?fatality", "moderator", "tyrannosaur", "mine.?titan"]
+action: filter
+action_reason: "{{match}} mentioned"
+
+---
+type: comment
+moderators_exempt: false
+author:
+    is_moderator: true
+body (regex): '^!filter\Wfirst post'
+parent_submission:
+    action: filter
+    action_reason: "filter: {{match-2}}"
+action: remove
+comment: |
+    Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!
+
+    -Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on Reddit. In the meantime checkout our posting rules listed in the sidebar.
+
+    *It may take a while for the mods to be available to approve this post but you can approve it yourself if you have read the rules for posting and reply to this comment with '!agree'* 
+
+---
+# help bot send to modqueue
+    type: comment
+    moderators_exempt: false
+    author:
+        is_moderator: true
+    body (regex): '^!filter\W(.*)'
+    parent_submission:
+        action: filter
+        action_reason: "filter: {{match-2}}"
+    action: remove
+
+---
+# hide bot commands
+    type: comment
+    moderators_exempt: false
+    author:
+        is_moderator: true
+    body (regex): '^!(.*)'
+    action: filter
+    action_reason: 'command {{match-2}}'
+
+---
+### add bug comment to bug flair -4/7/21 sp
+type: submission
+flair_text (includes): "bug"
+~flair_text (includes): "thread"
+comment: |
+    Thank you for posting to r/{{subreddit}}. If you are reporting a bug then please delete this post and place it in the pinned bug report thread. Hello Games reads that post and may miss general bug reports just posted under the general "bug" flair. 
+
+    Please, continue to post using this flair if you wish to discuss a bug or possible bug.
+ 
+    You can also report a bug directly to Hello Games at [Zen Desk](https://hellogames.zendesk.com/).
+---
+
+# add comment for new "answered" flair 4/3/21 -sp
+type: submission
+flair_text (includes): 'question'
+comment: |
+    Once you have a satisfactory answer to your question please reset the flair to "answered". This will help others find an answer to the same question.  Selecting a flair is one of the icons under the post when you open it. Alternatively you can comment with "!flair:answered" and the bot will do it for you.
+
+    Please consider adding your gaming platform to your user flair. There are icons for every platform. That way people will know not to answer with information specific to a different platform. There are very few issues that are platform dependent but every platform has its little quirks.
+
+    **If this is a question reporting a bug please delete and place it in the pinned bug report thread. If this is a discussion about a bug or possible bug please change the flair to the more specific "Bug" flair.**
+
 ---    
 
 # Certain word spam filter
@@ -18,10 +140,8 @@
 ### Spoiler Tags and Flair
 ---
     type: submission
-    title (includes): ["spoiler" , "spoilers"]
-    set_flair: ["Spoiler", "nsfw"]
-    set_nsfw: true
-    overwrite_flair: true
+    title (regex, includes): ["spoilers?"]
+    set_spoiler: true
 ---
 ### General Removal
 ---
@@ -32,33 +152,24 @@
 ---
     type: submission
     # 19/07/16 asking for votes -sp
-    title (regex, includes): 'do(n\W?t|do not)\sup\s?vote'
+    title (regex, includes): '(please|do(n\W?t|\snot)?)\s+(up|down)\s+vote'
     action: remove
     action_reason: "Title contains \"vote\""
 ---
-    # 2/15 changed to submission only to keep from flooding the mod queue -sp
-    type: submission
+### shadow ban neg karma 1/5/22 -sp
+    type: any
     author:
-        combined_karma: "< 15"
-    action: filter
-    action_reason: "Comment karma less than threshold"
-    #modmail: The {{kind}} by /u/{{author}} has been automatically removed due to a low karma account, moderators please check the {{kind}} - {{permalink}}
----
-    ### allow comments from new accounts to stop the flood in the mod queue. 3/11/21 --sp
-    type: submission
-    author: 
-        account_age: "< 3 days"
-    action: filter
-    action_reason: "Account less than three days old"
-    #Modmail: The {{kind}} by /u/{{author}} has been automatically removed due to the account being new, moderators please check {{kind}} - {{permalink}}
-    comment: In an effort to combat the spam from new accounts which Reddit's filters cannot handle, your {{kind}} has been automatically removed. Please wait a few days.
+        combined_karma: "< -5"
+    action: remove
+    action_reason: "negative karma < -5"
+    #message: In an effort to combat spam {{type}} from low karma accounts is removed. Please try again once your karma has improved. 
 ---
     standard: crowdfunding sites
     action: remove
     action_reason: "Crowdfunding Site"
     comment: Your {{kind}} has been automatically removed because a crowdfunding link was detected.
 ---
-    url+body (regex): ["crowdrise\\.com", "kickstarter\\.com", "kck\\.st", "giveforward\\.com", "indiegogo\\.com", "igg\\.me", "generosity\\.com", "gofundme\\.com", "prefundia\\.com", "totalgiving\\.co\\.uk", "youcaring\\.com", "youcaring\\.net", "youcaring\\.org", "petcaring\\.com", "walacea\\.com"]
+    url+body (regex): ["crowdrise\\.com", "kickstarter\\.com", "kck\\.st", "giveforward\\.com", "indiegogo\\.com", "igg\\.me", "generosity\\.com", "gofundme\\.com", "gofund\\.me", "prefundia\\.com", "totalgiving\\.co\\.uk", "youcaring\\.com", "youcaring\\.net", "youcaring\\.org", "petcaring\\.com", "walacea\\.com"]
     action: remove
     action_reason: "Crowdfunding Site"
     comment: Your {{kind}} has been automatically removed because a crowdfunding link was detected.
@@ -69,20 +180,19 @@
     comment: Your {{kind}} has been automatically removed because an affiliate link was detected.
     
 ---
-    url+body (regex): ["gamesdeal.com.*a_aid"]
+    url+body (regex): ["gamesdeal.com.*a_aid","cdkeys.*","instant-gaming.*","kinguin.*","allkeyshop.*","g2a.*","eneba.*","instant-gaming.*","mmoga.*","fanatical.*"]
     action: remove
-    action_reason: "Affiliate links"
-    comment: Your {{kind}} has been automatically removed because an affiliate link was detected.
+    action_reason: "Greymarket site"
+    #comment: Your {{kind}} has been automatically removed because an questionable site was detected.
 ---
     domain: [twimg.com]
     action: remove
     comment: Your submission has been automatically removed. Please link directly to the tweet containing this image instead.
-
 ---
-    domain (regex): ["(amazon|amzn)\\.(com|co\\.uk|ca)"]
+    url+body (includes): ["amazon.co", "amzn.to", "ebay.co", "a.co", "etsy.com"]
     action: remove
     action_reason: "Online retailer"
-    comment: Your {{kind}} has been automatically removed because an affiliate link was detected.
+    #comment: Your {{kind}} has been automatically removed because an online retailer link was detected.
 ---
 ### Rule Violations
 ---
@@ -108,37 +218,22 @@
     # Handle posts that appear to mention giveaway(s), pending moderator authorization.
     type: submission
     title (regex, includes): 'give\s?aways?'
+    ~flair_template_id: "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267"
     action: remove
-    action_reason: "Giveaway likely, message left to contact mod team"
-    comment: Your submission has been automatically removed as it appears to have an associated giveaway. All giveaways must be authorized by the subreddit moderation team and verified before being permitted on /r/NoMansSkyTheGame. If you already contacted the moderators, please disregard this message - your post will be approved shortly. Otherwise, please send a message to the subreddit moderators requesting verification and approval. Thank you for posting to /r/NoMansSkyTheGame!
+    action_reason: "Giveaway likely"
+    #comment: Your submission has been automatically removed as it appears to have an associated giveaway. All giveaways must be authorized by the subreddit moderation team and verified before being permitted on /r/NoMansSkyTheGame. If you already contacted the moderators, please disregard this message - your post will be approved shortly. Otherwise, please send a message to the subreddit moderators requesting verification and approval. Thank you for posting to /r/NoMansSkyTheGame!
 ---
 # Reports
 ---
-    reports: 7
-    action_reason: "Many reports"
-    action: remove
-    modmail: The above {{kind}} by /u/{{author}} has received 7 reports. Please investigate.
----
-    reports: 15
+    reports: 5
+    action_reason: "5 reports"
     action: filter
-    action_reason: "Removed - the amount of reports is too damn high"
-    modmail: The above {{kind}} by /u/{{author}} has received 15 reports. It was removed.
+    #modmail: The above {{kind}} by /u/{{author}} has received 5 reports. Please investigate.
 ---
-### Fluff
----
-    type: comment
-    body (regex, includes): ["thank you,? (mr\\.? )?automod(erator)?", "thanks(,)? (mr\\.? )?automod(erator)?", "thank you(,)? (mr\\.? )?(auto)?bot", "thanks(,)? (mr\\.? )?(auto)?bot", "thank you(,)? (mr\\.? )?sentinel", "thanks(,)? (mr\\.? )?sentinel", "thank you(,)? (mr\\.? )?sentinel", "thanks(,)? (mr\\.? )?sentinel"]
-    comment: |
-        You're welcome, explorer!
----
-# Hey Sentinel
-
-    type: comment
-    body (regex, includes): ["hey(,)? (mr\\.? )?sentinel", "hi(,)? (mr\\.? )?sentinel", "yo(,)? (mr\\.? )?sentinel", "ciao(,)? (mr\\.? )?sentinel", "hello(,)? (mr\\.? )?sentinel"]
-    comment: |
-        Hi, /u/{{author}}!
----
-### Breaking reddit
+    reports: 10
+    action: remove
+    action_reason: "Removed - 10 reports"
+    #modmail: The above {{kind}} by /u/{{author}} has received 10 reports. It was removed.
 ---
 ### Phone numbers
     title+body (regex): ["\\(?(\\d{3})\\)?([ .-])(\\d{3})([ .-])(\\d{4})","(\\d{5})([ .-])(\\d{6})","\\(?(\\d{4})\\)?([ .-])(\\d{3})([ .-])(\\d{3})","\\(?(\\d{2})\\)?([ .-])(\\d{4})([ .-])(\\d{4})","\\(?(\\d{2})\\)?([ .-])(\\d{3})([ .-])(\\d{4})","\\+([\\d ]{10,15})"]
@@ -156,12 +251,6 @@
 ---
 ### Spam
 ---
-    ###/r/nomansskyshitposts spam
-    #type: comment
-    #body: ["nomansskyshitposts"]
-    #action: remove
-    #action_reason: "Referral messages from /r/nomansskyshitposts"
----
     ###New sex spam account filter
     type: submission
     author:
@@ -172,8 +261,8 @@
     ~title (regex, ends-with, case-sensitive): ['\s[0-9][Xx]', '\s(1st|2nd|3rd|[4-9]th)', '\s40(1[Kk]|3[Bb])[Ss]?', '\s457[Bb][Ss]?', '\s[Ww][249][Ss]?', '\s\d{2}([MmFf]|[Yy][Oo]?)', '\s\d+[KkMm]', '\s[A-Z0-9]+s?', '\s([A-Z][a-z]+)+', 'eSports']
     ~domain: [gfycat.com, imgur.com, instagram.com, twitter.com, wikimedia.org, wikipedia.org, youtu.be, youtube.com]
     action: filter
-    action_reason: "Dating/sex spam from new account"
-    comment: Your post has been removed because your account is several hours old.
+    action_reason: "Dating/sex spam from new account 1"
+    comment: Your post has been removed because your account is a few hours old.
 ---
     ###New dating spam account filter
     type: submission
@@ -183,7 +272,7 @@
     body#dating (regex): ['dat(e|ing)', 'internet', 'join(ed|ing)?', 'match', 'match\W?mak\w*', 'meet(ing|s)?', 'met', 'on\W?line', 'opportunity', 'roman(ce|tic)']
     body#adjective (regex): ['admirable', 'amazing', 'astonishing', 'awesome', 'brilliant', 'cool', 'enjoyable', 'excellent', 'fabulous', 'fantastic', 'fascinating', 'fine', 'great', 'ideal', 'incredible', 'magnificent', 'marvelous', 'outstanding', 'perfect', 'phenomenal', 'pleasant', 'pleasing', 'remarkable', 'sensational', 'splendid', 'strange', 'superb', 'surprising', 'terrific', 'tremendous', 'wonderful', 'wondrous', 'admirer', 'alter\W?ego', 'babe', 'beau', 'beloved', 'bf', 'boyfriend', 'companion', 'confidante', 'darling', 'dear', 'dear\W?one', 'fianc[ée]{1,2}', 'flame', 'gf', 'girl', 'girlfriend', 'heart\W?throb', 'heart\x27s desire', 'helpmate', 'honey', 'husband', 'inamorat[ao]', 'intimate', 'kindred\W?soul', 'kindred\W?spirit', 'love', 'lovebird', 'lover', 'man', 'my so', 'one\W?and\W?only', 'one\x27s\W?promised', 'paramour', 'partner', 'pet', 'significant\W?other', 'soul\W?mate', 'spouse', 'steady', 'suitor', 'swain', 'sweet', 'sweetheart', 'treasure', 'true\W?love', 'valentine', 'wife', 'woman']
     action: filter
-    action_reason: "Dating/sex spam from new account"
+    action_reason: "Dating/sex spam from new account 2"
 ---
     type: submission
     url (regex, includes): ['/\d+\.php\#\w+$']
@@ -191,28 +280,28 @@
     author:
         account_age: "< 7 days"
     action: filter
-    action_reason: "Dating/sex spam from new account"
+    action_reason: "Dating/sex spam from new account 3"
 --- 
 ### Hostility
 ---
-    body (regex): ['cock[- ]?sucker', 'dyke', 'fag(g[eoi]t)?', 'femi[- ]?nazi', 'he-she', 'shemale', 'trann(y', 'ie)', 'k[iy]ke', 'krouts?', 'autist', 'shit[- ]?lord', 'neck[- ]?beard', 'leg[- ]?beard', 'weeaboo', 'fur[- ]?fag', 'be[ea]ner', 'chink', 'gook', 'honk(ie|ey)', 'jigg?[ae]r?boo', 'k[iy]ke', 'n[ie]gg?(er|a|let|ro|uh?)', 'porch.?monk', 'spick', 'wet[ -]?back', 'zion(ists?|ism)', '(towel|rag)[ -]?head', 'gingerdick', "dick[ -]?head", "kill ?yoursel(f|ves?)", "shit[ -]?(head|lord)", "twat", "cock[- ]?sucker"]
-    action: filter
-    action_reason: "hostility"
+    body (regex): ['cock[- ]?(?!pit)sucker', 'dyke', 'fag(g[eoi]t)?', 'femi[- ]?nazi', 'he-she', 'shemale', 'trann(y', 'ie)', 'k[iy]ke', 'krouts?', 'autist', 'shit[- ]?lord', 'neck[- ]?beard', 'leg[- ]?beard', 'weeaboo', 'fur[- ]?fag', 'be[ea]ner', 'chink', 'gook', 'honk(ie|ey)', 'jigg?[ae]r?boo', 'k[iy]ke', 'n[ie]gg?(er|a|let|ro|uh?)', 'porch.?monk', 'spick', 'wet[ -]?back', 'zion(ists?|ism)', '(towel|rag)[ -]?head', 'gingerdick', "dick[ -]?head", "kill ?yoursel(f|ves?)", "shit[ -]?(head|lord)", "twat", "cock[- ]?(?!pit)sucker"]
+    action: remove
+    action_reason: "hostility 1"
 ---
     type: any
     body+title (includes-word, regex): ["cuck", "cunt", "dick[ -]?head", "douche", "fuc?k? (you|u|yo)", "fuck? ?(off|tool|loser)", "prick", "shit[ -]?head", "twat", 'retard?(ed|s)', 'slut?(ty|s)', 'bitch', 'asshole']
-    action: filter
-    action_reason: "hostility"
+    action: remove
+    action_reason: "hostility 2"
 ---
     type: any
     body+title (includes-word, regex): ["f[#*u]+ck ?(you|yourself|yourselves|off|them)", "f[#* u]+ck(ers?|wits?)", "fuck ?heads?", "f[*#u]+ck is wrong"]
-    action: filter
-    action_reason: "hostility"
+    action: remove
+    action_reason: "hostility 3"
 ---
     type: any
     body+title (includes-word, regex): ["kill ?yoursel(f|ves?)", "I hope (you die|it dies?|she dies?|he dies?|they die|they all die|you get ebola|she gets ebola|he gets ebola|they get ebola|it gets? Ebola)", " deserve to (die|be shot)", "belong against a wall", "(you|he|she|they) (should|deserves? to) be exterminated"]
-    action: filter
-    action_reason: "hostility"
+    action: remove
+    action_reason: "hostility 4"
 ---
 #Days since
 title (includes): "Days Since Sean"
@@ -235,55 +324,19 @@ set_sticky: true
     body: "https://bighoppers.ltd/the-game-no-mans-sky-art/"
     action: remove
 ---
-    type: comment
-    body: "cottonbureau.com"
+### combined several url filters into 1 rule - 12/5/21 - sp
+    type: any
+    url (includes): ["zoodilaces.com", "zeelaces.com", "cottonbureau.com", "mixaly.design", "qualtrics.com", "xporn.com"]
     action: remove
----
-    type: comment
-    body: "mixaly.design"
-    action: remove
----
-    type: submission
-    url (includes): ["qualtrics.com"]
-    ~domain: [qualtrics.com]
-    author:
-        account_age: "< 7 days"
-    action: filter
-    action_reason: "Gift card spam from new account"
 ---
 ### u/darkforce10011's Sanity Rule
 ---
     type: submission
-    title (includes): ["dick", "penis", "phallic", "immature", "dong", "cock", "gay", "pee-pee", "peepee", "virile", "pecker", "prick", "wang", "bbc"]
+    title (includes,regex): ["dick", "penis", "phallic", "immature", "dong", "cock(?!pit)", "gay", "pee-pee", "peepee", "virile", "pecker", "prick", "wang", "bbc", "schlong"]
     action: remove
     action_reason: "Probable low-effort dickposting"
 ---
     type: submission
     title (includes): ["gift", "present", "take this"]
-    action: remove
-    action_reason: "Probable karma-farming gifting meme"
----
-### Cause I was told to add Aimee Chanellor to automod filter ~~ Eva
----
-    type: submission
-    body+title+url (includes): Aimee Chanellor
     action: filter
-    action_reason: Mentioning the Aimee Chanellor situation
----
-### add bug comment to bug flair -4/7/21 sp
-type: submission
-flair_text (includes): "bug"
-comment: |
-    Thank you for posting your bug to {{sub}}. However, there is an active bug thread pinned at the top of {{sub}} where bugs should be posted. 
-    Please **delete** this post and add your bug report to that post. Hello Games reads that post and may miss general bug reports as normal posts.
-
-    You can also report a bug to [Hello Games Zen Desk](https://hellogames.zendesk.com/).
----
-# add comment for new "answered" flair 4/3/21 -sp
-type: submission
-flair_text (includes): 'question'
-comment: |
-    Once you have a satisfactory answer to your question please reset the flair to "answered". This will help others find an answer to the same question.
-
-    **If this is a bug question please delete this post and add your bug to the bug post pinned to the top of {{sub}}.**
----
+    action_reason: "Probable karma-farming gifting meme"
