@@ -57,7 +57,7 @@ async function getContest() {
         }
 
     let end = new Date().valueOf()
-    console.log("contest", start.toUTCString(), end - start.valueOf(), "ms")
+    // console.log("contest", start.toUTCString(), end - start.valueOf(), "ms")
 }
 
 async function getNew() {
@@ -104,7 +104,7 @@ async function getNew() {
     await Promise.all(p)
 
     let end = new Date().valueOf()
-    console.log("posts", start.toUTCString(), end - start.valueOf(), "ms")
+    // console.log("posts", start.toUTCString(), end - start.valueOf(), "ms")
 }
 
 async function getModqueue() {
@@ -121,7 +121,7 @@ async function getModqueue() {
     await Promise.all(p)
 
     let end = new Date().valueOf()
-    console.log("modqueue", start.toUTCString(), end - start.valueOf(), "ms")
+    // console.log("modqueue", start.toUTCString(), end - start.valueOf(), "ms")
 }
 
 async function getComments() {
@@ -131,7 +131,7 @@ async function getComments() {
 
     if (settings.watch.find(x => x.active === true && x.comments === true)) {
         let posts = await sub.getNewComments(!lastComment.name || lastComment.full + recheck < date ? {
-            limit: 20 // if startup misses a few nbd
+            limit: 50 // if startup misses a few nbd
         } : {
             before: lastComment.name
         }).catch(err => error(err))
@@ -150,7 +150,7 @@ async function getComments() {
         }
 
         let end = new Date().valueOf()
-        console.log("comments", start.toUTCString(), end - start.valueOf(), "ms")
+        // console.log("comments", start.toUTCString(), end - start.valueOf(), "ms")
     }
 }
 
@@ -280,7 +280,7 @@ function updateSettings() {
 
 var commentedList = []
 
-async function checkPostLimits(posts) {
+async function checkPostLimits(posts, approve) {
     let p = []
     let now = new Date().valueOf() / 1000
 
@@ -410,10 +410,16 @@ async function checkPostLimits(posts) {
 
             p.push(post.remove().catch(err => error(err)))
         }
-        else if (typeof limit.start_utc !== "undefined" && post.created_utc > limit.start_utc
-            || typeof limit.time !== "undefined" && now - post.created_utc < limit.time)
+        else {
+            if (approve)
+                p.push(post.approve().catch(err => error(err)))
 
-            user.history.push(post)
+            if (typeof limit.start_utc !== "undefined" && post.created_utc > limit.start_utc
+                || typeof limit.time !== "undefined" && now - post.created_utc < limit.time) {
+
+                user.history.push(post)
+            }
+        }
     }
 
     return Promise.all(p)
@@ -441,22 +447,21 @@ function checkNewPosters(posts) {
             if (posts.length === 2 || posts.length === 1 && posts[0].approved_by) {
                 posters.push(post.author_fullname)
             }
-            else if (!post.banned_by) {
-                console.log("new poster", post.author.name, permaLinkHdr + post.permalink)
-                let p = []
-                p.push(post.reply("!filter-First Post").catch(err => error(err)))
+            else {
+                // console.log(JSON.stringify(post))
 
-                if (!commentedList.includes(post.name)) {
-                    commentedList.push(post.name)
+                if (!post.banned_by && (typeof post.preview !== "undefined" || typeof post.media_metadata !== "undefined")) {
+                    console.log("new poster", post.author.name, permaLinkHdr + post.permalink)
+                    let p = []
+                    p.push(post.reply("!filter-First Post").catch(err => error(err)))
 
-                    p.push(reddit.composeMessage({
-                        to: post.author.name,
-                        subject: "First post to r/NoMansSkyTheGame",
-                        text: firstPost
-                    }).catch(err => error(err)))
+                    if (!commentedList.includes(post.name)) {
+                        commentedList.push(post.name)
+                        p.push(post.reply(firstPost+botSig).catch(err => error(err)))
+                    }
+
+                    return Promise.all(p)
                 }
-
-                return Promise.all(p)
             }
         }))
     }
@@ -470,7 +475,7 @@ function checkReported(posts) {
         if (post.author.name === "AutoModerator" || post.author.name === "nmsceBot")
             p.push(post.approve())  // idiots reporting automod & bot comments
 
-        if (post.name.startsWith("t1"))
+        if (post.name.startsWith("t1") && !post.banned_by)
             for (let r of post.user_reports)
                 if (r[0].includes("poiler"))
                     p.push(post.reply("!Filter-Spoiler").catch(err => error(err)))
@@ -519,38 +524,81 @@ async function updateWikiThreads(posts) {
 
 async function modCommands(posts, mods) {
     let p = []
+    // console.log("queue", posts.length)
 
     for (let post of posts) {
-        if (post.name.startsWith("t1_") && mods.includes(post.author_fullname)) {
-            let match = post.body.match(/!(watch|unwatch|contest|reload|check|ad|pm|r|c)\W?(.*)?/i)
+        if (post.name.startsWith("t1_")) {
+            let match = post.body.match(/!\W?(watch|unwatch|contest|reload|check|flair|agree|ad|pm|r|c)\W?(.*)?/i)
 
             if (match) {
                 console.log("command", post.body)
+
+                let m = match[1].toLowerCase()
                 let op
 
-                if (post.parent_id.startsWith("t1_"))
-                    op = await reddit.getComment(post.parent_id).fetch()
-                else
-                    op = await reddit.getSubmission(post.parent_id).fetch()
+                while (typeof post.parent_id !== "undefined" && post.parent_id.startsWith("t1_"))
+                    op = await reddit.getComment(post.parent_id).fetch()   // trace back up comment thread
 
-                switch (match[1]) {
-                    case "r": p.push(removePost(post, op)); break           // remove post
-                    case "c": p.push(sendComment(post, op)); break          // comment
-                    case "pm": p.push(sendMessage(post, op)); break         // pm op
-                    case "ad": p.push(setupAdvertiser(post, op)); break     // setup ad permission
-                    case "watch": p.push(setupWatch(post, op)); break       // send ops post to modqueue
-                    case "unwatch": p.push(clearWatch(post, op)); break
-                    case "contest": p.push(setupContest(post, op)); break   // setup contest
-                    case "reload": p.push(loadSettings(post, op)); break    // reload settings from wiki
-                    case "check": p.push(botStats(post, op)); break         // am I running?
+                op = await reddit.getSubmission(post.parent_id).fetch()     // original post
+
+                if (mods.includes(post.author_fullname)) {
+                    switch (m) {
+                        case "r": p.push(removePost(post, op)); break           // remove post
+                        case "c": p.push(sendComment(post, op)); break          // comment
+                        case "pm": p.push(sendMessage(post, op)); break         // pm op
+                        case "ad": p.push(setupAdvertiser(post, op)); break     // setup ad permission
+                        case "watch": p.push(setupWatch(post, op)); break       // send ops post to modqueue
+                        case "unwatch": p.push(clearWatch(post, op)); break
+                        case "contest": p.push(setupContest(post, op)); break   // setup contest
+                        case "reload": p.push(loadSettings(post, op)); break    // reload settings from wiki
+                        case "check": p.push(botStats(post, op)); break         // am I running?
+                    }
+
+                    p.push(post.remove().catch(err => error(err)))
                 }
 
-                p.push(post.remove().catch(err => error(err)))
+                if (post.author_fullname === op.author_fullname || mods.includes(post.author_fullname)) {
+                    switch (m) {
+                        case "flair": p.push(setFlair(post, op)); break      // set flair
+                        case "agree": p.push(checkMotherMayI(post, op)); break    // first time post mother-may-i
+                    }
+
+                    p.push(post.remove().catch(err => error(err)))
+                }
             }
         }
     }
 
     return Promise.all(p)
+}
+
+
+function setFlair(post, op) {
+    let p = []
+    let posts = []
+
+    let m = post.body.match(/!\W?flair:(.*)/)
+    if (m) {
+        if (op.link_flair_template_id === "20526a8e-9448-11e8-9fdd-0e511532ebae")
+            op.link_flair_template_id = "30e40f0c-948f-11eb-bc74-0e0c6b05f4ff"
+
+        op.link_flair_text = m[1]
+
+        p.push(op.selectFlair({
+            flair_template_id: op.link_flair_template_id,
+            text: op.link_flair_text
+        }).catch(err => error(err)))
+
+        posts.push(op)
+        p.push(checkPostLimits(posts, true))    // approve post if limit ok
+    }
+}
+
+function checkMotherMayI(post, op) {
+    let posts = []
+    posts.push(op)
+
+    return checkPostLimits(posts, true)    // approve post if limit ok
 }
 
 function setupAdvertiser(post, op) {
@@ -997,6 +1045,6 @@ const removedPost = 'Your post has been removed because it violates the followin
 const postLimit = "Posting limit exceded: OP is allowed to make "
 const contestLimit = "Contest limit exceded: OP is allowed to make "
 const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*"
-const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime checkout our posting rules listed in the sidebar.  \n\n*Since moderators are not always immediately available please be patient for your post to be approved.*"
+const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime checkout our posting rules listed in the sidebar.  \n\n*You can approve this post yourself if you have read the rules for posting and reply to this comment with '!agree'*  \n\n"
 const permaLinkHdr = "https://reddit.com"
-const civFlair = "-Please complete this [applicaion](https://forms.gle/wE3vtTWtJH1bZaQg7) before using this flair. Contact the moderators when its completed so we don't miss it.  \n-If you have already applied and been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the \"Civ Advertisement\" flair to replace it with your unique flair.  \n-If you just forgot to edit the flair you can repost this using the correct flair. Alternatively you can edit the flair and wait for a moderator to reapprove your post.  \n"
+const civFlair = "-Please complete this [applicaion](https://forms.gle/wE3vtTWtJH1bZaQg7) before using this flair. Please contact the moderators when its completed so we don't miss it.  \n-If you have already applied and been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the \"Civ Advertisement\" flair to replace it with your unique flair.  \n-If you just forgot to edit the flair use '!flair:Your Unique Flair' and the flair will be edited and post automatically approved.\n"
