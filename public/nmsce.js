@@ -1139,11 +1139,11 @@ class NMSCE {
     }
 
     search(search) {
-        if(!NMSCE.EnsureValidForm(search))
+        if (!NMSCE.EnsureValidForm(search))
             return false;
         else
             search = null;
-            
+
 
 
         if (!search) {
@@ -1800,14 +1800,14 @@ class NMSCE {
                     appenditem(itm, f.link, f.name, id, null, null, null, f.inputHide)
                     break
                 case "number":
-                    if (!f.sub || slist[f.ttip]) {
+                    if (!f.sub || slist[f.sub]) {
                         l = /range/[Symbol.replace](tNumber, f.range)
                         l = /stype/[Symbol.replace](l, f.query ? f.query : "")
                         appenditem(itm, l, f.name, id, !f.sub ? f.ttip : slist[f.ttip], f.required, null, f.inputHide)
                     }
                     break
                 case "float":
-                    if (!f.sub || slist[f.ttip]) {
+                    if (!f.sub || slist[f.sub]) {
                         l = /range/[Symbol.replace](tFloat, f.range)
                         l = /stype/[Symbol.replace](l, f.query ? f.query : "")
                         appenditem(itm, l, f.name, id, !f.sub ? f.ttip : slist[f.ttip], f.required, null, f.inputHide)
@@ -1841,10 +1841,12 @@ class NMSCE {
                     }
                     break
                 case "string":
-                    appenditem(itm, tString, f.name, id, f.ttip, f.required, null, f.inputHide)
+                    if (!f.sub || slist[f.sub])
+                        appenditem(itm, tString, f.name, id, f.ttip, f.required, null, f.inputHide)
                     break
                 case "long string":
-                    appenditem(itm, tLongString, f.name, id, f.ttip, f.required, inpLongHdr, f.inputHide)
+                    if (!f.sub || slist[f.sub])
+                        appenditem(itm, tLongString, f.name, id, f.ttip, f.required, inpLongHdr, f.inputHide)
                     break
                 case "blank":
                     itm.append(inpHdr + inpEnd)
@@ -1858,6 +1860,7 @@ class NMSCE {
 
                     f.labelsize = "col-5"
                     f.menusize = "col"
+                    f.sort = true
 
                     bhs.buildMenu(lst, f.name, f.sub ? slist[f.sub] : f.list, f.sublist ? this.selectSublist.bind(this) : null, f)
 
@@ -1875,7 +1878,8 @@ class NMSCE {
                     }
                     break
                 case "tags":
-                    if (typeof f.ckIncludeColor === "undefined" || !f.ckIncludeColor || slist.includeColor) {
+                    if (typeof f.ckIncludeSail === "undefined" || !f.ckIncludeSail || slist.includeSail) {
+                        //  if (!f.sub || slist[f.sub]) {
                         appenditem(itm, tTags, "", id, f.ttip, f.required, inpLongHdr, f.inputHide)
                         loc = itm.find("#row-" + id)
                         if (f.max)
@@ -1924,29 +1928,31 @@ class NMSCE {
                     }
                     break
                 case "radio":
-                    let list = []
-                    if (f.list) {
-                        appenditem(itm, tRadio, f.name, id, f.ttip, f.required, null, f.inputHide)
-                        list = f.list
+                    if (!f.sub || slist[f.sub]) {
+                        let list = []
+                        if (f.list) {
+                            appenditem(itm, tRadio, f.name, id, f.ttip, f.required, null, f.inputHide)
+                            list = f.list
 
-                    } else if (slist[f.sub]) {
-                        appenditem(itm, tRadio, f.name, id, typeof slist[f.ttip] === "string" ? slist[f.ttip] : null, f.required, null, f.inputHide)
-                        list = slist[f.sub]
-                    }
+                        } else if (slist[f.sub]) {
+                            appenditem(itm, tRadio, f.name, id, typeof slist[f.ttip] === "string" ? slist[f.ttip] : null, f.required, null, f.inputHide)
+                            list = slist[f.sub]
+                        }
 
-                    loc = itm.find("#row-" + id + " #list")
+                        loc = itm.find("#row-" + id + " #list")
 
-                    for (let i of list) {
-                        let l = /title/g[Symbol.replace](tRadioItem, i.name)
-                        l = /ttip/[Symbol.replace](l, i.ttip ? "&nbsp;" + i.ttiip : "")
-                        l = /idname/g[Symbol.replace](l, id)
-                        l = /tname/g[Symbol.replace](l, i.name.nameToId())
-                        loc.append(l)
+                        for (let i of list) {
+                            let l = /title/g[Symbol.replace](tRadioItem, i.name)
+                            l = /ttip/[Symbol.replace](l, i.ttip ? "&nbsp;" + i.ttiip : "")
+                            l = /idname/g[Symbol.replace](l, id)
+                            l = /tname/g[Symbol.replace](l, i.name.nameToId())
+                            loc.append(l)
 
-                        let rdo = loc.find("#rdo-" + i.name)
-                        if (fcedata) {
-                            if (i.default)
-                                rdo.prop("checked", true)
+                            let rdo = loc.find("#rdo-" + i.name)
+                            if (fcedata) {
+                                if (i.default)
+                                    rdo.prop("checked", true)
+                            }
                         }
                     }
                     break
@@ -3058,7 +3064,7 @@ class NMSCE {
     redditLoggedIn(state, code) {
         let accessToken = window.localStorage.getItem('nmsce-reddit-access-token')
         if (accessToken)
-            this.redditCreate(state)
+            nmsce.redditCreate(state)
 
         else
             $.ajax({
@@ -3085,12 +3091,12 @@ class NMSCE {
                         window.localStorage.setItem('nmsce-reddit-refresh-token', res.refresh_token)
 
                         if (state.includes("post_"))
-                            this.redditCreate(state, res.access_token)
+                            nmsce.redditCreate(state, res.access_token)
                     }
                 },
                 error: (err) => {
                     console.error(err);
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
     }
@@ -3107,7 +3113,7 @@ class NMSCE {
         }
 
         if (!accessToken || !expires || !refreshToken)
-            this.redditLogin(state) // no return
+            nmsce.redditLogin(state) // no return
 
         else if (new Date().getTime() > expires) {
             $.ajax({
@@ -3133,15 +3139,15 @@ class NMSCE {
                         window.localStorage.setItem('nmsce-reddit-expires', new Date().getTime() + (res.expires_in - 300) * 1000)
 
                         if (state.includes("post_"))
-                            this.redditCreate(state, res.access_token)
+                            nmsce.redditCreate(state, res.access_token)
                         else if (state.includes("getFlair_"))
-                            this.redditGetSubscribed(state, res.access_token)
+                            nmsce.redditGetSubscribed(state, res.access_token)
                         else if (state.includes("getSubscribed"))
-                            this.setSubReddit(res.access_token)
+                            nmsce.setSubReddit(res.access_token)
                     }
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         } else
@@ -3150,25 +3156,25 @@ class NMSCE {
 
     redditCreate(state, accessToken) {
         if (!accessToken) {
-            if (this.last) {
-                let e = this.last
+            if (nmsce.last) {
+                let e = nmsce.last
                 state = "post_" + e.galaxy.nameToId() + "_" + e.type + "_" + e.id
             }
 
-            accessToken = this.getRedditToken(state)
+            accessToken = nmsce.getRedditToken(state)
         }
 
         if (accessToken) {
-            this.getRedditUser(accessToken)
-            this.redditGetSubscribed(accessToken)
+            nmsce.getRedditUser(accessToken)
+            nmsce.redditGetSubscribed(accessToken)
 
             if (state) {
                 let path = state.split("_")
 
-                if (!this.last || this.last.galaxy !== path[1].idToName() || this.last.type !== path[2] || this.last.id !== path[3]) {
+                if (!nmsce.last || nmsce.last.galaxy !== path[1].idToName() || nmsce.last.type !== path[2] || nmsce.last.id !== path[3]) {
                     getDoc(doc(bhs.fs, "nmsce/" + path[1].idToName() + "/" + path[2] + "/" + path[3])).then(doc => {
                         if (doc.exists())
-                            this.displaySingle(doc.data(), true)
+                            nmsce.displaySingle(doc.data(), true)
                         $("#redditPost").show()
                     })
                 }
@@ -3180,7 +3186,7 @@ class NMSCE {
 
     getRedditUser(accessToken) {
         if (!accessToken)
-            accessToken = this.getRedditToken("getUser")
+            accessToken = nmsce.getRedditToken("getUser")
 
         if (accessToken) {
             let url = reddit.api_oauth_url + reddit.user_endpt
@@ -3196,7 +3202,7 @@ class NMSCE {
                     window.localStorage.setItem('nmsce-reddit-name', res.name)
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
@@ -3204,7 +3210,7 @@ class NMSCE {
 
     redditGetSubscribed(accessToken) {
         if (!accessToken)
-            accessToken = this.getRedditToken("getSubscribed")
+            accessToken = nmsce.getRedditToken("getSubscribed")
 
         if (accessToken) {
             let url = reddit.api_oauth_url + reddit.subscriber_endpt
@@ -3219,21 +3225,21 @@ class NMSCE {
                 },
                 crossDomain: true,
                 success(res) {
-                    this.subReddits = []
+                    nmsce.subReddits = []
                     for (let s of res.data.children) {
                         let data = s.data;
 
-                        if (data.over18 || data.subreddit_type == 'user')
-                            continue;
+                        // if (data.over18 || data.subreddit_type == 'user')
+                        //     continue;
 
-                        this.subReddits.push({
+                        nmsce.subReddits.push({
                             name: data.display_name_prefixed,
                             url: data.url,
                             link: data.name
                         })
 
                     }
-                    bhs.buildMenu($("#redditPost"), "SubReddit", this.subReddits, this.setSubReddit, {
+                    bhs.buildMenu($("#redditPost"), "SubReddit", nmsce.subReddits, nmsce.setSubReddit, {
                         required: true,
                         labelsize: "col-4",
                         menusize: "col",
@@ -3241,7 +3247,7 @@ class NMSCE {
                     })
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
@@ -3249,13 +3255,13 @@ class NMSCE {
 
     setSubReddit(evt, accessToken) {
         let name = typeof evt === "string" ? evt.split("_")[1] : $(evt).text().stripMarginWS()
-        let i = getIndex(this.subReddits, "name", name)
+        let i = getIndex(nmsce.subReddits, "name", name)
 
         if (!accessToken)
-            accessToken = this.getRedditToken("getFlair_" + this.subReddits[i].name)
+            accessToken = nmsce.getRedditToken("getFlair_" + nmsce.subReddits[i].name)
 
         if (accessToken) {
-            let url = reddit.api_oauth_url + this.subReddits[i].url + reddit.getflair_endpt
+            let url = reddit.api_oauth_url + nmsce.subReddits[i].url + reddit.getflair_endpt
 
             $.ajax({
                 type: "get",
@@ -3266,23 +3272,23 @@ class NMSCE {
                 },
                 crossDomain: true,
                 success(res) {
-                    this.subRedditFlair = []
+                    nmsce.subRedditFlair = []
                     for (let s of res)
-                        this.subRedditFlair.push({
+                        nmsce.subRedditFlair.push({
                             name: s.text,
                             text_color: s.text_color === "light" ? "white" : "black",
                             color: s.background_color,
                             id: s.id,
                         })
 
-                    bhs.buildMenu($("#redditPost"), "Flair", this.subRedditFlair, null, {
+                    bhs.buildMenu($("#redditPost"), "Flair", nmsce.subRedditFlair, null, {
                         required: true,
                         labelsize: "col-4",
                         menusize: "col"
                     })
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
@@ -3295,17 +3301,17 @@ class NMSCE {
         let title = loc.find("#id-Title").val()
 
         if (!sr) {
-            this.postStatus("Please select SubReddit")
+            nmsce.postStatus("Please select SubReddit")
             return
         }
 
         if (!flair) {
-            this.postStatus("Please select Flair")
+            nmsce.postStatus("Please select Flair")
             return
         }
 
         if (!title) {
-            this.postStatus("Please select Title")
+            nmsce.postStatus("Please select Title")
             return
         }
 
@@ -3313,29 +3319,29 @@ class NMSCE {
         window.localStorage.setItem('nmsce-reddit-flair', flair)
         window.localStorage.setItem('nmsce-reddit-title', title)
 
-        let e = this.last
-        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let e = nmsce.last
+        let link = `https://nmsce.com/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
         window.localStorage.setItem('nmsce-reddit-plink', link)
 
-        link = `/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
+        link = `https://nmsce.com/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
         window.localStorage.setItem('nmsce-reddit-slink', link)
 
-        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(this.last.Photo));
-        this.redditSubmit()
+        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(nmsce.last.Photo));
+        nmsce.redditSubmit()
     }
 
     redditSubmit(accessToken) {
         if (!accessToken)
-            accessToken = this.getRedditToken("submit")
+            accessToken = nmsce.getRedditToken("submit")
 
         if (accessToken) {
             let sr = window.localStorage.getItem('nmsce-reddit-sr')
-            let i = getIndex(this.subReddits, "name", sr)
-            sr = this.subReddits[i].url
+            let i = getIndex(nmsce.subReddits, "name", sr)
+            sr = nmsce.subReddits[i].url
 
             let flair = window.localStorage.getItem('nmsce-reddit-flair')
-            i = getIndex(this.subRedditFlair, "name", flair)
-            let flairId = this.subRedditFlair[i].id
+            i = getIndex(nmsce.subRedditFlair, "name", flair)
+            let flairId = nmsce.subRedditFlair[i].id
 
             let plink = window.localStorage.getItem('nmsce-reddit-plink')
             let slink = window.localStorage.getItem('nmsce-reddit-slink')
@@ -3380,43 +3386,41 @@ class NMSCE {
                                     },
                                     data: {
                                         thing_id: t,
-                                        text: "This was posted from the [NMSCE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything in this system."
+                                        text: "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything in this system."
                                     },
                                     crossDomain: true,
                                 })
 
                                 let e = plink.split("&")
+                                let galaxy, type, id
+
                                 for (let i of e) {
                                     let p = i.split("=")
                                     if (p[0] === "g")
-                                        var galaxy = p[1].idToName()
+                                        galaxy = p[1].idToName()
                                     else if (p[0] === "t")
-                                        var type = p[1]
+                                        type = p[1]
                                     else if (p[0].includes("?i"))
-                                        var id = p[1]
+                                        id = p[1]
                                 }
 
-                                getDoc(doc(bhs.fs, "nmsce/" + galaxy + "/" + type + "/" + id)).then(doc => {
-                                    let e = doc.data()
-                                    let out = {}
-                                    out.redditlink = link
-                                    if (!e.reddit)
-                                        out.reddit = Timestamp.now()
+                                let out = {}
+                                out.redditlink = link
+                                out.reddit = Timestamp.now()
 
-                                    setDoc(ref, out, {
-                                        merge: true
-                                    }).then(() => {
-                                        this.postStatus("Posted")
-                                        $("#redditlink").val(link)
-                                    })
+                                setDoc(doc(bhs.fs, "nmsce/" + galaxy + "/" + type + "/" + id), out, {
+                                    merge: true
+                                }).then(() => {
+                                    nmsce.postStatus("Posted")
+                                    $("#redditlink").val(link)
                                 })
                             }
                         }
                     else
-                        this.postStatus("failed")
+                        nmsce.postStatus("failed")
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
@@ -4098,11 +4102,11 @@ class NMSCE {
                     <div class="col-3">
                         <a href="https://www.patreon.com/bePatron?u=28538540" style="background-color:red; color:white; border-radius:12px">&nbsp;&nbsp;Become a Patron!&nbsp;&nbsp;</a>
                     </div>
-                    <div class="col-5">You can also get patron benefits by entering data.&nbsp;
+                    <!--div class="col-5">You can also get patron benefits by entering data.&nbsp;
                         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                             data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
                         </i>
-                    </div>
+                    </div-->
                 </div>
                 <br>
                 <div class="row h6 border-top">
@@ -4157,16 +4161,16 @@ class NMSCE {
                                     &nbsp;Show All
                                 </label>
                             </div>
-                            <div class="col-5">You can get patron benefits by entering data.&nbsp;
+                            <!--div class="col-5">You can get patron benefits by entering data.&nbsp;
                                 <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                                     data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
                                 </i>
-                            </div>
+                            </div-->
                         </div>
                         <div class="row">
                             <div id="id-name" class="col-9 pointer" onclick="nmsce.sortTotals(this)">Player&nbsp;&nbsp;<i class="fas fa-sort-alpha-down"></i></div>
                             <div id="id-total" class="col-2 pointer" onclick="nmsce.sortTotals(this)">Overall&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div>
-                            <div id="id-monthly" class="col-2 pointer" onclick="nmsce.sortTotals(this)">Monthly&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div>
+                            <!--div id="id-monthly" class="col-2 pointer" onclick="nmsce.sortTotals(this)">Monthly&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div-->
                         </div>
                     </div>
                     <div id="userTotals" class="card-body scroll txt-black" style="height:600px"></div>
@@ -4191,7 +4195,7 @@ class NMSCE {
             <div class="row pointer" onclick="nmsce.expandTotals(this)">
                 <div id="id-name" class="col-8"><i class="far fa-caret-square-down txt-input"></i> nameS</div>
                 <div id="id-total" class="col-2 txt-right">totalT</div>
-                <div id="id-monthly" class="col-2 txt-right">monthlyT</div>
+                <!--div id="id-monthly" class="col-2 txt-right">monthlyT</div-->
             </div>
             <div id="id-exp" class="row hidden" onclick="nmsce.expandTotals(this)">
                 <div id="id-details">detailT</div>
@@ -5212,18 +5216,18 @@ const resultTables = [{
     name: "Top Favorites",
     field: "votes.favorite",
     limit: 20,
-}, {
-    name: "Patron Favorites",
-    field: "votes.patron",
-    limit: 20,
-}, {
-    name: "Top Visited",
-    field: "votes.visited",
-    limit: 20,
-}, {
-    name: "Moderators Choice",
-    field: "votes.edchoice",
-    limit: 20,
+    // }, {
+    //     name: "Patron Favorites",
+    //     field: "votes.patron",
+    //     limit: 20,
+    // }, {
+    //     name: "Top Visited",
+    //     field: "votes.visited",
+    //     limit: 20,
+    // }, {
+    //     name: "Moderators Choice",
+    //     field: "votes.edchoice",
+    //     limit: 20,
     // }, {
     //     name: "Hall of Fame",
     //     field: "votes.hof",
@@ -5280,7 +5284,7 @@ const objectList = [{
         ttip: "Select ship type to select ship size and parts.",
         required: true,
         search: true,
-        sublist: [ {
+        sublist: [{
             name: "Slots",
             type: "radio",
             ttip: "slotTtip",
@@ -5313,14 +5317,14 @@ const objectList = [{
             type: "map",
             sub: "wings",
             search: true,
-        },{
+        }, {
             name: "Sail",
             ttip: "Translucent sail color.",
             type: "tags",
             search: true,
             list: colorList,
             max: 1,
-            ckIncludeColor: true
+            ckIncludeSail: true
         }]
     }, {
         //     name: "Frequency",
