@@ -1770,11 +1770,10 @@ export const shipList = [{
 }, {
     name: "Solar",
     bodies: "/images/solar-opt.svg",
-    includeColor: true
+    includeSail: true
 }, {
     name: "Interceptor",
     bodies: "/images/interceptor.svg",
-    includeColor: false
 }
 ]
 

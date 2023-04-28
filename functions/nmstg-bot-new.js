@@ -411,8 +411,10 @@ async function checkPostLimits(posts, approve) {
             p.push(post.remove().catch(err => error(err)))
         }
         else {
-            if (approve)
+            if (approve) {
+                console.log("approve", permaLinkHdr + post.permalink)
                 p.push(post.approve().catch(err => error(err)))
+            }
 
             if (typeof limit.start_utc !== "undefined" && post.created_utc > limit.start_utc
                 || typeof limit.time !== "undefined" && now - post.created_utc < limit.time) {
@@ -453,7 +455,7 @@ function checkNewPosters(posts) {
                 if (!post.banned_by && (typeof post.preview !== "undefined" || typeof post.media_metadata !== "undefined")) {
                     console.log("new poster", post.author.name, permaLinkHdr + post.permalink)
                     let p = []
-                    p.push(post.reply(firstPost+botSig+firstPostCmd).catch(err => error(err)))
+                    p.push(post.reply(firstPost + botSig + firstPostCmd).catch(err => error(err)))
 
                     // if (!commentedList.includes(post.name)) {
                     //     commentedList.push(post.name)
@@ -531,30 +533,44 @@ async function modCommands(posts, mods) {
             let match = post.body.match(/!\W?(watch|unwatch|contest|reload|check|flair|agree|ad|pm|r|c)\W?(.*)?/i)
 
             if (match) {
-                console.log("command", post.body)
+                console.log("command", post.body, permaLinkHdr + post.permalink)
 
                 let m = match[1].toLowerCase()
                 let op
+                let parent
+                let id = post.parent_id
 
-                while (typeof post.parent_id !== "undefined" && post.parent_id.startsWith("t1_"))
-                    op = await reddit.getComment(post.parent_id).fetch()   // trace back up comment thread
+                if (id.startsWith("t1_"))
+                    parent = await reddit.getComment(id).fetch()   // trace back up comment thread
+                else
+                    parent = await reddit.getSubmission(id).fetch()   // get post
 
-                op = await reddit.getSubmission(post.parent_id).fetch()     // original post
+                id = post.parent_id
+
+                while (typeof id !== "undefined" && id.startsWith("t1_")) {
+                    op = await reddit.getComment(id).fetch()   // trace back up comment thread
+                    id = op.parent_id
+                }
+
+                if (id !== parent.parent_id)
+                    op = await reddit.getSubmission(id).fetch()   // get post
+                else
+                    op = parent
+
+                p.push(post.remove().catch(err => error(err)))
 
                 if (mods.includes(post.author_fullname)) {
                     switch (m) {
                         case "r": p.push(removePost(post, op)); break           // remove post
-                        case "c": p.push(sendComment(post, op)); break          // comment
-                        case "pm": p.push(sendMessage(post, op)); break         // pm op
+                        case "c": p.push(sendComment(post, parent)); break          // comment
+                        case "pm": p.push(sendMessage(post, parent)); break         // pm op
                         case "ad": p.push(setupAdvertiser(post, op)); break     // setup ad permission
-                        case "watch": p.push(setupWatch(post, op)); break       // send ops post to modqueue
-                        case "unwatch": p.push(clearWatch(post, op)); break
+                        case "watch": p.push(setupWatch(post, parent)); break       // send ops post to modqueue
+                        case "unwatch": p.push(clearWatch(post, parent)); break
                         case "contest": p.push(setupContest(post, op)); break   // setup contest
                         case "reload": p.push(loadSettings(post, op)); break    // reload settings from wiki
                         case "check": p.push(botStats(post, op)); break         // am I running?
                     }
-
-                    p.push(post.remove().catch(err => error(err)))
                 }
 
                 if (post.author_fullname === op.author_fullname || mods.includes(post.author_fullname)) {
@@ -562,8 +578,6 @@ async function modCommands(posts, mods) {
                         case "flair": p.push(setFlair(post, op)); break      // set flair
                         case "agree": p.push(checkMotherMayI(post, op)); break    // first time post mother-may-i
                     }
-
-                    p.push(post.remove().catch(err => error(err)))
                 }
             }
         }
@@ -579,15 +593,18 @@ function setFlair(post, op) {
 
     let m = post.body.match(/!\W?flair:(.*)/)
     if (m) {
+
         if (op.link_flair_template_id === "20526a8e-9448-11e8-9fdd-0e511532ebae")
             op.link_flair_template_id = "30e40f0c-948f-11eb-bc74-0e0c6b05f4ff"
 
-        op.link_flair_text = m[1]
+        op.link_flair_text = m[1].match(/answered/i) ? "Answered" : m[1]
 
         p.push(op.selectFlair({
             flair_template_id: op.link_flair_template_id,
             text: op.link_flair_text
         }).catch(err => error(err)))
+
+        console.log("set flair", op.link_flair_text, permaLinkHdr + op.permalink)
 
         posts.push(op)
         p.push(checkPostLimits(posts, true))    // approve post if limit ok
@@ -595,6 +612,8 @@ function setFlair(post, op) {
 }
 
 function checkMotherMayI(post, op) {
+    console.log("approve first post", permaLinkHdr + op.permalink)
+
     let posts = []
     posts.push(op)
 
@@ -688,7 +707,7 @@ function listAdvertisers(post, flair) {
     return post.reply(text).catch(err => error(err))
 }
 
-function setupWatch(post, op) {
+async function setupWatch(post, op) {
     let watch = settings.watch.find(x => x.uid === op.author_fullname)
     let opts = post.body.split(" ")
     let p = []
@@ -788,7 +807,7 @@ function watchHistory(post, op, watch) {
     }
 }
 
-function clearWatch(post, op) {
+async function clearWatch(post, op) {
     let p = []
     let watch = settings.watch.find(x => x.uid === op.author_fullname)
 
@@ -912,7 +931,21 @@ function removePost(post, op) {
 }
 
 function sendComment(post, op) {
-    let message = post.body.slice(3) + "  \n\n*This comment was made by a moderator of r/NoMansSkyTheGame. If you have questions please contact them [here](https://www.reddit.com/message/compose?to=%2Fr%2FNoMansSkyTheGame).*"
+    let message = ""
+    let match = post.body.match(/!\W?c\W?([0-9,]+)/)
+
+    if (match) {
+        let list = match[1].split(",")
+
+        for (let r of list) {
+            let i = parseInt(r) - 1
+            message += typeof rules[i] !== "undefined" ? rules[i] + "  \n\n" : ""
+        }
+
+        message += botSig
+    } else
+        message = post.body.slice(3) + "  \n\n*This comment was made by a moderator of r/NoMansSkyTheGame. If you have questions please contact them [here](https://www.reddit.com/message/compose?to=%2Fr%2FNoMansSkyTheGame).*"
+
     console.log("post comment: ", message)
 
     return op.reply(message)
