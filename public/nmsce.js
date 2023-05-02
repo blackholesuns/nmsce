@@ -2895,20 +2895,20 @@ class NMSCE {
     setFont(evt) {
         let font = $(evt).text()
 
-        let keys = Object.keys(this.imageText)
+        let keys = Object.keys(nmsce.imageText)
         for (let id of keys) {
             if (id === "textsize")
                 continue
 
-            let text = this.imageText[id]
+            let text = nmsce.imageText[id]
 
             if (text.sel && text.type !== "img") {
                 text.font = id === "Glyphs" ? "NMS Glyphs" : font
-                text = this.measureText(text)
+                text = nmsce.measureText(text)
             }
         }
 
-        this.drawText()
+        nmsce.drawText()
     }
 
     drawText(alt, altw) {
@@ -2952,6 +2952,16 @@ class NMSCE {
 
             let loc = $("#img-text")
             let keys = Object.keys(this.imageText)
+
+            let logo = this.imageText.myLogo
+
+            if (logo) {
+                let tloc = loc.find("#ck-" + logo.id)
+
+                if(logo.ck && tloc.is(":visible"))
+                        ctx.drawImage(logo.img, logo.x + logo.left, logo.y, logo.right - logo.left, logo.ascent + logo.decent)
+            }
+
             for (let id of keys) {
                 if (id === "textsize")
                     continue
@@ -2999,8 +3009,7 @@ class NMSCE {
                             }
                         } else
                             ctx.fillText(text.text, text.x, text.y)
-                    } else if (text.id === "myLogo")
-                        ctx.drawImage(text.img, text.x + text.left, text.y, text.right - text.left, text.ascent + text.decent)
+                    } 
 
                     if (text.sel && !altw) {
                         ctx.strokeStyle = "white"
@@ -3386,7 +3395,7 @@ class NMSCE {
                                     },
                                     data: {
                                         thing_id: t,
-                                        text: "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything in this system."
+                                        text: "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything found so far in this system."
                                     },
                                     crossDomain: true,
                                 })
