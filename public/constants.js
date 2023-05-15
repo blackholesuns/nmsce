@@ -1694,36 +1694,6 @@ export const occurenceList = [{
     name: "Rare",
 },]
 
-export const mapList = [{
-    name: "Fighter",
-    map: "/images/fighter-opt.svg",
-}, {
-    name: "Hauler",
-    map: "/images/hauler-opt.svg",
-}, {
-    name: "Shuttle",
-    map: "/images/shuttle-opt.svg",
-}, {
-    name: "Explorer",
-    map: "/images/explorer-opt.svg",
-}, {
-    name: "Exotic",
-    map: "/images/exotic-opt.svg",
-}, {
-    name: "Freighter",
-    map: "/images/freighter-opt.svg",
-}, {
-    name: "Living-Ship",
-    map: "/images/living-ship-opt.svg",
-}, {
-    name: "Solar-Ship",
-    map: "/images/solar-opt.svg",
-}, {
-    name: "Interceptor",
-    map: "/images/interceptor.svg",
-}
-]
-
 export const shipList = [{
     name: "Fighter",
     slotList: tierList,
@@ -1784,7 +1754,7 @@ export const shipList = [{
     classList:true,
 }, {
     name: "Living",
-    bodies: "/images/living-ship-opt.svg",
+    bodies: "/images/living-opt.svg",
     resetMission:true,
 }, {
     name: "Interceptor",

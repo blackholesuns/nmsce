@@ -666,8 +666,8 @@ class NMSCE {
         if (tab === "Freighter")
             $("#pnl-map #pnl-Freighter").show()
 
-        if (tab === "Living-Ship")
-            $("#pnl-map #pnl-Living-Ship").show()
+        // if (tab === "Living-Ship")
+        //     $("#pnl-map #pnl-Living-Ship").show()
 
         if (fcedata) {
             let canvas = document.getElementById("id-canvas")
@@ -5939,111 +5939,5 @@ const objectList = [{
         type: "img",
         required: true,
     }]
-    // }, {
-    //     name: "Living-Ship",
-    //     imgText: [{
-    //         id: "#id-Player",
-    //         field: "_name",
-    //         name: "Player",
-    //         type: "string",
-    //         required: true,
-    //     }, {
-    //         id: "#id-Galaxy",
-    //         field: "galaxy",
-    //         name: "Galaxy",
-    //         type: "menu",
-    //         required: true,
-    //         // }, {
-    //         //     id: "#id-Platform",
-    //         //     field: "Platform",
-    //         //     name: "Platform",
-    //         //     type: "radio",
-    //         //     required: true,
-    //     }, {
-    //         id: "#id-addrInput #id-addr",
-    //         field: "addr",
-    //         name: "Coords",
-    //         type: "string",
-    //         required: true,
-    //     }, {
-    //         id: "#id-addrInput #id-addr",
-    //         field: "addr",
-    //         name: "Glyphs",
-    //         font: "NMS Glyphs",
-    //         type: "glyph",
-    //     },],
-    //     fields: [{
-    //         name: "Name",
-    //         type: "string",
-    //         search: true,
-    //         imgText: true,
-    //         onchange: getEntry,
-    //         inputHide: true,
-    //     }, {
-    //         name: "blank",
-    //         type: "blank",
-    //     }, {
-    //         name: "Damage",
-    //         type: "float",
-    //         inputHide: true,
-    //     }, {
-    //         name: "Hyperdrive",
-    //         type: "float",
-    //         inputHide: true,
-    //     }, {
-    //         name: "Planet Name",
-    //         type: "string",
-    //         imgText: true,
-    //         searchText: true,
-    //         inputHide: true,
-    //     }, {
-    //         name: "Planet Index",
-    //         type: "number",
-    //         range: 15,
-    //         ttip: planetNumTip,
-    //         onchange: getPlanet,
-    //         searchText: true,
-    //     }, {
-    //         name: "Latitude",
-    //         imgText: true,
-    //         type: "float",
-    //     }, {
-    //         name: "Longitude",
-    //         imgText: true,
-    //         type: "float",
-    //     }, {
-    //         name: "Reset Mission",
-    //         type: "checkbox",
-    //         search: true,
-    //         imgText: true,
-    //         ttip: "Find specific living ship by resetting mission log location while on this planet."
-    //     }, {
-    //         name: "Seed",
-    //         type: "string",
-    //         searchText: true,
-    //         ttip: "Found in save file. Can be used to reskin.",
-    //         inputHide: true,
-    //     }, {
-    //         name: "Color",
-    //         type: "tags",
-    //         max: 4,
-    //         list: colorList,
-    //         search: true,
-    //     }, {
-    //         name: "Tags",
-    //         type: "tags",
-    //         max: 4,
-    //         imgText: true,
-    //         search: true,
-    //         inputHide: true,
-    //     }, {
-    //         name: "Photo",
-    //         type: "img",
-    //         required: true,
-    //     }, {
-    //         name: "Parts",
-    //         type: "map",
-    //         map: "/images/living-ship-opt.svg",
-    //         search: true,
-    //     }]
+  
 }]
