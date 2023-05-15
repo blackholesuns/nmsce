@@ -216,18 +216,22 @@ const resultsItem = `
 
 function showLatLong() {
     let loc = $("#typePanels #hdr-Ship")
-    if ($(this).prop("checked")) {
-        loc.find("#row-Latitude").show()
-        loc.find("#row-Longitude").show()
-        loc.find("#row-Planet-Index").show()
-        loc.find("#row-Planet-Name").show()
-        loc.find("#row-Class").show()
+    let type = loc.find("#btn-Type").text()
+    type = loc.find("#slist-"+type)
+    let chk = type.find("#ck-Crashed")
+
+    if (!chk.length || chk.prop("checked")) {
+        type.find("#row-Latitude").show()
+        type.find("#row-Longitude").show()
+        type.find("#row-Planet-Index").show()
+        type.find("#row-Planet-Name").show()
+        type.find("#row-Class").show()
     } else {
-        loc.find("#row-Latitude").hide()
-        loc.find("#row-Longitude").hide()
-        loc.find("#row-Planet-Index").hide()
-        loc.find("#row-Planet-Name").hide()
-        loc.find("#row-Class").hide()
+        type.find("#row-Latitude").hide()
+        type.find("#row-Longitude").hide()
+        type.find("#row-Planet-Index").hide()
+        type.find("#row-Planet-Name").hide()
+        type.find("#row-Class").hide()
     }
 }
 
@@ -298,37 +302,37 @@ class NMSCE {
             let lastDownTarget
             let canvas = document.getElementById("id-canvas")
 
-            img.on("touchstart", e => {
+            img.on("touchstart", event => {
                 event.offsetX = event.targetTouches[0].pageX - img.offset().left
                 event.offsetY = event.targetTouches[0].pageY - img.offset().top
 
-                this.imageMouseDown(e)
+                this.imageMouseDown(event)
             })
-            img.on("touchmove", e => {
+            img.on("touchmove", event => {
                 event.offsetX = event.targetTouches[0].pageX - img.offset().left
                 event.offsetY = event.targetTouches[0].pageY - img.offset().top
 
-                this.imageMouseMove(e)
+                this.imageMouseMove(event)
             })
-            img.on("touchend", e => {
-                this.imageMouseUp(e)
+            img.on("touchend", event => {
+                this.imageMouseUp(event)
             })
-            img.mouseout(e => {
-                this.imageMouseOut(e)
+            img.mouseout(event => {
+                this.imageMouseOut(event)
             })
-            img.mousedown(e => {
+            img.mousedown(event => {
                 lastDownTarget = canvas
-                this.imageMouseDown(e)
+                this.imageMouseDown(event)
             })
-            img.mousemove(e => {
-                this.imageMouseMove(e)
+            img.mousemove(event => {
+                this.imageMouseMove(event)
             })
-            img.mouseup(e => {
-                this.imageMouseUp(e)
+            img.mouseup(event => {
+                this.imageMouseUp(event)
             })
 
-            document.addEventListener('mousedown', (e) => {
-                lastDownTarget = e.target
+            document.addEventListener('mousedown', (event) => {
+                lastDownTarget = event.target
             }, true)
 
             document.addEventListener('keydown', (e) => {
@@ -1708,7 +1712,6 @@ class NMSCE {
         return u
     }
 
-
     buildTypePanels() {
         let tabs = $("#typeTabs")
         let pnl = $("#typePanels")
@@ -1862,7 +1865,7 @@ class NMSCE {
                     f.menusize = "col"
                     f.sort = true
 
-                    bhs.buildMenu(lst, f.name, f.sub ? slist[f.sub] : f.list, f.sublist ? this.selectSublist.bind(this) : null, f)
+                    bhs.buildMenu(lst, f.name, f.sub ? slist[f.sub] : f.list, f.sublist ? this.selectSublist.bind(this) : null, f, f.onchange)
 
                     if (f.sublist) {
                         for (let s of f.list) {
@@ -1878,8 +1881,7 @@ class NMSCE {
                     }
                     break
                 case "tags":
-                    if (typeof f.ckIncludeSail === "undefined" || !f.ckIncludeSail || slist.includeSail) {
-                        //  if (!f.sub || slist[f.sub]) {
+                    if (!f.sub || slist[f.sub]) {
                         appenditem(itm, tTags, "", id, f.ttip, f.required, inpLongHdr, f.inputHide)
                         loc = itm.find("#row-" + id)
                         if (f.max)
@@ -2386,7 +2388,7 @@ class NMSCE {
         let img = new Image()
         img.crossOrigin = "anonymous"
         img.onload = this.onLoadLogo.bind(this);
-        img.src = "/images/nmsge-app-logo-abrev.png"
+        img.src = "/images/nmsge-app-logo.png"
 
         this.initImageText("Text")
         this.initImageText("myLogo")
@@ -2958,8 +2960,8 @@ class NMSCE {
             if (logo) {
                 let tloc = loc.find("#ck-" + logo.id)
 
-                if(logo.ck && tloc.is(":visible"))
-                        ctx.drawImage(logo.img, logo.x + logo.left, logo.y, logo.right - logo.left, logo.ascent + logo.decent)
+                if (logo.ck && tloc.is(":visible"))
+                    ctx.drawImage(logo.img, logo.x + logo.left, logo.y, logo.right - logo.left, logo.ascent + logo.decent)
             }
 
             for (let id of keys) {
@@ -3009,7 +3011,7 @@ class NMSCE {
                             }
                         } else
                             ctx.fillText(text.text, text.x, text.y)
-                    } 
+                    }
 
                     if (text.sel && !altw) {
                         ctx.strokeStyle = "white"
@@ -5293,7 +5295,18 @@ const objectList = [{
         ttip: "Select ship type to select ship size and parts.",
         required: true,
         search: true,
+        onchange: showLatLong,
         sublist: [{
+            name: "Parts",
+            type: "map",
+            sub: "bodies",
+            search: true,
+        }, {
+            name: "Parts-2",
+            type: "map",
+            sub: "wings",
+            search: true,
+        }, {
             name: "Slots",
             type: "radio",
             ttip: "slotTtip",
@@ -5304,7 +5317,7 @@ const objectList = [{
             name: "Max Upgrade",
             type: "float",
             ttip: "upgradeTtip",
-            sub: true,
+            sub: "upgradeTtip",
             // search: true,
             // query: ">=",
             imgText: true,
@@ -5317,15 +5330,55 @@ const objectList = [{
             search: true,
             inputHide: true,
         }, {
-            name: "Parts",
-            type: "map",
-            sub: "bodies",
+            name: "First Wave",
+            ttip: "This is <span class='h5' style='font-weight:bold'>ONLY</span> valid on space stations. First wave for reloading a save and restarting the game are different.",
+            type: "radio",
+            list: [{
+                name: "Reload"
+            }, {
+                name: "Restart"
+            }],
+            imgText: true,
             search: true,
+            inputHide: true,
+            sub: "firstWave"
         }, {
-            name: "Parts-2",
-            type: "map",
-            sub: "wings",
+            name: "Crashed",
+            type: "checkbox",
+            onchange: showLatLong,
+            imgText: true,
             search: true,
+            sub: "firstWave"
+        }, {
+            name: "Latitude",
+            type: "float",
+            imgText: true,
+        }, {
+            name: "Longitude",
+            type: "float",
+            imgText: true,
+        }, {
+            name: "Planet Name",
+            type: "string",
+            imgText: true,
+        }, {
+            name: "Planet Index",
+            type: "number",
+            range: 15,
+            onchange: getPlanet,
+        }, {
+            name: "Class",
+            type: "radio",
+            list: classList,
+            imgText: true,
+            sub: "classList"
+        }, {
+            name: "Reset Mission",
+            type: "checkbox",
+            search: true,
+            imgText: true,
+            ttip: "Find specific living ship by resetting mission log location while next to portal.",
+            sub: "resetMission"
         }, {
             name: "Sail",
             ttip: "Translucent sail color.",
@@ -5333,66 +5386,8 @@ const objectList = [{
             search: true,
             list: colorList,
             max: 1,
-            ckIncludeSail: true
+            sub: "includeSail"
         }]
-    }, {
-        //     name: "Frequency",
-        //     ttip: "Arrival frequency.",
-        //     type: "menu",
-        //     list: occurenceList,
-        //     search: true,
-        //     inputHide: true,
-        // }, {
-        name: "Crashed",
-        type: "checkbox",
-        onchange: showLatLong,
-        imgText: true,
-        search: true,
-    }, {
-        name: "Latitude",
-        type: "float",
-        startState: "hidden",
-        imgText: true,
-    }, {
-        name: "Longitude",
-        type: "float",
-        imgText: true,
-        startState: "hidden",
-    }, {
-        name: "Planet Name",
-        type: "string",
-        imgText: true,
-        startState: "hidden",
-    }, {
-        name: "Planet Index",
-        type: "number",
-        range: 15,
-        startState: "hidden",
-        onchange: getPlanet,
-    }, {
-        name: "Class",
-        type: "radio",
-        startState: "hidden",
-        list: classList,
-        imgText: true,
-    }, {
-        name: "First Wave",
-        ttip: "This is <span class='h5' style='font-weight:bold'>ONLY</span> valid on space stations. First wave for reloading a save and restarting the game are different.",
-        type: "radio",
-        list: [{
-            name: "Reload"
-        }, {
-            name: "Restart"
-        }],
-        imgText: true,
-        search: true,
-        inputHide: true,
-    }, {
-        name: "Seed",
-        type: "string",
-        searchText: true,
-        ttip: "Found in save file. Can be used to reskin ship.",
-        inputHide: true,
     }, {
         name: "Color",
         ttip: "Main body & wing colors. For colored chrome use the color + chrome.",
@@ -5413,6 +5408,12 @@ const objectList = [{
         max: 4,
         imgText: true,
         search: true,
+        inputHide: true,
+    }, {
+        name: "Seed",
+        type: "string",
+        searchText: true,
+        ttip: "Found in save file. Can be used to reskin ship.",
         inputHide: true,
     }, {
         name: "Photo",
@@ -5938,111 +5939,111 @@ const objectList = [{
         type: "img",
         required: true,
     }]
-}, {
-    name: "Living-Ship",
-    imgText: [{
-        id: "#id-Player",
-        field: "_name",
-        name: "Player",
-        type: "string",
-        required: true,
-    }, {
-        id: "#id-Galaxy",
-        field: "galaxy",
-        name: "Galaxy",
-        type: "menu",
-        required: true,
-        // }, {
-        //     id: "#id-Platform",
-        //     field: "Platform",
-        //     name: "Platform",
-        //     type: "radio",
-        //     required: true,
-    }, {
-        id: "#id-addrInput #id-addr",
-        field: "addr",
-        name: "Coords",
-        type: "string",
-        required: true,
-    }, {
-        id: "#id-addrInput #id-addr",
-        field: "addr",
-        name: "Glyphs",
-        font: "NMS Glyphs",
-        type: "glyph",
-    },],
-    fields: [{
-        name: "Name",
-        type: "string",
-        search: true,
-        imgText: true,
-        onchange: getEntry,
-        inputHide: true,
-    }, {
-        name: "blank",
-        type: "blank",
-    }, {
-        name: "Damage",
-        type: "float",
-        inputHide: true,
-    }, {
-        name: "Hyperdrive",
-        type: "float",
-        inputHide: true,
-    }, {
-        name: "Planet Name",
-        type: "string",
-        imgText: true,
-        searchText: true,
-        inputHide: true,
-    }, {
-        name: "Planet Index",
-        type: "number",
-        range: 15,
-        ttip: planetNumTip,
-        onchange: getPlanet,
-        searchText: true,
-    }, {
-        name: "Latitude",
-        imgText: true,
-        type: "float",
-    }, {
-        name: "Longitude",
-        imgText: true,
-        type: "float",
-    }, {
-        name: "Reset Mission",
-        type: "checkbox",
-        search: true,
-        imgText: true,
-        ttip: "Find specific living ship by resetting mission log location while on this planet."
-    }, {
-        name: "Seed",
-        type: "string",
-        searchText: true,
-        ttip: "Found in save file. Can be used to reskin.",
-        inputHide: true,
-    }, {
-        name: "Color",
-        type: "tags",
-        max: 4,
-        list: colorList,
-        search: true,
-    }, {
-        name: "Tags",
-        type: "tags",
-        max: 4,
-        imgText: true,
-        search: true,
-        inputHide: true,
-    }, {
-        name: "Photo",
-        type: "img",
-        required: true,
-    }, {
-        name: "Parts",
-        type: "map",
-        map: "/images/living-ship-opt.svg",
-        search: true,
-    }]
+    // }, {
+    //     name: "Living-Ship",
+    //     imgText: [{
+    //         id: "#id-Player",
+    //         field: "_name",
+    //         name: "Player",
+    //         type: "string",
+    //         required: true,
+    //     }, {
+    //         id: "#id-Galaxy",
+    //         field: "galaxy",
+    //         name: "Galaxy",
+    //         type: "menu",
+    //         required: true,
+    //         // }, {
+    //         //     id: "#id-Platform",
+    //         //     field: "Platform",
+    //         //     name: "Platform",
+    //         //     type: "radio",
+    //         //     required: true,
+    //     }, {
+    //         id: "#id-addrInput #id-addr",
+    //         field: "addr",
+    //         name: "Coords",
+    //         type: "string",
+    //         required: true,
+    //     }, {
+    //         id: "#id-addrInput #id-addr",
+    //         field: "addr",
+    //         name: "Glyphs",
+    //         font: "NMS Glyphs",
+    //         type: "glyph",
+    //     },],
+    //     fields: [{
+    //         name: "Name",
+    //         type: "string",
+    //         search: true,
+    //         imgText: true,
+    //         onchange: getEntry,
+    //         inputHide: true,
+    //     }, {
+    //         name: "blank",
+    //         type: "blank",
+    //     }, {
+    //         name: "Damage",
+    //         type: "float",
+    //         inputHide: true,
+    //     }, {
+    //         name: "Hyperdrive",
+    //         type: "float",
+    //         inputHide: true,
+    //     }, {
+    //         name: "Planet Name",
+    //         type: "string",
+    //         imgText: true,
+    //         searchText: true,
+    //         inputHide: true,
+    //     }, {
+    //         name: "Planet Index",
+    //         type: "number",
+    //         range: 15,
+    //         ttip: planetNumTip,
+    //         onchange: getPlanet,
+    //         searchText: true,
+    //     }, {
+    //         name: "Latitude",
+    //         imgText: true,
+    //         type: "float",
+    //     }, {
+    //         name: "Longitude",
+    //         imgText: true,
+    //         type: "float",
+    //     }, {
+    //         name: "Reset Mission",
+    //         type: "checkbox",
+    //         search: true,
+    //         imgText: true,
+    //         ttip: "Find specific living ship by resetting mission log location while on this planet."
+    //     }, {
+    //         name: "Seed",
+    //         type: "string",
+    //         searchText: true,
+    //         ttip: "Found in save file. Can be used to reskin.",
+    //         inputHide: true,
+    //     }, {
+    //         name: "Color",
+    //         type: "tags",
+    //         max: 4,
+    //         list: colorList,
+    //         search: true,
+    //     }, {
+    //         name: "Tags",
+    //         type: "tags",
+    //         max: 4,
+    //         imgText: true,
+    //         search: true,
+    //         inputHide: true,
+    //     }, {
+    //         name: "Photo",
+    //         type: "img",
+    //         required: true,
+    //     }, {
+    //         name: "Parts",
+    //         type: "map",
+    //         map: "/images/living-ship-opt.svg",
+    //         search: true,
+    //     }]
 }]

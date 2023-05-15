@@ -197,7 +197,7 @@ export const versionList = [
         date: "4/13/2022",
         changed: [
             {
-                type: "Ship"
+                Type: "Shuttle"
             }
         ]
     }, {
@@ -1728,20 +1728,24 @@ export const shipList = [{
     name: "Fighter",
     slotList: tierList,
     slotTtip: `
-        T1: 15-19 slots<br>
-        T2: 20-29 slots<br>
+        T1: 24-28 slots<br>
+        T2: 24-32 slots<br>
         T3: 30-38 slots`,
     bodies: "/images/fighter-opt.svg",
     //asymmetric: true,
-    upgradeTtip: "Maximum damage value for fighter UPGRADED to S-Class"
+    upgradeTtip: "Maximum damage value for fighter UPGRADED to S-Class",
+    firstWave:true,
+    classList:true,
 }, {
     name: "Hauler",
     slotList: tierList,
     slotTtip: `
-        T1: 25-31 slots<br>
-        T2: 32-39 slots<br>
+        T1: 30-36 slots<br>
+        T2: 36-40 slots<br>
         T3: 40-48 slots`,
     bodies: "/images/hauler-opt.svg",
+    firstWave:true,
+    classList:true,
 }, {
     name: "Shuttle",
     slotList: [{
@@ -1750,30 +1754,42 @@ export const shipList = [{
         name: "T2"
     }],
     slotTtip: `
-        T1: 18-23 slots<br>
-        T2: 24-28 slots`,
+        T1: 24-32 slots<br>
+        T2: 28-36 slots`,
     bodies: "/images/shuttle-opt.svg",
     asymmetric: true,
+    firstWave:true,
+    classList:true,
 }, {
     name: "Explorer",
     bodies: "/images/explorer-opt.svg",
     slotList: tierList,
     asymmetric: true,
     slotTtip: `
-        T1: 15-19 slots<br>
-        T2: 20-29 slots<br>
+        T1: 24-29 slots<br>
+        T2: 24-32 slots<br>
         T3: 30-38 slots`,
-    upgradeTtip: "Maximum range value for explorer UPGRADED to S-Class"
+    upgradeTtip: "Maximum range value for explorer UPGRADED to S-Class",
+    firstWave:true,
+    classList:true,
 }, {
     name: "Exotic",
     bodies: "/images/exotic-opt.svg",
+    firstWave:true,
 }, {
     name: "Solar",
     bodies: "/images/solar-opt.svg",
-    includeSail: true
+    includeSail: true,
+    firstWave:true,
+    classList:true,
+}, {
+    name: "Living",
+    bodies: "/images/living-ship-opt.svg",
+    resetMission:true,
 }, {
     name: "Interceptor",
     bodies: "/images/interceptor.svg",
+    classList:true,
 }
 ]
 
