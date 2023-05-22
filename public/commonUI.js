@@ -1191,7 +1191,6 @@ blackHoleSuns.prototype.buildMenu = function (
 
     let mlist = menu.find("#list");
 
-    
     if (options.sort){
         list = list.sort((a, b) => a.name.localeCompare(b.name));
     }

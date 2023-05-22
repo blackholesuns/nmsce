@@ -98,7 +98,7 @@ export const platformListAll = [
 
 export const versionList = [
     {
-        name: "Nothing Selected",
+        name: " Nothing Selected",
     },
     {
         name: "next",
@@ -1764,7 +1764,7 @@ export const shipList = [{
 ]
 
 export const mtList = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Alien",
 }, {
@@ -1986,7 +1986,7 @@ export const frigateNegatives = [{
 },]
 
 export const sentinelList = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Low"
 }, {
@@ -1998,81 +1998,155 @@ export const sentinelList = [{
 }]
 
 export const faunaList = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
-    name: "Anastomus - Striders"
+    name: "Striders - Anastomus"
 }, {
     name: "Anomalous"
 }, {
-    name: "Bos - Spiders"
+    name: "Spiders - Bos"
 }, {
-    name: "Bosoptera - Flying beetles"
+    name: "Flying beetles - Bosoptera"
 }, {
-    name: "Conokinis - Swarming beetles"
+    name: "Swarming beetles - Conokinis"
 }, {
-    name: "Felidae - Cat"
+    name: "Cat - Felidae"
 }, {
-    name: "Felihex - Hexapodal cat"
+    name: "Hexapodal cat - Felihex"
 }, {
-    name: "Hexungulatis - Hexapodal cow"
+    name: "Hexapodal cow - Hexungulatis"
 }, {
-    name: "Lok - Blobs"
+    name: "Blobs - Lok"
 }, {
-    name: "Mechanoceris - Robot antelopes"
+    name: "Robot antelopes - Mechanoceris"
 }, {
-    name: "Mogara - Grunts, bipedal"
+    name: "Grunts, bipedal - Mogara"
 }, {
-    name: "Osteofelidae - Bonecats"
+    name: "Bonecats - Osteofelidae"
 }, {
-    name: "Prionterrae - Ploughs"
+    name: "Ploughs - Prionterrae"
 }, {
-    name: "Procavya - Rodents"
+    name: "Rodents - Procavya"
 }, {
-    name: "Protosphaeridae - Protorollers"
+    name: "Protorollers - Protosphaeridae"
 }, {
-    name: "Prototerrae - Protodiggers"
+    name: "Protodiggers - Prototerrae"
 }, {
-    name: "Rangifae - Diplos"
+    name: "Diplos - Rangifae"
 }, {
-    name: "Reococcyx - Bipedal antelopes"
+    name: "Bipedal antelopes - Reococcyx"
 }, {
-    name: "Spiralis - Drills"
+    name: "Drills - Spiralis"
 }, {
-    name: "Talpidae - Moles"
+    name: "Moles - Talpidae"
 }, {
-    name: "Tetraceris - Antelopes"
+    name: "Antelopes - Tetraceris"
 }, {
-    name: "Theroma - Triceratops"
+    name: "Triceratops - Theroma"
 }, {
-    name: "Tyranocae - Tyrannosaurus rex-like"
+    name: "Tyrannosaurus rex-like - Tyranocae"
 }, {
-    name: "Ungulatis - Cow"
+    name: "Cow - Ungulatis"
 }, {
-    name: "Procavaquatica - Swimming rodents"
+    name: "Swimming rodents - Procavaquatica"
 }, {
-    name: "Bosaquatica - Underwater crabs"
+    name: "Underwater crabs - Bosaquatica"
 }, {
-    name: "Chrysaora - Jellyfish"
+    name: "Jellyfish - Chrysaora"
 }, {
-    name: "Ictaloris - Fish"
+    name: "Fish - Ictaloris"
 }, {
-    name: "Prionace - Sharks, eels, seasnakes"
+    name: "Sharks, eels, seasnakes - Prionace"
 }, {
-    name: "Prionacefda - Swimming cows"
+    name: "Swimming cows - Prionacefda"
 }, {
-    name: "Agnelis - Birds"
+    name: "Birds - Agnelis"
 }, {
-    name: "Cycromys - Flying Lizard"
+    name: "Flying Lizard - Cycromys"
 }, {
-    name: "Oxyacta - Wraiths / flying snake"
+    name: "Wraiths / flying snake - Oxyacta"
 }, {
-    name: "Protocaeli - Protoflyers"
+    name: "Protoflyers - Protocaeli"
 }, {
-    name: "Rhopalocera - Butterflies"
+    name: "Butterflies - Rhopalocera"
 }]
 
+// export const faunaList = [{
+//     name: " Nothing Selected"
+// }, {
+//     name: "Anastomus - Striders"
+// }, {
+//     name: "Anomalous"
+// }, {
+//     name: "Bos - Spiders"
+// }, {
+//     name: "Bosoptera - Flying beetles"
+// }, {
+//     name: "Conokinis - Swarming beetles"
+// }, {
+//     name: "Felidae - Cat"
+// }, {
+//     name: "Felihex - Hexapodal cat"
+// }, {
+//     name: "Hexungulatis - Hexapodal cow"
+// }, {
+//     name: "Lok - Blobs"
+// }, {
+//     name: "Mechanoceris - Robot antelopes"
+// }, {
+//     name: "Mogara - Grunts, bipedal"
+// }, {
+//     name: "Osteofelidae - Bonecats"
+// }, {
+//     name: "Prionterrae - Ploughs"
+// }, {
+//     name: "Procavya - Rodents"
+// }, {
+//     name: "Protosphaeridae - Protorollers"
+// }, {
+//     name: "Prototerrae - Protodiggers"
+// }, {
+//     name: "Rangifae - Diplos"
+// }, {
+//     name: "Reococcyx - Bipedal antelopes"
+// }, {
+//     name: "Spiralis - Drills"
+// }, {
+//     name: "Talpidae - Moles"
+// }, {
+//     name: "Tetraceris - Antelopes"
+// }, {
+//     name: "Theroma - Triceratops"
+// }, {
+//     name: "Tyranocae - Tyrannosaurus rex-like"
+// }, {
+//     name: "Ungulatis - Cow"
+// }, {
+//     name: "Procavaquatica - Swimming rodents"
+// }, {
+//     name: "Bosaquatica - Underwater crabs"
+// }, {
+//     name: "Chrysaora - Jellyfish"
+// }, {
+//     name: "Ictaloris - Fish"
+// }, {
+//     name: "Prionace - Sharks, eels, seasnakes"
+// }, {
+//     name: "Prionacefda - Swimming cows"
+// }, {
+//     name: "Agnelis - Birds"
+// }, {
+//     name: "Cycromys - Flying Lizard"
+// }, {
+//     name: "Oxyacta - Wraiths / flying snake"
+// }, {
+//     name: "Protocaeli - Protoflyers"
+// }, {
+//     name: "Rhopalocera - Butterflies"
+// }]
+
 export const faunaProductKilled = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Diplo Chunks"
 }, {
@@ -2102,7 +2176,7 @@ export const faunaProductKilled = [{
 }]
 
 export const faunaProductTamed = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Crab 'Apple'"
 }, {
@@ -2179,6 +2253,12 @@ export const resourceList = [{
     name: "Solanium"
 }, {
     name: "Star Bulb"
+}, {
+    name: "Faecium"
+}, {
+    name: "Mordite"
+}, {
+    name: "Basalt"
 },]
 
 export const colorList = [{

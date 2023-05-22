@@ -528,7 +528,7 @@ function applyEdits(ts, elist) {
 //     return admin.firestore().doc("edits/" + e.time.toDate().getTime()).set(e)
 // }
 
-exports.scheduleBackupBHS = functions.pubsub.schedule('0 2 1,8,15,22 * *').onRun(context => {
+exports.scheduleBackupBHS = functions.pubsub.schedule('0 2 * * 0').onRun(context => {
     return doBackup()
 })
 

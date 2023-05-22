@@ -217,7 +217,7 @@ const resultsItem = `
 function showLatLong() {
     let loc = $("#typePanels #hdr-Ship")
     let type = loc.find("#btn-Type").text()
-    type = loc.find("#slist-"+type)
+    type = loc.find("#slist-" + type)
     let chk = type.find("#ck-Crashed")
 
     if (!chk.length || chk.prop("checked")) {
@@ -618,7 +618,7 @@ class NMSCE {
 
             if (fnmsce) {
                 $("#id-Player").val("")
-                $("#btn-Version").text("Nothing Selected")
+                $("#btn-Version").text(" Nothing Selected")
             }
         }
 
@@ -809,7 +809,7 @@ class NMSCE {
                         break
                     case "menu":
                         entry[id] = loc.find("[id|='btn']").text().stripMarginWS()
-                        if (entry[id] === "Nothing Selected")
+                        if (entry[id] === " Nothing Selected")
                             entry[id] = ""
                         break
                     case "checkbox":
@@ -1347,7 +1347,7 @@ class NMSCE {
             })
 
         let val = $("#btn-Version").text().stripMarginWS()
-        if (val.length > 0 && val !== "Nothing Selected") {
+        if (val.length > 0 && val !== " Nothing Selected") {
             search.push({
                 name: "version",
                 type: "menu",
@@ -1458,7 +1458,7 @@ class NMSCE {
                     val = loc.find("#btn-" + itm.name).text().stripMarginWS()
                     if (val) {
                         val = val.stripNumber()
-                        if (val !== "Nothing Selected") {
+                        if (val !== " Nothing Selected") {
                             itm.val = val
                             search.push(itm)
                         }
@@ -2529,6 +2529,7 @@ class NMSCE {
             let text = ""
             let data = $(evt).data()
             let loc = $(data.loc)
+            let dloc = loc
 
             if (data.row)
                 loc = loc.find(data.row)
@@ -2538,6 +2539,9 @@ class NMSCE {
                 loc = $(data.loc).find("#slist-" + btn)
                 loc = loc.find(data.sub)
             }
+
+            if (loc.length === 0 && data.sub)    // planet name could be on sub because of crashed ships
+                loc = dloc.find(data.sub)
 
             switch (data.type) {
                 case "menu":
@@ -5183,7 +5187,7 @@ function getPlanet(evt) {
             if (e["Planet-Name"] && e["Planet-Name"] !== "") {
                 $("[id='id-Planet-Name']").val(e["Planet-Name"])
                 $("[id='row-Planet-Name'] .fa-check").show()
-                this.restoreImageText(null, true)
+                nmsce.restoreImageText(null, true)
             }
         } else
             $("[id='row-Planet-Name'] .fa-check").hide()
@@ -5939,5 +5943,5 @@ const objectList = [{
         type: "img",
         required: true,
     }]
-  
+
 }]
