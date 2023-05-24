@@ -16,38 +16,40 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // rewrite fauna type to be description
 // update version for verified tags, *** add to main site somehow ***
 
-async function updateVersion() {
-    let ref = admin.firestore().collection("nmsce")
-    let galaxies = await ref.listDocuments()
+fixFauna()
 
-    for (let g of galaxies) {
-        let types = await admin.firestore().doc(g.path).listCollections()
+// async function updateVersion() {
+//     let ref = admin.firestore().collection("nmsce")
+//     let galaxies = await ref.listDocuments()
 
-        for (let t of types) {
-            console.log(t.path)
-            let snapshot = await admin.firestore().collection(t.path).where("Tags", "array-contains", "interceptor verified").get()
+//     for (let g of galaxies) {
+//         let types = await admin.firestore().doc(g.path).listCollections()
 
-            for (let doc of snapshot.docs) {
-                let d = doc.data()
+//         for (let t of types) {
+//             console.log(t.path)
+//             let snapshot = await admin.firestore().collection(t.path).where("Tags", "array-contains", "interceptor verified").get()
 
-                let i = d.Tags.indexOf("interceptor verified")
-                d.Tags.splice(i, 1)
-                d.version = "interceptor"
+//             for (let doc of snapshot.docs) {
+//                 let d = doc.data()
 
-                doc.ref.set(d)
-            }
-        }
-    }
-}
+//                 let i = d.Tags.indexOf("interceptor verified")
+//                 d.Tags.splice(i, 1)
+//                 d.version = "interceptor"
+
+//                 doc.ref.set(d)
+//             }
+//         }
+//     }
+// }
 
 // async function fixFauna() {
 //     let ref = admin.firestore().collection("nmsce")
 //     let galaxies = await ref.listDocuments()
-//     console.log(galaxies.length)
 
 //     for (let g of galaxies) {
 //         if (galaxyList.includes(g.id)) {
 //             let ref = admin.firestore().collection(g.path + "/Fauna")
+//             ref = ref.where("Genus", "==", "Tyrannosaurus rex-like - Tyranocae")
 //             let snapshot = await ref.get()
 
 //             console.log(g.id, snapshot.docs.length)
@@ -55,13 +57,12 @@ async function updateVersion() {
 //             for (let doc of snapshot.docs) {
 //                 let d = doc.data()
 
-//                 let i = oldFaunaList.indexOf(d.Genus)
+//                 // let i = oldFaunaList.indexOf(d.Genus)
 
-//                 if (i !== -1) {
-//                     d.Genus = newFaunaList[i]
-//                     // console.log(oldFaunaList[i], d.Genus)
+//                 // if (i !== -1) {
+//                     d.Genus = "Tyrannosaurus rex - Tyranocae"
 //                     doc.ref.set(d)
-//                 }
+//                 // }
 //             }
 //         }
 //     }
@@ -128,8 +129,6 @@ async function updateVersion() {
 //     }
 // }
 
-main()
-
 const newFaunaList = [
     " Nothing Selected",
     "Striders - Anastomus",
@@ -154,7 +153,7 @@ const newFaunaList = [
     "Moles - Talpidae",
     "Antelopes - Tetraceris",
     "Triceratops - Theroma",
-    "Tyrannosaurus rex-like - Tyranocae",
+    "Tyrannosaurus rex - Tyranocae",
     "Cow - Ungulatis",
     "Swimming rodents - Procavaquatica",
     "Underwater crabs - Bosaquatica",

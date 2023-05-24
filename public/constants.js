@@ -2044,7 +2044,7 @@ export const faunaList = [{
 }, {
     name: "Triceratops - Theroma"
 }, {
-    name: "Tyrannosaurus rex-like - Tyranocae"
+    name: "Tyrannosaurus rex - Tyranocae"
 }, {
     name: "Cow - Ungulatis"
 }, {
