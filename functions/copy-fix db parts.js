@@ -6,7 +6,7 @@ admin.initializeApp({
 require('events').EventEmitter.defaultMaxListeners = 0
 
 // recalc all totals
-// copy votes but not common to get rid of galaxy
+// copy votes but not common to get rid of galaxy, new vote structure???
 // tags/colors to element=true instead of arrays???
 
 // *** done ***
@@ -16,7 +16,52 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // rewrite fauna type to be description
 // update version for verified tags, *** add to main site somehow ***
 
-fixFauna()
+async function combineGalaxies() {
+    let ref = admin.firestore().collection("nmsce")
+    let galaxies = await ref.listDocuments()
+    let count = 0
+
+    for (let g of galaxies) {
+        let ref = admin.firestore().doc(g.path)
+        let types = await ref.listCollections()
+
+        for (let t of types) {
+            if (t.id === "Living-Ship")
+                continue
+
+            let ref = admin.firestore().collection(t.path)
+            let items = await ref.get()
+
+            for (let doc of items.docs) {
+                let d = doc.data()
+                console.log(g.id, t.id, d.id)
+
+                let ref = admin.firestore().doc("nmsceCombined/" + d.id)
+
+                let dup = await ref.get()
+                if (dup.exists) {
+                    console.log("duplicate", g.id, t.id, d.id)
+                    continue
+                }
+
+                await ref.set(d)
+                ++count
+
+                let votes = await doc.ref.collection("votes").get()
+                for (let vdoc of votes.docs) {
+                    let v = vdoc.data()
+
+                    // new vote structure???
+                    await ref.collection("votes").doc(v.uid).set(v)
+                }
+
+                // fix totals here so we don't duplicate reads
+            }
+            if (count > 2000)
+                return
+        }
+    }
+}
 
 // async function updateVersion() {
 //     let ref = admin.firestore().collection("nmsce")
@@ -49,20 +94,23 @@ fixFauna()
 //     for (let g of galaxies) {
 //         if (galaxyList.includes(g.id)) {
 //             let ref = admin.firestore().collection(g.path + "/Fauna")
-//             ref = ref.where("Genus", "==", "Tyrannosaurus rex-like - Tyranocae")
 //             let snapshot = await ref.get()
 
 //             console.log(g.id, snapshot.docs.length)
 
 //             for (let doc of snapshot.docs) {
 //                 let d = doc.data()
+//                 let i = FaunaList.indexOf(d.Genus)
+//                 if (d.Type) 
+//                     i = oldFaunaList.indexOf(d.Type)
 
-//                 // let i = oldFaunaList.indexOf(d.Genus)
+//                 d.Genus = newFaunaList[i]
 
-//                 // if (i !== -1) {
-//                     d.Genus = "Tyrannosaurus rex - Tyranocae"
-//                     doc.ref.set(d)
-//                 // }
+//                 if (i === -1 || !d.Genus)
+//                     continue
+
+//                 console.log(d.Genus)
+//                 doc.ref.set(d)
 //             }
 //         }
 //     }
@@ -131,45 +179,46 @@ fixFauna()
 
 const newFaunaList = [
     " Nothing Selected",
-    "Striders - Anastomus",
+    "Striders",
     "Anomalous",
-    "Spiders - Bos",
-    "Flying beetles - Bosoptera",
-    "Swarming beetles - Conokinis",
-    "Cat - Felidae",
-    "Hexapodal cat - Felihex",
-    "Hexapodal cow - Hexungulatis",
-    "Blobs - Lok",
-    "Robot antelopes - Mechanoceris",
-    "Grunts, bipedal - Mogara",
-    "Bonecats - Osteofelidae",
-    "Ploughs - Prionterrae",
-    "Rodents - Procavya",
-    "Protorollers - Protosphaeridae",
-    "Protodiggers - Prototerrae",
-    "Diplos - Rangifae",
-    "Bipedal antelopes - Reococcyx",
-    "Drills - Spiralis",
-    "Moles - Talpidae",
-    "Antelopes - Tetraceris",
-    "Triceratops - Theroma",
-    "Tyrannosaurus rex - Tyranocae",
-    "Cow - Ungulatis",
-    "Swimming rodents - Procavaquatica",
-    "Underwater crabs - Bosaquatica",
-    "Jellyfish - Chrysaora",
-    "Fish - Ictaloris",
-    "Sharks, eels, seasnakes - Prionace",
-    "Swimming cows - Prionacefda",
-    "Birds - Agnelis",
-    "Flying Lizard - Cycromys",
-    "Wraiths / flying snake - Oxyacta",
-    "Protoflyers - Protocaeli",
-    "Butterflies - Rhopalocera"
+    "Spider",
+    "Beetle, flying",
+    "Beetle",
+    "Cat",
+    "Cat, hexapodal",
+    "Cow, hexapodal",
+    "Blob",
+    "Antelope, robot",
+    "Grunt",
+    "Bonecat",
+    "Plough",
+    "Rodent",
+    "Protoroller",
+    "Protodigger",
+    "Diplo",
+    "Antelope, bipedal",
+    "Drill",
+    "Mole",
+    "Antelope",
+    "Triceratop",
+    "Tyrannosaurus rex",
+    "Cow",
+    "Rodent, swimming",
+    "Crab, underwater",
+    "Jellyfish",
+    "Fish",
+    "Shark, eel, seasnake",
+    "Cow, swimming",
+    "Bird",
+    "Lizard, flying",
+    "Wraith / snake, flying",
+    "Protoflyer",
+    "Butterfly",
+    ""
 ]
 
 const oldFaunaList = [
-    "Nothing Selected",
+    " Nothing Selected",
     "Anastomus - Striders",
     "Anomalous",
     "Bos - Spiders",
@@ -180,7 +229,7 @@ const oldFaunaList = [
     "Hexungulatis - Hexapodal cow",
     "Lok - Blobs",
     "Mechanoceris - Robot antelopes",
-    "Mogara - Grunts, bipedal",
+    "Mogara - Grunts, bipedal species",
     "Osteofelidae - Bonecats",
     "Prionterrae - Ploughs",
     "Procavya - Rodents",

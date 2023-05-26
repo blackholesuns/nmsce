@@ -1704,8 +1704,8 @@ export const shipList = [{
     bodies: "/images/fighter-opt.svg",
     //asymmetric: true,
     upgradeTtip: "Maximum damage value for fighter UPGRADED to S-Class",
-    firstWave:true,
-    classList:true,
+    firstWave: true,
+    classList: true,
 }, {
     name: "Hauler",
     slotList: tierList,
@@ -1714,8 +1714,8 @@ export const shipList = [{
         T2: 36-40 slots<br>
         T3: 40-48 slots`,
     bodies: "/images/hauler-opt.svg",
-    firstWave:true,
-    classList:true,
+    firstWave: true,
+    classList: true,
 }, {
     name: "Shuttle",
     slotList: [{
@@ -1728,8 +1728,8 @@ export const shipList = [{
         T2: 28-36 slots`,
     bodies: "/images/shuttle-opt.svg",
     asymmetric: true,
-    firstWave:true,
-    classList:true,
+    firstWave: true,
+    classList: true,
 }, {
     name: "Explorer",
     bodies: "/images/explorer-opt.svg",
@@ -1740,26 +1740,26 @@ export const shipList = [{
         T2: 24-32 slots<br>
         T3: 30-38 slots`,
     upgradeTtip: "Maximum range value for explorer UPGRADED to S-Class",
-    firstWave:true,
-    classList:true,
+    firstWave: true,
+    classList: true,
 }, {
     name: "Exotic",
     bodies: "/images/exotic-opt.svg",
-    firstWave:true,
+    firstWave: true,
 }, {
     name: "Solar",
     bodies: "/images/solar-opt.svg",
     includeSail: true,
-    firstWave:true,
-    classList:true,
+    firstWave: true,
+    classList: true,
 }, {
     name: "Living",
     bodies: "/images/living-opt.svg",
-    resetMission:true,
+    resetMission: true,
 }, {
     name: "Interceptor",
     bodies: "/images/interceptor.svg",
-    classList:true,
+    classList: true,
 }
 ]
 
@@ -1997,153 +1997,44 @@ export const sentinelList = [{
     name: "Corrupted"
 }]
 
-export const faunaList = [{
-    name: " Nothing Selected"
-}, {
-    name: "Striders - Anastomus"
-}, {
-    name: "Anomalous"
-}, {
-    name: "Spiders - Bos"
-}, {
-    name: "Flying beetles - Bosoptera"
-}, {
-    name: "Swarming beetles - Conokinis"
-}, {
-    name: "Cat - Felidae"
-}, {
-    name: "Hexapodal cat - Felihex"
-}, {
-    name: "Hexapodal cow - Hexungulatis"
-}, {
-    name: "Blobs - Lok"
-}, {
-    name: "Robot antelopes - Mechanoceris"
-}, {
-    name: "Grunts, bipedal - Mogara"
-}, {
-    name: "Bonecats - Osteofelidae"
-}, {
-    name: "Ploughs - Prionterrae"
-}, {
-    name: "Rodents - Procavya"
-}, {
-    name: "Protorollers - Protosphaeridae"
-}, {
-    name: "Protodiggers - Prototerrae"
-}, {
-    name: "Diplos - Rangifae"
-}, {
-    name: "Bipedal antelopes - Reococcyx"
-}, {
-    name: "Drills - Spiralis"
-}, {
-    name: "Moles - Talpidae"
-}, {
-    name: "Antelopes - Tetraceris"
-}, {
-    name: "Triceratops - Theroma"
-}, {
-    name: "Tyrannosaurus rex - Tyranocae"
-}, {
-    name: "Cow - Ungulatis"
-}, {
-    name: "Swimming rodents - Procavaquatica"
-}, {
-    name: "Underwater crabs - Bosaquatica"
-}, {
-    name: "Jellyfish - Chrysaora"
-}, {
-    name: "Fish - Ictaloris"
-}, {
-    name: "Sharks, eels, seasnakes - Prionace"
-}, {
-    name: "Swimming cows - Prionacefda"
-}, {
-    name: "Birds - Agnelis"
-}, {
-    name: "Flying Lizard - Cycromys"
-}, {
-    name: "Wraiths / flying snake - Oxyacta"
-}, {
-    name: "Protoflyers - Protocaeli"
-}, {
-    name: "Butterflies - Rhopalocera"
-}]
-
-// export const faunaList = [{
-//     name: " Nothing Selected"
-// }, {
-//     name: "Anastomus - Striders"
-// }, {
-//     name: "Anomalous"
-// }, {
-//     name: "Bos - Spiders"
-// }, {
-//     name: "Bosoptera - Flying beetles"
-// }, {
-//     name: "Conokinis - Swarming beetles"
-// }, {
-//     name: "Felidae - Cat"
-// }, {
-//     name: "Felihex - Hexapodal cat"
-// }, {
-//     name: "Hexungulatis - Hexapodal cow"
-// }, {
-//     name: "Lok - Blobs"
-// }, {
-//     name: "Mechanoceris - Robot antelopes"
-// }, {
-//     name: "Mogara - Grunts, bipedal"
-// }, {
-//     name: "Osteofelidae - Bonecats"
-// }, {
-//     name: "Prionterrae - Ploughs"
-// }, {
-//     name: "Procavya - Rodents"
-// }, {
-//     name: "Protosphaeridae - Protorollers"
-// }, {
-//     name: "Prototerrae - Protodiggers"
-// }, {
-//     name: "Rangifae - Diplos"
-// }, {
-//     name: "Reococcyx - Bipedal antelopes"
-// }, {
-//     name: "Spiralis - Drills"
-// }, {
-//     name: "Talpidae - Moles"
-// }, {
-//     name: "Tetraceris - Antelopes"
-// }, {
-//     name: "Theroma - Triceratops"
-// }, {
-//     name: "Tyranocae - Tyrannosaurus rex-like"
-// }, {
-//     name: "Ungulatis - Cow"
-// }, {
-//     name: "Procavaquatica - Swimming rodents"
-// }, {
-//     name: "Bosaquatica - Underwater crabs"
-// }, {
-//     name: "Chrysaora - Jellyfish"
-// }, {
-//     name: "Ictaloris - Fish"
-// }, {
-//     name: "Prionace - Sharks, eels, seasnakes"
-// }, {
-//     name: "Prionacefda - Swimming cows"
-// }, {
-//     name: "Agnelis - Birds"
-// }, {
-//     name: "Cycromys - Flying Lizard"
-// }, {
-//     name: "Oxyacta - Wraiths / flying snake"
-// }, {
-//     name: "Protocaeli - Protoflyers"
-// }, {
-//     name: "Rhopalocera - Butterflies"
-// }]
+export const faunaList = [
+    { name: " Nothing Selected" },
+    { name: "Striders" },
+    { name: "Anomalous" },
+    { name: "Spider" },
+    { name: "Beetle, flying" },
+    { name: "Beetle" },
+    { name: "Cat" },
+    { name: "Cat, hexapodal" },
+    { name: "Cow, hexapodal" },
+    { name: "Blob" },
+    { name: "Antelope, robot" },
+    { name: "Grunt" },
+    { name: "Bonecat" },
+    { name: "Plough" },
+    { name: "Rodent" },
+    { name: "Protoroller" },
+    { name: "Protodigger" },
+    { name: "Diplo" },
+    { name: "Antelope, bipedal" },
+    { name: "Drill" },
+    { name: "Mole" },
+    { name: "Antelope" },
+    { name: "Triceratop" },
+    { name: "Tyrannosaurus rex" },
+    { name: "Cow" },
+    { name: "Rodent, swimming" },
+    { name: "Crab, underwater" },
+    { name: "Jellyfish" },
+    { name: "Fish" },
+    { name: "Shark, eel, seasnake" },
+    { name: "Cow, swimming" },
+    { name: "Bird" },
+    { name: "Lizard, flying" },
+    { name: "Wraith / snake, flying" },
+    { name: "Protoflyer" },
+    { name: "Butterfly" }
+]
 
 export const faunaProductKilled = [{
     name: " Nothing Selected"
