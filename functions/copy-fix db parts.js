@@ -6,8 +6,8 @@ admin.initializeApp({
 require('events').EventEmitter.defaultMaxListeners = 0
 
 // recalc all totals
-// copy votes but not common to get rid of galaxy, new vote structure???
-// tags/colors to element=true instead of arrays???
+// copy votes but not common to get rid of galaxy. copy to new db collection
+// delete "old"+type when copy to new db collection
 
 // *** done ***
 // validate galaxies delete invalid inc images
@@ -15,6 +15,56 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // fix resources on planets, tags to resources. e.g. faecium
 // rewrite fauna type to be description
 // update version for verified tags, *** add to main site somehow ***
+// tags to element=true instead of arrays
+
+async function fixTags() {
+    let ref = admin.firestore().collection("nmsce")
+    let galaxies = await ref.listDocuments()
+
+    for (let g of galaxies) {
+        if (g.id < "Euclid")
+            continue
+
+        let ref = admin.firestore().doc(g.path)
+        let types = await ref.listCollections()
+
+        for (let t of types) {
+            if (t.id === "Living-Ship" || g.id === "Euclid" && t.id < "Ship")
+                continue
+
+            let tref = admin.firestore().doc("tags/" + t.id)
+            let tags = await tref.get()
+            tags = tags.data().tags // filter bad tags
+
+            let ref = admin.firestore().collection(t.path)
+            let items = await ref.get()
+
+            // rewrites every single entry in the db
+            for (let doc of items.docs) {
+                let d = doc.data()
+
+                for (let type of ["Sail", "Color", "Markings", "Tags", "Resources"])
+                    if (typeof d["old" + type] === "undefined" && typeof d[type] !== "undefined") {
+                        d["old" + type] = d[type]
+                        d[type] = {}
+
+                        try {
+                            for (let l of d["old" + type])
+                                if (type !== "Tags" || tags.indexOf(l) !== -1)
+                                    d[type][l] = true
+                        }
+                        catch (err) { console.log(err, JSON.stringify(d)) }
+
+                        if (d["old" + type].length > 0)
+                            console.log(d.galaxy, d.type, d.id, JSON.stringify(d["old" + type]), JSON.stringify(d[type]))
+                    }
+
+                await doc.ref.set(d)
+            }
+        }
+    }
+}
+fixTags()
 
 async function combineGalaxies() {
     let ref = admin.firestore().collection("nmsce")
@@ -50,8 +100,6 @@ async function combineGalaxies() {
                 let votes = await doc.ref.collection("votes").get()
                 for (let vdoc of votes.docs) {
                     let v = vdoc.data()
-
-                    // new vote structure???
                     await ref.collection("votes").doc(v.uid).set(v)
                 }
 
@@ -213,8 +261,7 @@ const newFaunaList = [
     "Lizard, flying",
     "Wraith / snake, flying",
     "Protoflyer",
-    "Butterfly",
-    ""
+    "Butterfly"
 ]
 
 const oldFaunaList = [

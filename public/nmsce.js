@@ -794,18 +794,14 @@ class NMSCE {
                         break
                     case "tags":
                         let tloc = loc.find("[id|='tag']")
-                        entry[id] = []
+                        entry[id] = {}
 
                         for (let loc of tloc) {
                             let t = $(loc).prop("id").stripID().idToName()
-                            if (t && !entry[id].includes(t))
-                                entry[id].push(t)
+                            if (t)
+                                entry[id][t] = true
                         }
 
-                        if (entry[id].length > 0)
-                            entry[id].sort((a, b) =>
-                                a.toLowerCase() > b.toLowerCase() ? 1 :
-                                    a.toLowerCase() < b.toLowerCase() ? -1 : 0)
                         break
                     case "menu":
                         entry[id] = loc.find("[id|='btn']").text().stripMarginWS()
@@ -846,7 +842,7 @@ class NMSCE {
                                 ok = entry[id] !== -1 && entry[id] !== ""
                                 break
                             case "tags":
-                                ok = entry[id].length > 0
+                                ok = Object.keys(entry[id]).length > 0
                                 break
                         }
 
@@ -961,7 +957,8 @@ class NMSCE {
                         break
                     case "tags":
                         row.find("#list-" + id).empty()
-                        for (let t of entry[id]) {
+                        let keys = Object.keys(entry[id])
+                        for (let t of keys) {
                             let h = /idname/[Symbol.replace](tTag, t.nameToId())
                             h = /title/[Symbol.replace](h, t)
                             row.find("#list-" + id).append(h)
@@ -1087,18 +1084,13 @@ class NMSCE {
 
         let ref = collection(bhs.fs, "nmsce/" + search.galaxy + "/" + search.type)
 
-        let firstarray = 0;
-        let arraylist = [];
+        // let firstarray = 0;
+        // let arraylist = [];
         let statements = [];
 
         for (let q of search.search) {
             switch (q.type) {
                 case "tags":
-                    arraylist.push(q)
-
-                    if (firstarray++ === 0)
-                        statements.push(where(q.name, "array-contains-any", q.list))
-                    break
                 case "map":
                     for (let i of q.list)
                         statements.push(where(q.name + "." + i, "==", true))
@@ -1111,35 +1103,35 @@ class NMSCE {
 
         let qury = query(ref, ...statements, limit(50))
 
-        const filterResults = (entries, panel) => {
-            let list = []
-            if (entries)
-                for (let e of entries) {
-                    let found = true
-                    for (let l of arraylist) {
-                        for (let t of l.list) {
-                            if (!e[l.name] || !e[l.name].includes(t)) {
-                                found = false
-                                break
-                            }
-                        }
+        // const filterResults = (entries, panel) => {
+        //     let list = []
+        //     if (entries)
+        //         for (let e of entries) {
+        //             let found = true
+        //             for (let l of arraylist) {
+        //                 for (let t of l.list) {
+        //                     if (!e[l.name] || !e[l.name].includes(t)) {
+        //                         found = false
+        //                         break
+        //                     }
+        //                 }
 
-                        if (!found)
-                            break
-                    }
+        //                 if (!found)
+        //                     break
+        //             }
 
-                    if (found) {
-                        list.push(e)
-                    }
-                }
+        //             if (found) {
+        //                 list.push(e)
+        //             }
+        //         }
 
-            if (list.length === 0)
-                bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
-            else
-                dispFcn(list, panel)
-        }
+        //     if (list.length === 0)
+        //         bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
+        //     else
+        //         dispFcn(list, panel)
+        // }
 
-        this.getWithObserver(null, qury, panel, true, filterResults)
+        this.getWithObserver(null, qury, panel, true, dispFcn)
     }
 
     search(search) {
@@ -1147,8 +1139,6 @@ class NMSCE {
             return false;
         else
             search = null;
-
-
 
         if (!search) {
             search = this.extractSearch()
@@ -4383,10 +4373,12 @@ class NMSCE {
 
             if (obs.run) {
                 obs.run = false
-                // if (Atomics.compareExchange(obs.arr, 0, 0, 1) === 0)
-                // what the hell are obs.options supposed to do?
+
                 getDocs(ref).then(snapshot => {
                     if (snapshot.empty) {
+                        if (obs.type === "Search-Results")
+                            bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
+
                         obs.cont = false
                         obs.dispFcn([], obs.type)
                         return
@@ -4409,7 +4401,6 @@ class NMSCE {
                         }
 
                     obs.last = snapshot.docs[snapshot.size - 1]
-                    // Atomics.compareExchange(obs.arr, 0, 1, 0)
                 })
             }
         }
@@ -4444,10 +4435,6 @@ class NMSCE {
             obs.run = true
             obs.cont = cont
 
-            // const sab = new SharedArrayBuffer(4)
-            // obs.arr = new Int32Array(sab)
-            // obs.arr[0] = 0
-
             getSnapshot(obs)
         }
     }
@@ -4475,9 +4462,6 @@ class NMSCE {
             for (let r of resultTables) {
                 if (r.field) {
                     this.entries[r.name.nameToId()] = []
-
-
-
                     let qury = query(collectionGroup(bhs.fs, "nmsceCommon"), orderBy(r.field, "desc"), limit(r.limit))
 
                     this.getWithObserver(null, qury, r.name, r.cont, this.displayResultList, {
@@ -4646,12 +4630,10 @@ class NMSCE {
 
                 if (fld.type === "tags") {
                     let t = ""
-                    if (e[id]) {
-                        for (let c of e[id])
-                            t += c + ", "
+                    let k = Object.keys(e[id])
 
-                        t = t.slice(0, t.length - 2)
-                    }
+                    for (let i of k)
+                        t += i + " "
 
                     h = /value/[Symbol.replace](h, t)
                 } else
@@ -4927,7 +4909,20 @@ class NMSCE {
             let i = getIndex(objectList, "name", fstring ? e : e.type)
             for (let f of objectList[i].fields) {
                 let id = f.name.nameToId()
-                let title = fstring ? f.name : typeof e[f.name] === "undefined" ? "" : e[f.name]
+                let title = ""
+
+                if (fstring)
+                    title = f.name
+                else if (typeof e[f.name] === "undefined")
+                    title = ""
+                else if (f.type === "tags") {
+                    let keys = Object.keys(e[f.name])
+                    title = ""
+                    for (let k of keys)
+                        title += k + " "
+                }
+                else
+                    title = e[f.name]
 
                 if (f.type !== "img" && f.type !== "map") {
                     let l = /idname/g[Symbol.replace](itm, id)
