@@ -68,3 +68,4 @@ functions/test.json
 
 #for local testing
 local.*.js
+functions/ships.json

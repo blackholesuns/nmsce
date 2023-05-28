@@ -4920,8 +4920,7 @@ class NMSCE {
                     title = ""
                     for (let k of keys)
                         title += k + " "
-                }
-                else
+                } else
                     title = e[f.name]
 
                 if (f.type !== "img" && f.type !== "map") {
@@ -4934,7 +4933,19 @@ class NMSCE {
                     if (typeof f.sublist !== "undefined")
                         for (let s of f.sublist) {
                             let id = s.name.nameToId()
-                            let title = fstring ? s.name : typeof e[s.name] === "undefined" ? "" : e[s.name]
+                            let title = ""
+
+                            if (fstring)
+                                title = s.name
+                            else if (typeof e[s.name] === "undefined")
+                                title = ""
+                            else if (s.type === "tags") {
+                                let keys = Object.keys(e[s.name])
+                                title = ""
+                                for (let k of keys)
+                                    title += k + " "
+                            } else
+                                title = e[s.name]
 
                             if (s.type !== "img" && s.type !== "map") {
                                 let l = /idname/g[Symbol.replace](itm, id)
@@ -4994,7 +5005,16 @@ class NMSCE {
         let i = getIndex(objectList, "name", e.type)
         for (let f of objectList[i].fields) {
             let id = f.name.nameToId()
-            let title = typeof e[f.name] === "undefined" ? "" : e[f.name]
+            let title = ""
+
+            if (typeof e[f.name] === "undefined")
+                title = ""
+            if (f.type === "tags") {
+                let keys = Object.keys(e[f.name])
+                for (let k of keys)
+                    title += k + " "
+            } else
+                title = e[f.name]
 
             if (f.type !== "img" && f.type !== "map") {
                 let floc = loc.find("#id-" + id)
@@ -5004,7 +5024,16 @@ class NMSCE {
                 if (typeof f.sublist !== "undefined")
                     for (let s of f.sublist) {
                         let id = s.name.nameToId()
-                        let title = typeof e[s.name] === "undefined" ? "" : e[s.name]
+                        let title = ""
+
+                        if (typeof e[s.name] === "undefined")
+                            title = ""
+                        if (s.type === "tags") {
+                            let keys = Object.keys(e[s.name])
+                            for (let k of keys)
+                                title += k + " "
+                        } else
+                            title = e[s.name]
 
                         if (s.type !== "img" && s.type !== "map") {
                             let floc = loc.find("#id-" + id)

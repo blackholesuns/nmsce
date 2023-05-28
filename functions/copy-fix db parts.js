@@ -25,14 +25,18 @@ async function getseeds() {
     for (let g of galaxies) {
         let ref = admin.firestore().collection(g.path + "/Ship")
         ref = ref.where("Seed", ">", "0x")
-         ref = ref.where("Type", "=", "Fighter")
+        ref = ref.where("Type", "=", "Fighter")
         let snapshot = await ref.get()
 
         for (let doc of snapshot.docs) {
             let d = doc.data()
-            let parts = Object.keys(d.parts).sort()
+            let parts = Object.keys(d.parts)
+            let stripped = []
+            for (let p of parts)
+                stripped.push(parseInt(p.slice(1)))
+            stripped = stripped.sort((a, b) => a - b)
             let color = Object.keys(d.Color).sort()
-            console.log(d.Seed, parts, d.color, "https://cdn.nmsce.com/nmsce/disp/thumb/"+d.Photo)
+            console.log(stripped, BigInt(d.Seed).toString(2).padStart(64, '0'), d.Seed, color, "https://cdn.nmsce.com/nmsce/disp/thumb/" + d.Photo)
         }
     }
 }
