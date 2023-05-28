@@ -5009,7 +5009,7 @@ class NMSCE {
 
             if (typeof e[f.name] === "undefined")
                 title = ""
-            if (f.type === "tags") {
+            else if (f.type === "tags") {
                 let keys = Object.keys(e[f.name])
                 for (let k of keys)
                     title += k + " "
@@ -5028,7 +5028,7 @@ class NMSCE {
 
                         if (typeof e[s.name] === "undefined")
                             title = ""
-                        if (s.type === "tags") {
+                        else if (s.type === "tags") {
                             let keys = Object.keys(e[s.name])
                             for (let k of keys)
                                 title += k + " "
