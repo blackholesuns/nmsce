@@ -758,6 +758,8 @@ class NMSCE {
                 entry.created = this.last.created
                 entry.id = this.last.id
                 entry.Photo = this.last.Photo
+                entry.reddit = this.last.reddit
+                entry.redditlink = this.last.redditlink
                 entry._name = this.last._name
                 entry.uid = this.last.uid
             } else {
@@ -1622,8 +1624,9 @@ class NMSCE {
         }
 
         if (ok) {
-            this.extractEntry().then(() => {
-                this.clearPanel();
+            this.extractEntry().then((ok) => {
+                if (ok)
+                    this.clearPanel();
             });
         }
     }
@@ -3412,6 +3415,9 @@ class NMSCE {
                                 let out = {}
                                 out.redditlink = link
                                 out.reddit = Timestamp.now()
+
+                                nmsce.last.reddit = out.reddit
+                                nmsce.last.redditlink = out.redditlink
 
                                 setDoc(doc(bhs.fs, "nmsce/" + galaxy + "/" + type + "/" + id), out, {
                                     merge: true

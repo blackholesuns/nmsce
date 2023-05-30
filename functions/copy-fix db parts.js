@@ -18,6 +18,87 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // tags to element=true instead of arrays
 // clean up garbage in seed
 
+// async function addLStoShipTotals() {
+//     let ref = admin.firestore().collection("users")
+//     ref = ref.where("nmsceTotals.Living-Ship", ">", 0)
+//     let items = await ref.get()
+
+//     for (let doc of items.docs) {
+//         let d = doc.data()
+//         if (typeof d.nmsceTotals.Ship !== "undefined")
+//             d.nmsceTotals.Ship += d.nmsceTotals["Living-Ship"]
+//         else
+//             d.nmsceTotals.Ship = d.nmsceTotals["Living-Ship"]
+//         delete d.nmsceTotals["Living-Ship"]
+//         console.log(d.nmsceTotals)
+//         doc.ref.set(d)
+//     }
+// }
+// addLStoShipTotals()
+
+async function combineGalaxies() {
+    let ref = admin.firestore().collection("nmsce")
+    let galaxies = await ref.listDocuments()
+    let count = 0
+    let totals = {}
+
+    for (let g of galaxies) {
+        let ref = admin.firestore().doc(g.path)
+        let types = await ref.listCollections()
+
+        for (let t of types) {
+            if (t.id === "Living-Ship")
+                continue
+
+            let ref = admin.firestore().collection(t.path)
+            let items = await ref.get()
+
+            for (let doc of items.docs) {
+                let d = doc.data()
+                console.log(g.id, t.id, d.id)
+
+                let keys = Object.keys(d)
+                for (let key of keys)
+                    if (key.startsWith("old"))
+                        delete d[key]
+
+                let ref = admin.firestore().doc("nmsceCombined/" + d.id)
+
+                // let dup = await ref.get()
+                // if (dup.exists) {
+                //     console.log("duplicate", g.id, t.id, d.id)
+                //     continue
+                // }
+
+                // await ref.set(d)
+
+                // let votes = await doc.ref.collection("votes").get()
+                // for (let vdoc of votes.docs) 
+                //     await ref.collection("votes").doc(v.uid).set(vdoc.data())
+
+                if (typeof totals[d.uid] === "undefined")
+                    totals[d.uid] = {}
+
+                if (typeof totals[d.uid][d.type] === "undefined")
+                    totals[d.uid][d.type] = 0
+
+                totals[d.uid][d.type]++
+
+                ++count
+            }
+
+            if (count > 200)
+                break
+        }
+
+        if (count > 200)
+            break
+    }
+
+    //write totals
+}
+// combineGalaxies()
+
 async function getseeds() {
     let ref = admin.firestore().collection("nmsce")
     let galaxies = await ref.listDocuments()
@@ -36,7 +117,7 @@ async function getseeds() {
                 stripped.push(parseInt(p.slice(1)))
             stripped = stripped.sort((a, b) => a - b)
             let color = Object.keys(d.Color).sort()
-            console.log(stripped, BigInt(d.Seed).toString(2).padStart(64, '0'), d.Seed, color, "https://cdn.nmsce.com/nmsce/disp/thumb/" + d.Photo)
+            console.log(stripped, BigInt(d.Seed).toString(2).padStart(64, '0'))//, d.Seed, color, "https://cdn.nmsce.com/nmsce/disp/thumb/" + d.Photo)
         }
     }
 }
@@ -91,51 +172,6 @@ getseeds()
 //     }
 // }
 // fixTags()
-
-async function combineGalaxies() {
-    let ref = admin.firestore().collection("nmsce")
-    let galaxies = await ref.listDocuments()
-    let count = 0
-
-    for (let g of galaxies) {
-        let ref = admin.firestore().doc(g.path)
-        let types = await ref.listCollections()
-
-        for (let t of types) {
-            if (t.id === "Living-Ship")
-                continue
-
-            let ref = admin.firestore().collection(t.path)
-            let items = await ref.get()
-
-            for (let doc of items.docs) {
-                let d = doc.data()
-                console.log(g.id, t.id, d.id)
-
-                let ref = admin.firestore().doc("nmsceCombined/" + d.id)
-
-                let dup = await ref.get()
-                if (dup.exists) {
-                    console.log("duplicate", g.id, t.id, d.id)
-                    continue
-                }
-
-                await ref.set(d)
-                ++count
-
-                let votes = await doc.ref.collection("votes").get()
-                for (let vdoc of votes.docs) {
-                    let v = vdoc.data()
-                    await ref.collection("votes").doc(v.uid).set(v)
-                }
-
-                // fix totals here so we don't duplicate reads
-            }
-            if (count > 2000)
-                return
-        }
-    }
-}
 
 // async function updateVersion() {
 //     let ref = admin.firestore().collection("nmsce")
