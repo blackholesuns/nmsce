@@ -1,6 +1,6 @@
 "use strict";
 
-import {collection, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+import { collection, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
 import { blackHoleSuns, bhs } from "./commonFb.js";
 import { addressToXYZ, fcedata, fdarc, fnmsce, fpoi, fpreview, fsearch, ftotals, getIndex, mergeObjects, reformatAddress } from "./commonNms.js";
 import { galaxyList, latestversion, platformList } from "./constants.js";
@@ -137,8 +137,8 @@ blackHoleSuns.prototype.isPatreon = function (tier) {
     return bhs.hasRole("nmsceAdmin")
         ? true
         : typeof bhs.patreon === "number"
-        ? bhs.patreon >= tier
-        : false;
+            ? bhs.patreon >= tier
+            : false;
 };
 
 blackHoleSuns.prototype.hasRole = function (role) {
@@ -252,15 +252,15 @@ blackHoleSuns.prototype.displayUser = function (user, force) {
 
     if (bhs.user.galaxy && bhs.user.galaxy !== "") {
         let i = galaxyList[getIndex(galaxyList, "name", bhs.user.galaxy)];
-        if(!i) {
+        if (!i) {
             bhs.user.galaxy = null;
-        } else {   
+        } else {
             let btn = pnl.find("#btn-Galaxy");
             btn.val(bhs.user.galaxy)
             btn.attr(
                 "style",
                 "background-color: " + i.color + ";"
-                );
+            );
         }
     } else pnl.find("#btn-Galaxy").val("");
 
@@ -426,8 +426,8 @@ blackHoleSuns.prototype.displayContest = function (contest) {
             clearInterval(x);
             c.html(
                 "<div class='col-14 text-center txt-def h6'>" +
-                    contest.name +
-                    " contest has ended</div>"
+                contest.name +
+                " contest has ended</div>"
             );
         }
     }, 1000);
@@ -1030,12 +1030,8 @@ blackHoleSuns.prototype.sortTotals = function (evt) {
     if (list.length > 0) {
         if (id.match(/name/i))
             list.sort((a, b) => {
-                let x = $(a)
-                    .find("#" + id)
-                    .text();
-                let y = $(b)
-                    .find("#" + id)
-                    .text();
+                let x = $(a).find("#" + id).text();
+                let y = $(b).find("#" + id).text();
 
                 if (g) {
                     x = parseInt(x.replace(/(\d+).*/, "$1"));
@@ -1049,14 +1045,8 @@ blackHoleSuns.prototype.sortTotals = function (evt) {
             });
         else
             list.sort((a, b) => {
-                let x = $(a)
-                    .find("#" + id)
-                    .text()
-                    .stripMarginWS();
-                let y = $(b)
-                    .find("#" + id)
-                    .text()
-                    .stripMarginWS();
+                let x = $(a).find("#" + id).text().stripMarginWS();
+                let y = $(b).find("#" + id).text().stripMarginWS();
                 x = x == "" ? -2 : x == "--" ? -1 : parseInt(x);
                 y = y == "" ? -2 : y == "--" ? -1 : parseInt(y);
 
@@ -1086,13 +1076,7 @@ blackHoleSuns.prototype.clickUser = function (evt) {
         if (pnlid == "itm-Galaxies") {
             $("#btn-Galaxy").val(name);
             $("#btn-Player").text("");
-            bhs.getEntries(
-                bhs.displayEntryList,
-                null,
-                null,
-                name.stripNumber(),
-                platform
-            );
+            bhs.getEntries(bhs.displayEntryList, null, null, name.stripNumber(), platform);
         } else if (pnlid == "itm-Organizations")
             bhs.getOrgEntries(bhs.displayEntryList, name, galaxy, platform);
         else bhs.getEntriesByName(bhs.displayEntryList, name, galaxy, platform);
@@ -1106,47 +1090,26 @@ blackHoleSuns.prototype.clickGalaxy = function (evt) {
     $("#btn-Galaxy").val(galaxy);
     let platform = $("#btn-Platform").text().stripMarginWS();
     $("#btn-Player").text("");
-    bhs.getEntries(
-        bhs.displayEntryList,
-        bhs.displayEntry,
-        null,
-        galaxy,
-        platform
-    );
+    bhs.getEntries(bhs.displayEntryList, bhs.displayEntry, null, galaxy, platform);
 };
 
-blackHoleSuns.prototype.buildMenu = function (
-    loc,
-    label,
-    list,
-    changefcn,
-    options
-) {
-    if (!list || list.length == 0) return;
+blackHoleSuns.prototype.buildMenu = function (loc, label, list, changefcn, options) {
+    if (!list || list.length == 0)
+        return;
 
     let header = `        
         <div class="row">`;
     let title = `
             <div class="size txt-label-def">title&nbsp;</div>`;
     let block = `
-            <div id="menu-idname" class="size dropdown">
-                <button id="btn-idname" class="btn border btn-sm dropdown-toggle" style="rgbcolor" type="button" data-toggle="dropdown"></button>
-         ttip   </div>
+            <select id="menu-idname"></select>&nbsp;ttip
         </div>`;
+    const item = `<option value="idname" style="font bkgcolor txtcolor cursor: pointer">iname</option>`;
+
     const tText = `&nbsp;
         <span class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
             data-placement="bottom" title="ttip"></span>&nbsp;`;
     const rText = `&nbsp;<span class="h5 text-danger">*</span>`;
-
-    let item = ``;
-    let hdr = ``;
-    if (list.length > 8) {
-        hdr = `<ul id="list" class="dropdown-menu scrollable-menu" role="menu"></ul>`;
-        item = `<li id="item-idname" class="dropdown-item" type="button" style="font bkgcolor txtcolor cursor: pointer">iname</li>`;
-    } else {
-        hdr = `<div id="list" class="dropdown-menu"></div>`;
-        item = `<button id="item-idname" class="dropdown-item border-bottom" type="button" style="font bkgcolor txtcolor cursor: pointer">iname</button>`;
-    }
 
     let id = label.nameToId();
     let h = header;
@@ -1186,60 +1149,31 @@ blackHoleSuns.prototype.buildMenu = function (
     loc.find("#id-" + id).empty();
     loc.find("#id-" + id).append(h);
 
-    let menu = loc.find("#menu-" + id);
-    menu.append(hdr);
+    let menu = loc.find("#menu-" + id)
 
-    let mlist = menu.find("#list");
-
-    if (options.sort){
-        list = list.sort((a, b) => a.name.localeCompare(b.name));
-    }
+    if (options.sort)
+        list = list.sort((a, b) => a.name.localeCompare(b.name))
 
     for (let l of list) {
-        let lid = l.name.nameToId();
-        h = /idname/[Symbol.replace](item, lid);
-        h = /iname/[Symbol.replace](
-            h,
-            (typeof l.number !== "undefined" ? l.number + " " : "") + l.name
-        );
-        h = /font/[Symbol.replace](
-            h,
-            typeof options.font === "boolean"
-                ? "font: 16pt " + l.name + ";"
-                : typeof options.font === "string"
-                ? "font: 16pt " + options.font + ";"
-                : ""
-        );
-        h = /bkgcolor/[Symbol.replace](
-            h,
-            "background-color: " +
-                (typeof l.color === "undefined" ? "#c0c0c0" : l.color) +
-                ";"
-        );
-        h = /txtcolor/[Symbol.replace](
-            h,
-            typeof l.text_color === "undefined"
-                ? ""
-                : "color: " + l.text_color + ";"
-        );
+        let lid = l.name.nameToId()
+        h = /idname/[Symbol.replace](item, lid)
+        h = /iname/[Symbol.replace](h, /*(typeof l.number !== "undefined" ? l.number + " " : "") +*/ l.name);
+        h = /font/[Symbol.replace](h, typeof options.font === "boolean" ? "font: 16pt " + l.name + ";" : typeof options.font === "string" ? "font: 16pt " + options.font + ";" : "");
+        h = /bkgcolor/[Symbol.replace](h, "background-color: " + (typeof l.color === "undefined" ? "#c0c0c0" : l.color) + ";");
+        h = /txtcolor/[Symbol.replace](h, typeof l.text_color === "undefined" ? "" : "color: " + l.text_color + ";");
 
-        mlist.append(h);
-        bhs.bindMenuChange(mlist.find("#item-" + lid), changefcn);
+        menu.append(h)
+        bhs.bindMenuChange(menu, changefcn)
     }
-};
+}
 
 blackHoleSuns.prototype.bindMenuChange = function (loc, fcn) {
-    loc.unbind("click");
-    loc.click(function () {
-        let name = $(this).text().stripMarginWS();
-        let btn = $(this).closest("[id|='id']").find("[id|='btn']").first();
-        btn.text(name);
-
-        if (typeof fcn === "function") fcn(btn);
-
-        if ($(this).attr("style")) btn.attr("style", $(this).attr("style"));
-    });
-};
+    loc.unbind("change");
+    loc.change(function () {
+        if (typeof fcn === "function") 
+            fcn($(this))
+    })
+}
 
 blackHoleSuns.prototype.saveUser = function () {
     if (!fnmsce) {
@@ -1435,12 +1369,12 @@ blackHoleSuns.prototype.extractMapOptions = function () {
 blackHoleSuns.prototype.setMapOptions = function (entry) {
     let opt = $("#mapoptions");
 
-    
+
     opt.find("#id-drawbase").hide();
     opt.find("#id-zoomreg").hide();
 
     if (!fsearch) opt.find("#id-drawcon").hide();
-  
+
 
     if (fsearch) opt.find("#zoomsection").hide();
 

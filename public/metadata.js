@@ -1,6 +1,13 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.0",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Get rid of required galaxy selection on searching. Use 'Select All' (default) to search across all galaxies."
+        ]
+    }, {
         Version: "1.1.9",
         Title: " ",
         Authors: ["spip01"],

@@ -102,8 +102,8 @@ $(document).ready(() => {
         nmsce.last.galaxy = passed.g
         nmsce.searchRegion()
 
-    } else if (passed.i && passed.g && passed.t) {
-        getDoc(doc(bhs.fs, "nmsce/" + passed.g + "/" + passed.t + "/" + passed.i)).then(doc => {
+    } else if (passed.i) {
+        getDoc(doc(bhs.fs, "nmsceCombined/" + passed.i)).then(doc => {
             if (doc.exists) {
                 if (fnmsce || fpreview)
                     nmsce.displaySelected(doc.data())
@@ -270,19 +270,15 @@ class NMSCE {
         addRadioList($("#id-Lifeform"), "Lifeform", lifeformList)
         addRadioList($("#id-Platform"), "Platform", platformListAll)
 
-        BuildGalaxyMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
+        if (fnmsce)
+            galaxyList.unshift({ name: "Search All" })
+
+        bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
+            tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
             required: true,
-            sort: true,
             labelsize: "col-md-6 col-4",
             menusize: "col",
         })
-        // bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
-        //     tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
-        //     required: true,
-        //     sort: true,
-        //     labelsize: "col-md-6 col-4",
-        //     menusize: "col",
-        // })
 
         if (fnmsce) {
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
@@ -343,11 +339,11 @@ class NMSCE {
     }
 
     setGalaxy(evt) {
-        bhs.updateUser({
-            galaxy: $(evt).text().stripNumber()
-        })
-
-        this.getEntries(true)
+        let galaxy = $("#menu-Galaxy").val().stripNumber().replace("-", " ")
+        if (galaxy !== "Search All")
+            bhs.updateUser({
+                galaxy: galaxy
+            })
     }
 
     setGlyphInput(evt) {
@@ -457,7 +453,7 @@ class NMSCE {
         else
             loc.find("#foundreg").hide()
 
-        $("#btn-Galaxy").val(entry.galaxy)
+        $("#menu-Galaxy").val(entry.galaxy)
 
         this.dispAddr(loc, entry.addr)
 
@@ -543,7 +539,7 @@ class NMSCE {
                 bhs.user.galaxy = window.localStorage.getItem('nmsce-galaxy')
 
             if (!bhs.user.galaxy)
-                bhs.user.galaxy = "Euclid"
+                bhs.user.galaxy = "Search All"
 
             if (bhs.user.uid && typeof this.entries["My Favorites"] === "undefined")
                 this.getResultsLists("My Favorites")
@@ -555,7 +551,7 @@ class NMSCE {
         if (fcedata)
             loc.find("#id-Player").val(bhs.user._name)
 
-        loc.find("#btn-Galaxy").val(bhs.user.galaxy)
+        loc.find("#menu-Galaxy").val(bhs.user.galaxy)
 
         loc = loc.find("#id-Platform")
         loc.find("input").prop("checked", false)
@@ -592,7 +588,7 @@ class NMSCE {
             pnl.find("[id|='menu']").each(function () {
                 let id = $(this).prop("id").stripID()
                 if ((!fcedata || all || id !== "Type") && id != "Galaxy")
-                    $(this).find("[id|='btn']").text("")
+                    $(this).val("")
             })
 
             pnl.find(".fa-check").hide()
@@ -699,15 +695,15 @@ class NMSCE {
             entry._name = last._name
             entry.uid = last.uid
             entry.created = last.created
-            entry.Platform = last.Platform
-            entry.platform = last.Platform === "PS4" ? "PS4" : last.Platform === "PC" || last.Platform === "XBox" ? "PC-XBox" : ""
+            // entry.Platform = last.Platform
+            // entry.platform = last.Platform === "PS4" ? "PS4" : last.Platform === "PC" || last.Platform === "XBox" ? "PC-XBox" : ""
             entry.galaxy = last.galaxy
             entry.version = last.version ? last.version : latestversion
         } else {
             entry._name = bhs.user._name
             entry.uid = bhs.user.uid
-            entry.Platform = bhs.user.Platform
-            entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
+            // entry.Platform = bhs.user.Platform
+            // entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
             entry.galaxy = bhs.user.galaxy
             entry.version = latestversion
         }
@@ -806,7 +802,7 @@ class NMSCE {
 
                         break
                     case "menu":
-                        entry[id] = loc.find("[id|='btn']").text().stripMarginWS()
+                        entry[id] = loc.val().stripMarginWS().replace("-", " ")
                         if (entry[id] === " Nothing Selected")
                             entry[id] = ""
                         break
@@ -1031,7 +1027,7 @@ class NMSCE {
     displaySearch(search) {
         this.clearPanel(true)
 
-        $("#btn-Galaxy").val(search.galaxy)
+        $("#menu-Galaxy").val(search.galaxy)
         $("#ck-notify").prop("checked", search.notify)
         $("#id-Player").text(search.name)
 
@@ -1084,11 +1080,14 @@ class NMSCE {
 
         $("#status").empty()
 
-        let ref = collection(bhs.fs, "nmsce/" + search.galaxy + "/" + search.type)
+        let ref = collection(bhs.fs, "nmsceCombined")
 
-        // let firstarray = 0;
-        // let arraylist = [];
         let statements = [];
+
+        if (search.galaxy !== "Search All")
+            statements.push(where("galaxy", "==", search.galaxy))
+
+        statements.push(where("type", "==", search.type))
 
         for (let q of search.search) {
             switch (q.type) {
@@ -1103,35 +1102,8 @@ class NMSCE {
             }
         }
 
-        let qury = query(ref, ...statements, limit(50))
-
-        // const filterResults = (entries, panel) => {
-        //     let list = []
-        //     if (entries)
-        //         for (let e of entries) {
-        //             let found = true
-        //             for (let l of arraylist) {
-        //                 for (let t of l.list) {
-        //                     if (!e[l.name] || !e[l.name].includes(t)) {
-        //                         found = false
-        //                         break
-        //                     }
-        //                 }
-
-        //                 if (!found)
-        //                     break
-        //             }
-
-        //             if (found) {
-        //                 list.push(e)
-        //             }
-        //         }
-
-        //     if (list.length === 0)
-        //         bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
-        //     else
-        //         dispFcn(list, panel)
-        // }
+        // statements.push(orderBy("created", "desc")) would require index for every possible combination
+        let qury = query(ref, ...statements, limit(25))
 
         this.getWithObserver(null, qury, panel, true, dispFcn)
     }
@@ -1178,7 +1150,7 @@ class NMSCE {
 
         if (!bhs.user.uid || !bhs.isPatreon(2)) {
             if (typeof (Storage) !== "undefined") {
-                window.localStorage.setItem('nmsce-galaxy', $("#btn-Galaxy").val().stripNumber())
+                window.localStorage.setItem('nmsce-galaxy', $("#menu-Galaxy").val().stripNumber().replace("-", " "))
 
                 search.uid = window.localStorage.getItem('nmsce-tempuid')
                 if (!search.uid) {
@@ -1313,20 +1285,15 @@ class NMSCE {
     }
 
     extractSearch() {
-        let galaxy = $("#btn-Galaxy").val().stripNumber()
+        let galaxy = $("#menu-Galaxy").val().stripNumber().replace("-", " ")
         let s = {}
         s.search = []
         let search = s.search
 
-        if (galaxy === "") {
-            bhs.status("No Galaxy Selected.")
-            return null
-        }
-
         let tab = $("#typeTabs .active").prop("id").stripID()
         let pnl = $("#typePanels #pnl-" + tab)
 
-        s.galaxy = galaxy
+        s.galaxy = galaxy === "" ? "Search All" : galaxy
         s.type = tab
 
         let name = $("#id-Player").val()
@@ -1517,7 +1484,7 @@ class NMSCE {
 
         this.entries["Search-Results"] = []
 
-        let ref = query(collectionGroup(bhs.fs, "nmsceCommon"),
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
             where("galaxy", "==", this.last.galaxy),
             where("addr", "==", this.last.addr))
 
@@ -1538,7 +1505,7 @@ class NMSCE {
 
         this.entries["Search-Results"] = []
 
-        let ref = query(collectionGroup(bhs.fs, "nmsceCommon"),
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
             where("galaxy", "==", this.last.galaxy),
             where("addr", ">=", this.last.addr.slice(0, 15) + "0000"),
             where("addr", "<=", this.last.addr.slice(0, 15) + "02FF"));
@@ -1691,7 +1658,7 @@ class NMSCE {
 
         u.version = latestversion
         u._name = loc.find("#id-Player").val()
-        u.galaxy = loc.find("#btn-Galaxy").val().stripNumber()
+        u.galaxy = loc.find("#menu-Galaxy").val().stripNumber().replace("-", " ")
 
         loc = loc.find("#id-Platform :checked")
         if (loc.length > 0)
@@ -2538,8 +2505,7 @@ class NMSCE {
 
             switch (data.type) {
                 case "menu":
-                    loc = loc.find("[id|='btn']")
-                    text = (loc.prop("nodeName") === "INPUT" ? loc.val() : loc.text()).stripNumber()
+                    text = loc.val().stripNumber().replace("-", " ")
                     break
                 case "tags":
                     loc = loc.find("[id|='tag']")
@@ -3166,7 +3132,7 @@ class NMSCE {
         if (!accessToken) {
             if (nmsce.last) {
                 let e = nmsce.last
-                state = "post_" + e.galaxy.nameToId() + "_" + e.type + "_" + e.id
+                state = "post_" + e.id
             }
 
             accessToken = nmsce.getRedditToken(state)
@@ -3179,8 +3145,8 @@ class NMSCE {
             if (state) {
                 let path = state.split("_")
 
-                if (!nmsce.last || nmsce.last.galaxy !== path[1].idToName() || nmsce.last.type !== path[2] || nmsce.last.id !== path[3]) {
-                    getDoc(doc(bhs.fs, "nmsce/" + path[1].idToName() + "/" + path[2] + "/" + path[3])).then(doc => {
+                if (!nmsce.last || nmsce.last.id !== path[1]) {
+                    getDoc(doc(bhs.fs, "nmsceCombined/" + path[1])).then(doc => {
                         if (doc.exists())
                             nmsce.displaySingle(doc.data(), true)
                         $("#redditPost").show()
@@ -3419,7 +3385,7 @@ class NMSCE {
                                 nmsce.last.reddit = out.reddit
                                 nmsce.last.redditlink = out.redditlink
 
-                                setDoc(doc(bhs.fs, "nmsce/" + galaxy + "/" + type + "/" + id), out, {
+                                setDoc(doc(bhs.fs, "nmsceCombined/" + id), out, {
                                     merge: true
                                 }).then(() => {
                                     nmsce.postStatus("Posted")
@@ -3822,15 +3788,9 @@ class NMSCE {
         if (this.last) {
             let entry = this.last
             this.last = null
-            let docRef = doc(bhs.fs, "nmsce/" + entry.galaxy + "/" + entry.type + "/" + entry.id)
+            let docRef = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
             let vref = collection(docRef, "votes")
-            getDocs(vref).then(snapshot => {
-                for (let doc of snapshot.docs)
-                    deleteDoc(doc.ref);
-            })
-
-            vref = collection(docRef, "nmsceCommon")
             getDocs(vref).then(snapshot => {
                 for (let doc of snapshot.docs)
                     deleteDoc(doc.ref);
@@ -3846,12 +3806,6 @@ class NMSCE {
                 getDocs(vref).then(snapshot => {
                     for (let doc of snapshot.docs)
                         deleteDoc(doc.ref);
-                })
-
-                vref = collection(docRef, "nmsceCommon")
-                getDocs(vref).then(snapshot => {
-                    for (let doc of snapshot.docs)
-                        delete (doc.ref);
                 })
 
                 // Little trick to get array of all different paths
@@ -3949,18 +3903,15 @@ class NMSCE {
             entry.id = uuidv4()
 
         if (typeof entry.Photo === "undefined")
-            entry.Photo = entry.type + "-" + entry.id + ".jpg"
+            entry.Photo = entry.id + ".jpg"
 
-        let ref = collection(bhs.fs, "nmsce/" + entry.galaxy + "/" + entry.type)
-        ref = doc(ref, entry.id)
+        let ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
         setDoc(ref, entry).then(() => {
             bhs.status(entry.type + " " + entry.Name + " saved.")
 
             if (created)
                 this.incrementTotals(entry, 1)
-
-            this.updateCommon(entry, ref)
         }).catch(err => {
             bhs.status("ERROR: " + err.code)
         })
@@ -3994,67 +3945,23 @@ class NMSCE {
         })
     }
 
-    updateCommon(entry, ref) {
-        let e = {}
-        e.created = entry.created
-        e.votes = entry.votes
-        e.private = entry.private ? true : false
-        e._name = entry._name
-        e.uid = entry.uid
-        e.id = entry.id
-        e.type = entry.type
-        e.galaxy = entry.galaxy
-        e.addr = entry.addr
-        e.Photo = entry.Photo
-        e.Name = entry.Name ? entry.Name : ""
-
-        if (entry.Type)
-            e.Type = entry.Type
-        if (entry["Planet-Index"])
-            e["Planet-Index"] = entry["Planet-Index"]
-        if (entry["Planet-Name"])
-            e["Planet-Name"] = entry["Planet-Name"]
-
-        ref = doc(collection(ref, "nmsceCommon"), entry.id)
-        setDoc(ref, e, {
-            merge: true
-        }).then().catch(err => {
-            bhs.status("ERROR: " + err.message)
-        })
-    }
-
-    getEntries(skipAll) {
+    getEntries() {
         if (typeof this.entries === "undefined")
             this.entries = {}
 
-        if (!!bhs.user.galaxy) {
+        for (let obj of objectList) {
+            this.entries[obj.name] = []
+            this.clearDisplayList(obj.name)
 
-            for (let obj of objectList) {
-                this.entries[obj.name] = []
-                this.clearDisplayList(obj.name)
-
-                let qury = query(collection(bhs.fs, "nmsce/" + bhs.user.galaxy + "/" + obj.name),
-                    where("uid", "==", bhs.user.uid),
-                    orderBy("created", "desc"),
-                    limit(50));
-                this.getWithObserver(null, qury, obj.name, true, this.displayList.bind(this))
-            }
-        }
-
-        if (!skipAll) {
-
-            this.entries.All = []
-
-            let qury = query(collectionGroup(bhs.fs, "nmsceCommon"),
+            let qury = query(collection(bhs.fs, "nmsceCombined"),
                 where("uid", "==", bhs.user.uid),
+                where("type", "==", obj.name),
                 orderBy("created", "desc"),
-                limit(50));
-
-            this.getWithObserver(null, qury, "All", true, this.displayList.bind(this), {
-                source: "server"
-            })
+                limit(25));
+            this.getWithObserver(null, qury, obj.name, true, this.displayList.bind(this))
         }
     }
+
     buildResultsList() {
         let nav = `
         <a id="dltab-idname" class="nav-item nav-link txt-def h5 rounded-top" style="border-color:black;" 
@@ -4364,7 +4271,7 @@ class NMSCE {
         return io
     }
 
-    getWithObserver(evt, ref, type, cont, dispFcn, options) {
+    getWithObserver(evt, ref, type, cont, dispFcn) {
         const getSnapshot = (obs) => {
             if (typeof obs.entryObserver === "undefined")
                 obs.entryObserver = this.fcnObserver($("#displayPanels"), this.getWithObserver.bind(this))
@@ -4386,7 +4293,7 @@ class NMSCE {
                             bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
 
                         obs.cont = false
-                        obs.dispFcn([], obs.type)
+                        // obs.dispFcn([], obs.type) leave search tab open
                         return
                     }
 
@@ -4468,7 +4375,7 @@ class NMSCE {
             for (let r of resultTables) {
                 if (r.field) {
                     this.entries[r.name.nameToId()] = []
-                    let qury = query(collectionGroup(bhs.fs, "nmsceCommon"), orderBy(r.field, "desc"), limit(r.limit))
+                    let qury = query(collection(bhs.fs, "nmsceCombined"), orderBy(r.field, "desc"), limit(r.limit))
 
                     this.getWithObserver(null, qury, r.name, r.cont, this.displayResultList, {
                         source: "server"
@@ -4517,7 +4424,7 @@ class NMSCE {
             let e = this.last
             let id = $(evt).prop("id")
 
-            let ref = doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)
+            let ref = doc(bhs.fs, "nmsceCombined/" + e.id)
 
             let res = await getDoc(doc(collection(ref, "votes"), bhs.user.uid));
 
@@ -4554,13 +4461,6 @@ class NMSCE {
             }, {
                 merge: true
             })
-
-            ref = doc(collection(ref, "nmsceCommon"), this.last.id)
-            await setDoc(ref, {
-                votes: e
-            }, {
-                merge: true
-            })
         }
     }
 
@@ -4571,7 +4471,7 @@ class NMSCE {
         let i = getIndex(this.entries[type], "id", id)
         let e = this.entries[type][i]
 
-        getDoc(doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)).then(doc => {
+        getDoc(doc(bhs.fs, "nmsceCombined/" + e.id)).then(doc => {
             let e = doc.data()
             this.last = e
             this.displaySelected(e)
@@ -4598,7 +4498,7 @@ class NMSCE {
         this.last = e
 
         if (bhs.user.uid) {
-            getDoc(doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id + "/votes/" + bhs.user.uid)).then(doc => {
+            getDoc(doc(bhs.fs, "nmsceCombined/" + e.id + "/votes/" + bhs.user.uid)).then(doc => {
                 this.showVotes(doc.data())
             })
         }
@@ -4732,14 +4632,7 @@ class NMSCE {
             <div id="list-idname" class="scroll row" style="height:600px"></div>
         </div>`
 
-        let l = /idname/g[Symbol.replace](nav, "All")
-        l = /title/[Symbol.replace](l, "All")
-        $("#displayTabs").append(l)
-
-        l = /idname/g[Symbol.replace](header, "All")
-        $("#displayPanels").append(l)
-
-        l = /idname/g[Symbol.replace](nav, "Search-Results")
+        let l = /idname/g[Symbol.replace](nav, "Search-Results")
         l = /title/[Symbol.replace](l, "Search Results")
         l = l.replace(/(.*?)\(.*\)/, "$1")
         $("#displayTabs").append(l)
@@ -4877,6 +4770,7 @@ class NMSCE {
             </div>
             <div class="row pl-10">`
         const item = `<div id="id-idname" class="col-md-7 col-14 border pointer">title</div>`
+        const glyphs = `<div id="id-idname" class="col-md-7 col-14 border pointer txt-glyph-disp" style="font-size:.75rem">title</div>`
         const sortItem = `<div id="id-idname" class="col-md-7 col-14 border pointer" onclick="nmsce.sortLoc(this)">title</div>`
         const end = `</div></div>`
 
@@ -4896,99 +4790,78 @@ class NMSCE {
             h = /imgsrc/[Symbol.replace](h, GetThumbnailUrl(e.Photo))
         }
 
-        if (type === "All" || type === "Search Results") {
-            let l = /idname/g[Symbol.replace](itm, "type")
-            l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.type)
-            if (e.Type) {
-                l = /idname/g[Symbol.replace](itm, "Type")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.Type)
-            }
-            l = /idname/g[Symbol.replace](itm, "Name")
-            l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.Name)
-            l = /idname/g[Symbol.replace](itm, "Addr")
-            l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.addr)
-        } else {
-            let i = getIndex(objectList, "name", fstring ? e : e.type)
-            for (let f of objectList[i].fields) {
-                let id = f.name.nameToId()
-                let title = ""
+        let l = /idname/g[Symbol.replace](itm, "galaxy")
+        l = /pointer/[Symbol.replace](l, "")
+        h += /title/[Symbol.replace](l, e.galaxy)
 
-                if (fstring)
-                    title = f.name
-                else if (typeof e[f.name] === "undefined")
-                    title = ""
-                else if (f.type === "tags") {
-                    let keys = Object.keys(e[f.name])
-                    title = ""
-                    for (let k of keys)
-                        title += k + " "
-                } else
-                    title = e[f.name]
+        let i = getIndex(objectList, "name", fstring ? e : e.type)
+        for (let f of objectList[i].fields) {
+            let id = f.name.nameToId()
+            let title = ""
 
-                if (f.type !== "img" && f.type !== "map") {
-                    let l = /idname/g[Symbol.replace](itm, id)
-                    if (!fstring)
-                        l = /pointer/[Symbol.replace](l, "")
+            if (fstring)
+                title = f.name
+            else if (typeof e[f.name] === "undefined")
+                title = ""
+            else if (f.type === "tags") {
+                let keys = Object.keys(e[f.name])
+                title = ""
+                for (let k of keys)
+                    title += k + " "
+            } else
+                title = e[f.name]
 
-                    h += /title/[Symbol.replace](l, title)
+            if (f.type !== "img" && f.type !== "map") {
+                let l = /idname/g[Symbol.replace](itm, id)
+                if (!fstring)
+                    l = /pointer/[Symbol.replace](l, "")
 
-                    if (typeof f.sublist !== "undefined")
-                        for (let s of f.sublist) {
-                            let id = s.name.nameToId()
-                            let title = ""
+                h += /title/[Symbol.replace](l, title)
 
-                            if (fstring)
-                                title = s.name
-                            else if (typeof e[s.name] === "undefined")
-                                title = ""
-                            else if (s.type === "tags") {
-                                let keys = Object.keys(e[s.name])
-                                title = ""
-                                for (let k of keys)
-                                    title += k + " "
-                            } else
-                                title = e[s.name]
+                if (typeof f.sublist !== "undefined")
+                    for (let s of f.sublist) {
+                        let id = s.name.nameToId()
+                        let title = ""
 
-                            if (s.type !== "img" && s.type !== "map") {
-                                let l = /idname/g[Symbol.replace](itm, id)
-                                h += /title/[Symbol.replace](l, title)
-                            }
+                        if (fstring)
+                            title = s.name
+                        else if (typeof e[s.name] === "undefined")
+                            title = ""
+                        else if (s.type === "tags") {
+                            let keys = Object.keys(e[s.name])
+                            title = ""
+                            for (let k of keys)
+                                title += k + " "
+                        } else
+                            title = e[s.name]
+
+                        if (s.type !== "img" && s.type !== "map") {
+                            let l = /idname/g[Symbol.replace](itm, id)
+                            h += /title/[Symbol.replace](l, title)
                         }
-                }
+                    }
             }
+        }
 
-            if (fstring) {
-                let l = /idname/g[Symbol.replace](itm, "Favorite")
-                h += /title/[Symbol.replace](l, "Favorite")
-                l = /idname/g[Symbol.replace](itm, "Visited")
-                h += /title/[Symbol.replace](l, "Visited")
-                l = /idname/g[Symbol.replace](itm, "Patron")
-                h += /title/[Symbol.replace](l, "Patron")
-                l = /idname/g[Symbol.replace](itm, "Editors-Choice")
-                h += /title/[Symbol.replace](l, "Editors Choice")
-                // l = /idname/g [Symbol.replace](itm, "Hall-of-Fame")
-                // h += /title/ [Symbol.replace](l, "Hall of Fame")
-                l = /idname/g[Symbol.replace](itm, "Created")
-                h += /title/[Symbol.replace](l, "Created")
-                l = /idname/g[Symbol.replace](itm, "Modified")
-                h += /title/[Symbol.replace](l, "Modified")
-                l = /idname/g[Symbol.replace](itm, "Posted")
-                h += /title/[Symbol.replace](l, "Posted")
-            } else {
-                let l = /idname/g[Symbol.replace](itm, "Created")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.created ? "Created " + e.created.toDate().toDateLocalTimeString() : "")
-                l = /idname/g[Symbol.replace](itm, "Modified")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.modded ? "Modified " + e.modded.toDate().toDateLocalTimeString() : "")
-                l = /idname/g[Symbol.replace](itm, "Posted")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.reddit ? "Posted " + e.reddit.toDate().toDateLocalTimeString() : "")
-            }
+        if (fstring) {
+            let l = /idname/g[Symbol.replace](itm, "Favorited")
+            h += /title/[Symbol.replace](l, "Favorited")
+            l = /idname/g[Symbol.replace](itm, "Created")
+            h += /title/[Symbol.replace](l, "Created")
+            l = /idname/g[Symbol.replace](itm, "Modified")
+            h += /title/[Symbol.replace](l, "Modified")
+            l = /idname/g[Symbol.replace](itm, "Posted")
+            h += /title/[Symbol.replace](l, "Posted")
+        } else {
+            let l = /idname/g[Symbol.replace](itm, "Created")
+            l = /pointer/[Symbol.replace](l, "")
+            h += /title/[Symbol.replace](l, e.created ? "Created " + e.created.toDate().toDateLocalTimeString() : "")
+            l = /idname/g[Symbol.replace](itm, "Modified")
+            l = /pointer/[Symbol.replace](l, "")
+            h += /title/[Symbol.replace](l, e.modded ? "Modified " + e.modded.toDate().toDateLocalTimeString() : "")
+            l = /idname/g[Symbol.replace](itm, "Posted")
+            l = /pointer/[Symbol.replace](l, "")
+            h += /title/[Symbol.replace](l, e.reddit ? "Posted " + e.reddit.toDate().toDateLocalTimeString() : "")
         }
 
         h += end
@@ -5070,7 +4943,7 @@ class NMSCE {
         let e = this.entries[type][i]
         this.displaySingle(e)
 
-        getDoc(doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)).then(doc => {
+        getDoc(doc(bhs.fs, "nmsceCombined/" + e.id)).then(doc => {
             if (doc.exists())
                 this.displaySingle(doc.data())
         })
@@ -5203,8 +5076,7 @@ function getPlanet(evt) {
         return
     }
 
-
-    let q = query(collectionGroup(bhs.fs, "nmsceCommon"),
+    let q = query(collection(bhs.fs, "nmsceCombined"),
         where("galaxy", "==", gal),
         where("addr", "==", addr),
         where("Planet-Index", "==", planet),
@@ -5228,10 +5100,10 @@ function getEntry() {
     let addr = $("#panels #id-addr").val()
     let name = $(this).val()
     let type = $("#typePanels .active").prop("id").stripID()
-    let gal = $("#btn-Galaxy").val().stripNumber()
+    let gal = $("#menu-Galaxy").val().stripNumber().replace("-", " ")
 
     if (gal && type && addr && name) {
-        let q = query(collection(bhs.fs, "nmsce/" + gal + "/" + type), where("Name", "==", name), where("addr", "==", addr))
+        let q = query(collection(bhs.fs, "nmsceCombined"), where("Galxy", "==", gal), where("Name", "==", name), where("addr", "==", addr))
         getDocs(q).then(snapshot => {
             if (!snapshot.empty) {
                 nmsce.displaySingle(snapshot.docs[0].data())
