@@ -145,7 +145,7 @@ const tString = `
     <div id="row-idname" data-type="string" data-req="ifreq" class="row">
         <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" class="rounded col-lg-7 col-9">&nbsp;
-        <i class="fas fa-check text-success hidden"></i>
+        <!--i class="fas fa-check text-success hidden"></i-->
     </div>`;
 const tMap = `<div id="row-idname" class="col-14" data-type="map"></div>`;
 const tLongString = `
@@ -270,7 +270,7 @@ class NMSCE {
 
         addRadioList($("#id-Economy"), "Economy", economyListTier)
         addRadioList($("#id-Lifeform"), "Lifeform", lifeformList)
-        addRadioList($("#id-Platform"), "Platform", platformListAll)
+        // addRadioList($("#id-Platform"), "Platform", platformListAll)
 
         if (fnmsce)
             galaxyList.unshift({ name: "Search All" })
@@ -278,13 +278,13 @@ class NMSCE {
         bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
             tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
             required: true,
-            labelsize: "col-md-6 col-4",
+            labelsize: "col-md-5 col-4",
             menusize: "col",
         })
 
         if (fnmsce) {
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
-                labelsize: "col-md-6 col-4",
+                labelsize: "col-md-5 col-4",
                 menusize: "col",
             })
         }
@@ -348,10 +348,10 @@ class NMSCE {
             })
     }
 
-    setGlyphInput(evt) {
+    setGlyphInput(evt, noupdate) {
         let checked = $(evt).prop("checked")
 
-        if (bhs.user.uid) {
+        if (!noupdate && bhs.user.uid) {
             if (typeof bhs.inputSettings === "undefined" || bhs.inputSettings.glyph !== checked) {
                 bhs.updateUser({
                     inputSettings: {
@@ -381,15 +381,20 @@ class NMSCE {
             this.changeAddr(loc)
     }
 
-    changeAddr(evt, a) {
+    changeAddr(evt, a, entry) {
         let addr = a ? a : $(evt).val()
-        let p = 0
         let idx = $("[role='tabpanel'] [id='id-Planet-Index']")
+        let planet = idx.val()
 
         if (addr !== "") {
-            if (addr.length === 12) {
-                p = addr.slice(0, 1)
-                idx.val(p)
+            if (addr.length === 12 && !entry) {
+                planet = addr.slice(0, 1)
+                if (planet !== "0") {
+                    idx.val(planet)
+
+                    if (fcedata)
+                        getPlanet(idx)
+                }
             }
 
             addr = reformatAddress(addr)
@@ -398,27 +403,78 @@ class NMSCE {
             this.dispAddr(pnl, addr)
             this.restoreImageText(null, true)
 
-            if (!fnmsce) {
-                $("#foundreg").hide()
-                $("#foundsys").hide()
-                $("[data-type='string'] .fa-check").hide()
-                getPlanet(idx.first())
+            if (fcedata) {
+                pnl.find("#foundreg").hide()
+                pnl.find("#foundsys").hide()
 
-                bhs.getEntry(addr, this.displaySystem.bind(this), null, null, true).then(entry => {
-                    if (!entry) {
-                        if (this.lastsys && this.lastsys.sys === $("#id-sys").val()) {
-                            $("#id-sys").val("")
-                            $("#id-reg").val("")
-                            $("#id-Economy [type='radio']").prop("checked", false)
-                            $("#id-Lifeform [type|='radio']").prop("checked", false)
-                        }
-                    }
-
-                    if (!entry || !entry.reg)
-                        bhs.getEntryByRegionAddr(addr, this.displayRegion)
-
+                if (entry)
                     this.lastsys = entry
-                })
+
+                if (typeof this.lastsys === "undefined")
+                    this.lastsys = {}
+
+                let ref = query(collection(bhs.fs, "nmsceCombined"),
+                    where("galaxy", "==", bhs.user.galaxy),
+                    where("addr", "==", addr),
+                    limit(1))
+
+                if (!entry || !entry.sys) {
+                    getDocs(ref, query(where("sys", "!=", ""))).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.lastsys.sys = e.sys
+                            if (entry)
+                                entry.sys = e.sys
+                            this.displaySys(this.lastsys)
+                        }
+                    })
+                }
+
+                if (!entry || !entry.Lifeform) {
+                    getDocs(ref, query(where("Lifeform", "!=", ""))).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.lastsys.Lifeform = e.Lifeform
+                            if (entry)
+                                entry.Lifeform = e.Lifeform
+                            setRadio($("#id-Lifeform"), e.Lifeform)
+                        }
+                    })
+                }
+
+                if (!entry || !entry.Economy) {
+                    getDocs(ref, query(where("Economy", "!=", ""))).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.lastsys.Economy = e.Economy
+                            if (entry)
+                                entry.Economy = e.Economy
+                            setRadio($("#id-Economy"), e.Economy)
+                        }
+                    })
+                }
+
+                if (!entry || !entry.reg) {
+                    let xyz = addressToXYZ(addr)
+
+                    let ref = query(collection(bhs.fs, "nmsceCombined"),
+                        where("galaxy", "==", bhs.user.galaxy),
+                        where("xyzs.x", "==", xyz.x),
+                        where("xyzs.y", "==", xyz.y),
+                        where("xyzs.z", "==", xyz.z),
+                        where("reg", "!=", ""),
+                        limit(1))
+
+                    getDocs(ref).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.lastsys.reg = e.reg
+                            if (entry)
+                                entry.reg = e.reg
+                            this.displayReg(this.lastsys)
+                        }
+                    })
+                }
             }
         }
     }
@@ -436,26 +492,26 @@ class NMSCE {
         loc.find("#id-hex").text(glyph)
     }
 
-    displayRegion(entry) {
+    displayReg(entry) {
         if (entry.reg) {
             let loc = $("#panels")
             loc.find("#id-reg").val(entry.reg)
+            let l = loc.find("#foundreg")
             loc.find("#foundreg").show()
+        }
+    }
+
+    displaySys(entry) {
+        if (entry.sys) {
+            let loc = $("#panels")
+            loc.find("#id-sys").val(entry.sys)
+            let l = loc.find("#foundsys")
+            loc.find("#foundsys").show()
         }
     }
 
     displaySystem(entry) {
         let loc = $("#panels")
-
-        if (entry.sys)
-            loc.find("#foundsys").show()
-        else
-            loc.find("#foundsys").hide()
-
-        if (entry.reg)
-            loc.find("#foundreg").show()
-        else
-            loc.find("#foundreg").hide()
 
         $("#menu-Galaxy").val(entry.galaxy)
 
@@ -464,33 +520,17 @@ class NMSCE {
         loc.find("#id-sys").val(entry.sys)
         loc.find("#id-reg").val(entry.reg)
 
-        loc.find("#id-by").html("<h6>" + entry.sys ? entry._name : "" + "</h6>")
+        if (entry.sys)
+            loc.find("#foundsys").show()
 
-        if (!entry.Economy && entry.econ) {
-            let i = getIndex(economyList, "name", entry.econ)
-            if (i > 0) {
-                let econ = economyList[i].number
-                entry.Economy = "T" + econ
-            }
-        }
+        if (entry.reg)
+            loc.find("#foundreg").show()
 
-        if (!entry.Platform && (entry.platform || bhs.user.Platform)) {
-            if (bhs.user.Platform)
-                entry.Platform = bhs.user.Platform
-            else if (entry.platform === "PC-XBox")
-                entry.Platform = "PC"
-            else
-                entry.Platform = "PS4"
-        }
-
-        if (typeof entry.Economy === "number")
-            entry.Economy = "T" + entry.Economy
+        // loc.find("#id-by").html("<h6>" + entry.sys ? entry._name : "" + "</h6>")
 
         setRadio($("#id-Economy"), entry.Economy)
-        if (!entry.Lifeform && entry.life)
-            entry.Lifeform = entry.life
         setRadio($("#id-Lifeform"), entry.Lifeform)
-        setRadio($("#id-Platform"), entry.Platform)
+        // setRadio($("#id-Platform"), entry.Platform)
     }
 
     showSearchPanel(evt) {
@@ -548,21 +588,27 @@ class NMSCE {
 
         this.expandPanels(fcedata || (bhs.user.nmscesettings && bhs.user.nmscesettings.expandPanels))
 
+        if (bhs.user.inputSettings) {
+            let loc = $("#id-addrInput #ck-glyphs")
+            loc.prop("checked", bhs.user.inputSettings.glyph)
+            this.setGlyphInput(loc, true)
+        }
+
         let loc = $("#row-playerInput")
         if (fcedata)
             loc.find("#id-Player").val(bhs.user._name)
 
         loc.find("#menu-Galaxy").val(bhs.user.galaxy)
 
-        loc = loc.find("#id-Platform")
-        loc.find("input").prop("checked", false)
-        if (bhs.user.Platform)
-            loc.find("#rdo-" + bhs.user.Platform).prop("checked", true)
+        // loc = loc.find("#id-Platform")
+        // loc.find("input").prop("checked", false)
+        // if (bhs.user.Platform)
+        //     loc.find("#rdo-" + bhs.user.Platform).prop("checked", true)
 
         loc = $("#row-playerDisplay")
         loc.find("#id-Player").text(bhs.user._name)
         loc.find("#id-Galaxy").text(bhs.user.galaxy)
-        loc.find("#id-Platform").text(bhs.user.Platform)
+        // loc.find("#id-Platform").text(bhs.user.Platform)
 
         $("#searchlocaltt").hide()
 
@@ -584,6 +630,9 @@ class NMSCE {
                     $(this).data("last", false)
                 } else if (id != "Galaxy")
                     $(this).val("")
+
+                if (type === "string")
+                    $(this).next().hide()
             })
 
             pnl.find("[id|='menu']").each(function () {
@@ -591,8 +640,6 @@ class NMSCE {
                 if ((!fcedata || all || id !== "Type") && id != "Galaxy")
                     $(this).val("")
             })
-
-            pnl.find(".fa-check").hide()
         }
 
         clr($("#typePanels"))
@@ -601,7 +648,7 @@ class NMSCE {
             let loc = $("#panels")
             loc.find("#foundreg").hide()
             loc.find("#foundsys").hide()
-            loc.find("#id-by").empty()
+            // loc.find("#id-by").empty()
 
             loc.find("#id-glyphInput #id-addr").empty()
             loc.find("#id-glyphInput #id-hex").empty()
@@ -696,15 +743,15 @@ class NMSCE {
             entry._name = last._name
             entry.uid = last.uid
             entry.created = last.created
-            entry.Platform = last.Platform
-            entry.platform = last.Platform === "PS4" ? "PS4" : last.Platform === "PC" || last.Platform === "XBox" ? "PC-XBox" : ""
+            // entry.Platform = last.Platform
+            // entry.platform = last.Platform === "PS4" ? "PS4" : last.Platform === "PC" || last.Platform === "XBox" ? "PC-XBox" : ""
             entry.galaxy = last.galaxy
             entry.version = last.version ? last.version : latestversion
         } else {
             entry._name = bhs.user._name
             entry.uid = bhs.user.uid
-            entry.Platform = bhs.user.Platform
-            entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
+            // entry.Platform = bhs.user.Platform
+            // entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
             entry.galaxy = bhs.user.galaxy
             entry.version = latestversion
         }
@@ -733,13 +780,13 @@ class NMSCE {
             ok = false
         }
 
-        if (ok) {
-            if (!last || last.uid === bhs.user.uid || bhs.isRole("admin") ||
-                !last.sys || !last.reg || !last.life || !last.Economy)
+        // if (ok) {
+        //     if (!last || last.uid === bhs.user.uid || bhs.isRole("admin") ||
+        //         !last.sys || !last.reg || !last.life || !last.Economy)
 
-                bhs.updateEntry(entry)
-        } else
-            bhs.status("WARNING: System info not updated. " + bhs.user._name + " is not creator of " + entry.addr + " " + entry.sys)
+        //         bhs.updateEntry(entry)
+        // } else
+        //     bhs.status("WARNING: System info not updated. " + bhs.user._name + " is not creator of " + entry.addr + " " + entry.sys)
 
         return ok ? entry : null
     }
@@ -762,8 +809,8 @@ class NMSCE {
             } else {
                 entry._name = bhs.user._name
                 entry.uid = bhs.user.uid
-                entry.Platform = bhs.user.Platform
-                entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
+                // entry.Platform = bhs.user.Platform
+                // entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
                 entry.galaxy = bhs.user.galaxy
             }
 
@@ -915,9 +962,7 @@ class NMSCE {
         let tloc = $("#tab-" + entry.type.nameToId())
         tloc.click()
 
-        $("#panels #foundreg").hide()
-        $("#panels #foundsys").hide()
-
+        // old bhs db //
         if (!entry.Lifeform && entry.life)
             entry.Lifeform = entry.life
 
@@ -927,9 +972,26 @@ class NMSCE {
                 entry.Economy = "T" + economyList[i].number
         } else if (typeof entry.Economy === "number")
             entry.Economy = "T" + entry.Economy
+        // **** //
+
+        if (this.lastsys && this.lastsys.addr === entry.addr) {
+            if (!entry.sys && this.lastsys.sys) entry.sys = this.lastsys.sys
+            if (!entry.reg && this.lastsys.reg) entry.reg = this.lastsys.reg
+            if (!entry.Economy && this.lastsys.Economy) entry.Economy = this.lastsys.Economy
+            if (!entry.Lifeform && this.lastsys.Lifeform) entry.Lifeform = this.lastsys.Lifeform
+        }
+
+        if (!entry.reg && this.lastsys && this.lastsys.reg) {
+            if (entry.xyzs.x === this.lastsys.xyzs.x &&
+                entry.xyzs.y === this.lastsys.xyzs.y &&
+                entry.xyzs.z === this.lastsys.xyzs.z)
+                entry.reg = this.lastsys.reg
+        }
+
+        if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
+            this.changeAddr(null, entry.addr, entry)
 
         this.displaySystem(entry)
-        this.changeAddr(null, entry.addr)
 
         let link = `/preview?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
         $("[id|='permalink']").attr("href", link)
@@ -966,7 +1028,7 @@ class NMSCE {
                         }
                         break
                     case "menu":
-                        row.find("#item-" + entry[id].nameToId()).click()
+                        row.find("#menu-" + id.nameToId()).val(entry[id])
 
                         if (fld.sublist)
                             disp(fld.sublist, pnltype, "#slist-" + entry[id].nameToId())
@@ -1628,11 +1690,11 @@ class NMSCE {
         u._name = loc.find("#id-Player").val()
         u.galaxy = loc.find("#menu-Galaxy").val().stripNumber().replace("-", " ")
 
-        loc = loc.find("#id-Platform :checked")
-        if (loc.length > 0)
-            u.Platform = loc.prop("id").stripID()
+        // loc = loc.find("#id-Platform :checked")
+        // if (loc.length > 0)
+        //     u.Platform = loc.prop("id").stripID()
 
-        u.platform = u.Platform === "PS4" ? "PS4" : u.Platform === "PC" || u.Platform === "XBox" ? "PC-XBox" : ""
+        // u.platform = u.Platform === "PS4" ? "PS4" : u.Platform === "PC" || u.Platform === "XBox" ? "PC-XBox" : ""
 
         u.nmscesettings = {}
         u.nmscesettings.expandPanels = $("#hidden").is(":visible")
@@ -4919,10 +4981,10 @@ class NMSCE {
         let e = this.entries[type][i]
         this.displaySingle(e)
 
-        getDoc(doc(bhs.fs, "nmsceCombined/" + e.id)).then(doc => {
-            if (doc.exists())
-                this.displaySingle(doc.data())
-        })
+        // getDoc(doc(bhs.fs, "nmsceCombined/" + e.id)).then(doc => {
+        //     if (doc.exists())
+        //         this.displaySingle(doc.data())
+        // })
     }
 }
 
@@ -5079,7 +5141,11 @@ function getEntry() {
     let gal = $("#menu-Galaxy").val().stripNumber().replace("-", " ")
 
     if (gal && type && addr && name) {
-        let q = query(collection(bhs.fs, "nmsceCombined"), where("Galxy", "==", gal), where("Name", "==", name), where("addr", "==", addr))
+        let q = query(collection(bhs.fs, "nmsceCombined"),
+            where("Galaxy", "==", gal),
+            where("Name", "==", name),
+            where("addr", "==", addr))
+
         getDocs(q).then(snapshot => {
             if (!snapshot.empty) {
                 nmsce.displaySingle(snapshot.docs[0].data())
@@ -5088,7 +5154,6 @@ function getEntry() {
         })
     }
 }
-
 
 const resultTables = [{
     name: "Search Results",

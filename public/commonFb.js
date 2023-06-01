@@ -9,9 +9,6 @@ import { App, Auth, Firestore, Storage } from "./firebase.js";
 
 export var bhs;
 
-var starsCol = "stars5"
-const usersCol = "users"
-
 export function startUp() {
     $("#javascript").remove()
     $("#jssite").show()
@@ -242,10 +239,10 @@ export class blackHoleSuns {
             ok = false
         }
 
-        if (ok && !user.platform) {
-            this.status("Error: Missing platform. Changes not saved.", 0)
-            ok = false
-        }
+        // if (ok && !user.platform) {
+        //     this.status("Error: Missing platform. Changes not saved.", 0)
+        //     ok = false
+        // }
     
         return ok
     }
