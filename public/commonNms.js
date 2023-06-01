@@ -2,14 +2,10 @@
 
 import { galaxyRaw, galaxyList, economyList, levelRgb } from "./constants.js";
 
-// Copyright 2019-2021 Black Hole Suns
+// Copyright 2019-2023 Black Hole Suns
 // Written by Stephen Piper
 
 export const findex = window.location.pathname.includes("index")
-export const fpoi = window.location.pathname.includes("poiorg")
-export const fdarc = window.location.pathname.includes("darc")
-export const ftotals = window.location.pathname.includes("totals")
-export const fsearch = window.location.pathname.includes("search")
 export const fcedata = window.location.pathname.includes("upload")
 export const fnmsce = window.location.pathname.includes("nmsce") || window.location.pathname == "/"
 export const fpreview = window.location.pathname.includes("preview")
@@ -180,16 +176,16 @@ export function addObjects(o, n) {
     return o
 }
 
-export function validateDistance(entry) {
-    let error = ""
+// export function validateDistance(entry) {
+//     let error = ""
 
-    if (entry.dist < 3200) error = entry.addr + " star in center void"
-    else if (entry.dist > 3600 && entry.towardsCtr < 0) error = entry.addr + " => " + entry.connection + " distance < 0"
-    else if (entry.dist <= 3600 && entry.towardsCtr < -400) error = entry.addr + " => " + entry.connection + ` distance < -400`
-    else if (entry.dist <= 819200 && entry.towardsCtr > 21000) error = entry.addr + " => " + entry.connection + ` distance > 21000`
+//     if (entry.dist < 3200) error = entry.addr + " star in center void"
+//     else if (entry.dist > 3600 && entry.towardsCtr < 0) error = entry.addr + " => " + entry.connection + " distance < 0"
+//     else if (entry.dist <= 3600 && entry.towardsCtr < -400) error = entry.addr + " => " + entry.connection + ` distance < -400`
+//     else if (entry.dist <= 819200 && entry.towardsCtr > 21000) error = entry.addr + " => " + entry.connection + ` distance > 21000`
 
-    return error
-}
+//     return error
+// }
 
 export function validateAddress(addr, ck) {
     if (addr === "")
@@ -202,10 +198,10 @@ export function validateAddress(addr, ck) {
     else if (c.y > 0xff) error = "y " + c.y.toString(16) + " > ff"
     else if (c.z > 0xfff) error = "z " + c.z.toString(16) + " > fff"
     else if (c.s > 0x2ff) error = "system " + c.s.toString(16) + " > 2ff"
-    else if (ck === "bh" && c.s != 0x79) error = ck + " system " + c.y.toString(16) + ' != 79'
-    else if (ck === "exit" && c.y < 0x7B) error = ck + " y " + c.y.toString(16) + ' < 7b'
-    else if (ck === "exit" && c.y > 0x83) error = ck + " y " + c.y.toString(16) + ' > 83'
-    else if (ck === "exit" && c.s > 0x78) error = ck + " system " + c.s.toString(16) + ' > 78'
+    // else if (ck === "bh" && c.s != 0x79) error = ck + " system " + c.y.toString(16) + ' != 79'
+    // else if (ck === "exit" && c.y < 0x7B) error = ck + " y " + c.y.toString(16) + ' < 7b'
+    // else if (ck === "exit" && c.y > 0x83) error = ck + " y " + c.y.toString(16) + ' > 83'
+    // else if (ck === "exit" && c.s > 0x78) error = ck + " system " + c.s.toString(16) + ' > 78'
 
     return error === "" ? "" : addr + " " + error
 }
@@ -240,19 +236,19 @@ String.prototype.stripNumber = function () {
     return this.replace(/\s*-?\d*\.*\s*(\D*)\s*/, "$1")
 }
 
-export function formatListSel(val, list) {
-    let name = val.stripNumber();
-    if (name === "") {
-        let num = val.replace(/(\d+).*/, "$1");
-        let idx = getIndex(list, "number", num);
-        if (idx != -1) name = list[idx].name;
-    } else {
-        let idx = getIndex(list, "name", name);
-        if (idx != -1) name = list[idx].name;
-    }
+// export function formatListSel(val, list) {
+//     let name = val.stripNumber();
+//     if (name === "") {
+//         let num = val.replace(/(\d+).*/, "$1");
+//         let idx = getIndex(list, "number", num);
+//         if (idx != -1) name = list[idx].name;
+//     } else {
+//         let idx = getIndex(list, "name", name);
+//         if (idx != -1) name = list[idx].name;
+//     }
 
-    return name;
-}
+//     return name;
+// }
 
 export function getIndex(list, field, id) {
     if (!id)
@@ -266,277 +262,277 @@ export function getIndex(list, field, id) {
     }).indexOf(typeof id === "string" ? id.toLowerCase() : id)
 }
 
-export function calcDist(addr, addr2) {
-    let xyz1 = addressToXYZ(addr)
-    let xyz2 = typeof addr2 !== "undefined" ? addressToXYZ(addr2) : {
-        x: 0x7ff,
-        y: 0x7f,
-        z: 0x7ff
-    }
-    return parseInt(calcDistXYZ(xyz1, xyz2) * 400)
-}
+// export function calcDist(addr, addr2) {
+//     let xyz1 = addressToXYZ(addr)
+//     let xyz2 = typeof addr2 !== "undefined" ? addressToXYZ(addr2) : {
+//         x: 0x7ff,
+//         y: 0x7f,
+//         z: 0x7ff
+//     }
+//     return parseInt(calcDistXYZ(xyz1, xyz2) * 400)
+// }
 
-export function calcDistXYZ(xyz1, xyz2, xp, yp) {
-    if (typeof xp !== "undefined" && typeof yp !== "undefined") {
-        let x = xyz1[xp] - xyz2[xp]
-        let y = xyz1[yp] - xyz2[yp]
-        return Math.sqrt(x * x + y * y)
-    } else {
-        let x = xyz1.x - xyz2.x
-        let y = xyz1.y - xyz2.y
-        let z = xyz1.z - xyz2.z
-        return Math.sqrt(x * x + y * y + z * z)
-    }
-}
+// export function calcDistXYZ(xyz1, xyz2, xp, yp) {
+//     if (typeof xp !== "undefined" && typeof yp !== "undefined") {
+//         let x = xyz1[xp] - xyz2[xp]
+//         let y = xyz1[yp] - xyz2[yp]
+//         return Math.sqrt(x * x + y * y)
+//     } else {
+//         let x = xyz1.x - xyz2.x
+//         let y = xyz1.y - xyz2.y
+//         let z = xyz1.z - xyz2.z
+//         return Math.sqrt(x * x + y * y + z * z)
+//     }
+// }
 
-export function calcAngle(saddr, eaddr, xp, yp) {
-    let zero = glyphToAddr("000000000000");
-    let a = calcDist(zero, eaddr, xp, yp);
-    let c = calcDist(saddr, eaddr, xp, yp);
-    let b = calcDist(saddr, zero, xp, yp);
-    let angle = parseInt(
-        (Math.acos((a * a - b * b - c * c) / (-2 * b * c)) * 180) / Math.PI
-    );
-    return Number.isNaN(angle) ? 0 : angle;
-}
+// export function calcAngle(saddr, eaddr, xp, yp) {
+//     let zero = glyphToAddr("000000000000");
+//     let a = calcDist(zero, eaddr, xp, yp);
+//     let c = calcDist(saddr, eaddr, xp, yp);
+//     let b = calcDist(saddr, zero, xp, yp);
+//     let angle = parseInt(
+//         (Math.acos((a * a - b * b - c * c) / (-2 * b * c)) * 180) / Math.PI
+//     );
+//     return Number.isNaN(angle) ? 0 : angle;
+// }
 
-export function calcPlane(C) {
-    const A = zero
-    const B = aboveZero
+// export function calcPlane(C) {
+//     const A = zero
+//     const B = aboveZero
 
-    // a=(By−Ay)(Cz−Az)−(Cy−Ay)(Bz−Az) 
-    // b=(Bz−Az)(Cx−Ax)−(Cz−Az)(Bx−Ax) 
-    // c=(Bx−Ax)(Cy−Ay)−(Cx−Ax)(By−Ay) 
-    // d=−(aAx+bAy+cAz) 
-    let n = {}
-    n.a = (B.y - A.y) * (C.z - A.z) - (C.y - A.y) * (B.z - A.z)
-    n.b = (B.z - A.z) * (C.x - A.x) - (C.z - A.z) * (B.x - A.x)
-    n.c = (B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)
-    n.d = -(n.a * C.x + n.b * C.y + n.c * C.z)
+//     // a=(By−Ay)(Cz−Az)−(Cy−Ay)(Bz−Az) 
+//     // b=(Bz−Az)(Cx−Ax)−(Cz−Az)(Bx−Ax) 
+//     // c=(Bx−Ax)(Cy−Ay)−(Cx−Ax)(By−Ay) 
+//     // d=−(aAx+bAy+cAz) 
+//     let n = {}
+//     n.a = (B.y - A.y) * (C.z - A.z) - (C.y - A.y) * (B.z - A.z)
+//     n.b = (B.z - A.z) * (C.x - A.x) - (C.z - A.z) * (B.x - A.x)
+//     n.c = (B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y)
+//     n.d = -(n.a * C.x + n.b * C.y + n.c * C.z)
 
-    let v = {}
-    v.x = A.x - C.x
-    v.y = A.y - C.y
-    v.z = A.z - C.z
+//     let v = {}
+//     v.x = A.x - C.x
+//     v.y = A.y - C.y
+//     v.z = A.z - C.z
 
-    let u = {
-        x: n.a,
-        y: n.b,
-        z: n.c
-    }
+//     let u = {
+//         x: n.a,
+//         y: n.b,
+//         z: n.c
+//     }
 
-    let r = {}
-    // | r.a, r.b, r.c | 
-    // | u.x, u.y, u.z |
-    // | v.x, v.y, v.z |
+//     let r = {}
+//     // | r.a, r.b, r.c | 
+//     // | u.x, u.y, u.z |
+//     // | v.x, v.y, v.z |
 
-    r.a = u.y * v.z - u.z * v.y
-    r.b = -u.x * v.z + u.z * v.x
-    r.c = u.x * v.y - u.y * v.x
-    r.d = -(r.a * C.x + r.b * C.y + r.c * C.z)
+//     r.a = u.y * v.z - u.z * v.y
+//     r.b = -u.x * v.z + u.z * v.x
+//     r.c = u.x * v.y - u.y * v.x
+//     r.d = -(r.a * C.x + r.b * C.y + r.c * C.z)
 
-    return {
-        n: n,
-        r: r,
-    }
-}
+//     return {
+//         n: n,
+//         r: r,
+//     }
+// }
 
-export function projOnPlane(p, xyz, rt) {
-    let n = rt ? p.r : p.n
+// export function projOnPlane(p, xyz, rt) {
+//     let n = rt ? p.r : p.n
 
-    let t = -(n.a * xyz.x + n.b * xyz.y + n.c * xyz.z + n.d) / (n.a * n.a + n.b * n.b + n.c * n.c)
-    let pr = {}
-    pr.x = n.a * t + xyz.x
-    pr.y = n.b * t + xyz.y
-    pr.z = n.c * t + xyz.z
+//     let t = -(n.a * xyz.x + n.b * xyz.y + n.c * xyz.z + n.d) / (n.a * n.a + n.b * n.b + n.c * n.c)
+//     let pr = {}
+//     pr.x = n.a * t + xyz.x
+//     pr.y = n.b * t + xyz.y
+//     pr.z = n.c * t + xyz.z
 
-    return pr
-}
+//     return pr
+// }
 
-export function distToPlane(p, xyz, rt) {
-    let n = !rt ? p.r : p.n
-    return (n.a * xyz.x + n.b * xyz.y + n.c * xyz.z + n.d) / Math.sqrt(n.a * n.a + n.b * n.b + n.c * n.c)
-}
+// export function distToPlane(p, xyz, rt) {
+//     let n = !rt ? p.r : p.n
+//     return (n.a * xyz.x + n.b * xyz.y + n.c * xyz.z + n.d) / Math.sqrt(n.a * n.a + n.b * n.b + n.c * n.c)
+// }
 
-export function calcAngles(b, c) {
-    // b = start, c = dest
-    let a = zero;
+// export function calcAngles(b, c) {
+//     // b = start, c = dest
+//     let a = zero;
 
-    let p = calcPlane(b);
-    let cv = projOnPlane(p, c);
-    let ch = projOnPlane(p, c, true);
+//     let p = calcPlane(b);
+//     let cv = projOnPlane(p, c);
+//     let ch = projOnPlane(p, c, true);
 
-    return {
-        v: parseInt(calcAngleA(a, b, cv)),
-        vdist: distToPlane(p, c),
-        h: parseInt(180 - calcAngleA(a, b, ch)),
-        hdist: distToPlane(p, c, true),
-        dist: parseInt(calcDistXYZ(b, c) * 400),
-    };
-}
+//     return {
+//         v: parseInt(calcAngleA(a, b, cv)),
+//         vdist: distToPlane(p, c),
+//         h: parseInt(180 - calcAngleA(a, b, ch)),
+//         hdist: distToPlane(p, c, true),
+//         dist: parseInt(calcDistXYZ(b, c) * 400),
+//     };
+// }
 
-export function calcAngleA(a, b, c) {
-    let t = ((b.x - a.x) * (c.x - a.x) + (b.y - a.y) * (c.y - a.y) + (b.z - a.z) * (c.z - a.z)) /
-        (Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y) + (b.z - a.z) * (b.z - a.z)) *
-            Math.sqrt((c.x - a.x) * (c.x - a.x) + (c.y - a.y) * (c.y - a.y) + (c.z - a.z) * (c.z - a.z)))
+// export function calcAngleA(a, b, c) {
+//     let t = ((b.x - a.x) * (c.x - a.x) + (b.y - a.y) * (c.y - a.y) + (b.z - a.z) * (c.z - a.z)) /
+//         (Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y) + (b.z - a.z) * (b.z - a.z)) *
+//             Math.sqrt((c.x - a.x) * (c.x - a.x) + (c.y - a.y) * (c.y - a.y) + (c.z - a.z) * (c.z - a.z)))
 
-    return Math.acos(t) * 180 / Math.PI
-}
+//     return Math.acos(t) * 180 / Math.PI
+// }
 
-var shipimg = null
+// var shipimg = null
 
-export function mapAngles(canvasid, a, width, height) {
-    if (!shipimg) {
-        shipimg = new Image();
-        shipimg.onload = function (evt) {
-            mapAngles(canvasid, a, width, height);
-        };
-        shipimg.crossOrigin = "anonymous";
-        shipimg.src = "/images/ship.svg";
-    }
+// export function mapAngles(canvasid, a, width, height) {
+//     if (!shipimg) {
+//         shipimg = new Image();
+//         shipimg.onload = function (evt) {
+//             mapAngles(canvasid, a, width, height);
+//         };
+//         shipimg.crossOrigin = "anonymous";
+//         shipimg.src = "/images/ship.svg";
+//     }
 
-    let drawing = document.getElementById(canvasid);
-    let ctx = drawing.getContext("2d");
+//     let drawing = document.getElementById(canvasid);
+//     let ctx = drawing.getContext("2d");
 
-    if (typeof width === "undefined")
-        width = height = $("#" + canvasid)
-            .parent()
-            .width();
+//     if (typeof width === "undefined")
+//         width = height = $("#" + canvasid)
+//             .parent()
+//             .width();
 
-    drawing.width = width;
-    drawing.height = height;
+//     drawing.width = width;
+//     drawing.height = height;
 
-    let margin = 20;
-    let marginb = 20;
+//     let margin = 20;
+//     let marginb = 20;
 
-    let elevx = margin;
-    let elevy = margin;
-    let elevw = width * 0.1;
-    let elevh = drawing.height - margin - marginb - 30;
-    let elev0y = elevy + elevh / 2;
-    let elev0x = elevx;
+//     let elevx = margin;
+//     let elevy = margin;
+//     let elevw = width * 0.1;
+//     let elevh = drawing.height - margin - marginb - 30;
+//     let elev0y = elevy + elevh / 2;
+//     let elev0x = elevx;
 
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(elevx + elevw / 2, elevy); //vert
-    ctx.lineTo(elevx + elevw / 2, elevy + elevh);
-    ctx.stroke();
+//     ctx.strokeStyle = "white";
+//     ctx.lineWidth = 2;
+//     ctx.lineCap = "round";
+//     ctx.beginPath();
+//     ctx.moveTo(elevx + elevw / 2, elevy); //vert
+//     ctx.lineTo(elevx + elevw / 2, elevy + elevh);
+//     ctx.stroke();
 
-    let u =
-        elev0y -
-        ((a.v > 90 ? 180 - a.v : a.v) * (a.vdist > 0 ? 1 : -1) * elevh) /
-        2 /
-        90;
+//     let u =
+//         elev0y -
+//         ((a.v > 90 ? 180 - a.v : a.v) * (a.vdist > 0 ? 1 : -1) * elevh) /
+//         2 /
+//         90;
 
-    ctx.font = screen.width > 1024 ? "18px Arial" : "15px Arial";
-    ctx.fillStyle = "white";
-    ctx.fillText("0", elevx - 8, elev0y + 3);
-    let txtw = ctx.measureText("Horizon").width;
-    ctx.fillText(
-        "Horizon",
-        elevx + elevw / 2 - txtw / 2,
-        drawing.height - marginb
-    );
-    txtw = ctx.measureText(a.v > 90 ? 180 - a.v : a.v).width;
-    ctx.fillText(a.v > 90 ? 180 - a.v : a.v, elevx - 10, u + 3);
+//     ctx.font = screen.width > 1024 ? "18px Arial" : "15px Arial";
+//     ctx.fillStyle = "white";
+//     ctx.fillText("0", elevx - 8, elev0y + 3);
+//     let txtw = ctx.measureText("Horizon").width;
+//     ctx.fillText(
+//         "Horizon",
+//         elevx + elevw / 2 - txtw / 2,
+//         drawing.height - marginb
+//     );
+//     txtw = ctx.measureText(a.v > 90 ? 180 - a.v : a.v).width;
+//     ctx.fillText(a.v > 90 ? 180 - a.v : a.v, elevx - 10, u + 3);
 
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(elev0x + txtw - 5, u);
-    ctx.lineTo(elev0x + elevw, u);
-    ctx.stroke();
+//     ctx.strokeStyle = "red";
+//     ctx.lineWidth = 4;
+//     ctx.beginPath();
+//     ctx.moveTo(elev0x + txtw - 5, u);
+//     ctx.lineTo(elev0x + elevw, u);
+//     ctx.stroke();
 
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(elev0x + 2, elev0y); //0 cross bar
-    ctx.lineTo(elev0x + elevw, elev0y);
-    ctx.stroke();
+//     ctx.strokeStyle = "white";
+//     ctx.lineWidth = 2;
+//     ctx.beginPath();
+//     ctx.moveTo(elev0x + 2, elev0y); //0 cross bar
+//     ctx.lineTo(elev0x + elevw, elev0y);
+//     ctx.stroke();
 
-    // angle indicator
+//     // angle indicator
 
-    let marginc = 10;
-    let offsetx = 5;
-    let radius = (drawing.width - margin * 2 - elevw - marginc * 2) / 2;
-    let ctrx = margin + elevw + marginc + radius + offsetx;
-    let ctry = margin + marginc + radius + 15;
+//     let marginc = 10;
+//     let offsetx = 5;
+//     let radius = (drawing.width - margin * 2 - elevw - marginc * 2) / 2;
+//     let ctrx = margin + elevw + marginc + radius + offsetx;
+//     let ctry = margin + marginc + radius + 15;
 
-    txtw = ctx.measureText("Angle from Galactic Center").width;
-    ctx.fillText(
-        "Angle from Galactic Center",
-        ctrx - txtw / 2,
-        drawing.height - marginb
-    );
+//     txtw = ctx.measureText("Angle from Galactic Center").width;
+//     ctx.fillText(
+//         "Angle from Galactic Center",
+//         ctrx - txtw / 2,
+//         drawing.height - marginb
+//     );
 
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(ctrx, ctry - radius); //angle to ctr
-    ctx.lineTo(ctrx, ctry);
-    ctx.stroke();
+//     ctx.lineWidth = 2;
+//     ctx.beginPath();
+//     ctx.moveTo(ctrx, ctry - radius); //angle to ctr
+//     ctx.lineTo(ctrx, ctry);
+//     ctx.stroke();
 
-    ctx.beginPath();
-    ctx.moveTo(ctrx + radius, ctry);
-    ctx.arc(ctrx, ctry, radius, 0, 2 * Math.PI);
-    ctx.stroke();
+//     ctx.beginPath();
+//     ctx.moveTo(ctrx + radius, ctry);
+//     ctx.arc(ctrx, ctry, radius, 0, 2 * Math.PI);
+//     ctx.stroke();
 
-    ctx.beginPath();
+//     ctx.beginPath();
 
-    for (let i = 1; i < 6; ++i) {
-        let x1 =
-            Math.sin(((i * 32.5) / 180) * Math.PI) *
-            (i % 2 ? radius - 25 : radius - 10);
-        let y1 =
-            Math.cos(((i * 32.5 - 180) / 180) * Math.PI) *
-            (i % 2 ? radius - 25 : radius - 10);
-        let x2 = Math.sin(((i * 32.5) / 180) * Math.PI) * radius;
-        let y2 = Math.cos(((i * 32.5 - 180) / 180) * Math.PI) * radius;
+//     for (let i = 1; i < 6; ++i) {
+//         let x1 =
+//             Math.sin(((i * 32.5) / 180) * Math.PI) *
+//             (i % 2 ? radius - 25 : radius - 10);
+//         let y1 =
+//             Math.cos(((i * 32.5 - 180) / 180) * Math.PI) *
+//             (i % 2 ? radius - 25 : radius - 10);
+//         let x2 = Math.sin(((i * 32.5) / 180) * Math.PI) * radius;
+//         let y2 = Math.cos(((i * 32.5 - 180) / 180) * Math.PI) * radius;
 
-        ctx.moveTo(ctrx + x1, ctry + y1);
-        ctx.lineTo(ctrx + x2, ctry + y2);
+//         ctx.moveTo(ctrx + x1, ctry + y1);
+//         ctx.lineTo(ctrx + x2, ctry + y2);
 
-        ctx.moveTo(ctrx - x1, ctry + y1);
-        ctx.lineTo(ctrx - x2, ctry + y2);
-    }
+//         ctx.moveTo(ctrx - x1, ctry + y1);
+//         ctx.lineTo(ctrx - x2, ctry + y2);
+//     }
 
-    ctx.stroke();
+//     ctx.stroke();
 
-    const txtr = radius + 12;
-    let x = Math.sin((32.5 / 180) * Math.PI) * txtr;
-    let y = Math.cos(((32.5 - 180) / 180) * Math.PI) * txtr;
-    ctx.fillText("32.5", ctrx + x, ctry + y);
+//     const txtr = radius + 12;
+//     let x = Math.sin((32.5 / 180) * Math.PI) * txtr;
+//     let y = Math.cos(((32.5 - 180) / 180) * Math.PI) * txtr;
+//     ctx.fillText("32.5", ctrx + x, ctry + y);
 
-    x = Math.sin((0 / 180) * Math.PI) * txtr;
-    y = Math.cos(((0 - 180) / 180) * Math.PI) * txtr;
-    ctx.fillText("0", ctrx + x, ctry + y);
+//     x = Math.sin((0 / 180) * Math.PI) * txtr;
+//     y = Math.cos(((0 - 180) / 180) * Math.PI) * txtr;
+//     ctx.fillText("0", ctrx + x, ctry + y);
 
-    x = Math.sin((a.h / 180) * Math.PI) * radius;
-    y = Math.cos(((a.h - 180) / 180) * Math.PI) * radius;
+//     x = Math.sin((a.h / 180) * Math.PI) * radius;
+//     y = Math.cos(((a.h - 180) / 180) * Math.PI) * radius;
 
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(ctrx, ctry);
-    ctx.lineTo(ctrx + x * (a.hdist > 0 ? 1 : -1), ctry + y);
-    ctx.stroke();
+//     ctx.strokeStyle = "red";
+//     ctx.lineWidth = 2;
+//     ctx.lineCap = "round";
+//     ctx.beginPath();
+//     ctx.moveTo(ctrx, ctry);
+//     ctx.lineTo(ctrx + x * (a.hdist > 0 ? 1 : -1), ctry + y);
+//     ctx.stroke();
 
-    x = Math.sin((a.h / 180) * Math.PI) * txtr;
-    y = Math.cos(((a.h - 180) / 180) * Math.PI) * txtr;
-    txtw = ctx.measureText(a.h).width;
-    ctx.fillText(
-        a.h,
-        ctrx + x * (a.hdist > 0 ? 1 : -1) + (a.hdist > 0 ? -8 : -txtw),
-        ctry + y
-    );
+//     x = Math.sin((a.h / 180) * Math.PI) * txtr;
+//     y = Math.cos(((a.h - 180) / 180) * Math.PI) * txtr;
+//     txtw = ctx.measureText(a.h).width;
+//     ctx.fillText(
+//         a.h,
+//         ctrx + x * (a.hdist > 0 ? 1 : -1) + (a.hdist > 0 ? -8 : -txtw),
+//         ctry + y
+//     );
 
-    txtw = ctx.measureText(a.dist + " LY").width;
-    ctx.fillText(a.dist + " LY", ctrx + (a.hdist > 0 ? -txtw - 10 : 10), ctry);
+//     txtw = ctx.measureText(a.dist + " LY").width;
+//     ctx.fillText(a.dist + " LY", ctrx + (a.hdist > 0 ? -txtw - 10 : 10), ctry);
 
-    ctx.drawImage(shipimg, ctrx - 10, ctry - 12, 20, 24);
-}
+//     ctx.drawImage(shipimg, ctrx - 10, ctry - 12, 20, 24);
+// }
 
 const zero = {
     x: 2048,
