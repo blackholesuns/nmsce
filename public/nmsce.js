@@ -718,10 +718,10 @@ class NMSCE {
             let ctx = canvas.getContext("2d")
             ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-            $("#save-system").text("Save System")
+            // $("#save-system").text("Save System")
             $("#save").text("Save All")
-            $("#delete-system").addClass("disabled")
-            $("#delete-system").prop("disabled", true)
+            // $("#delete-system").addClass("disabled")
+            // $("#delete-system").prop("disabled", true)
             $("#delete-item").addClass("disabled")
             $("#delete-item").prop("disabled", true)
 
@@ -888,7 +888,7 @@ class NMSCE {
                             case "menu":
                             case "checkbox":
                             case "radio":
-                            case "img":
+                                // case "img":
                                 ok = entry[id] !== ""
                                 break
                             case "number":
@@ -923,24 +923,17 @@ class NMSCE {
 
             entry.redditlink = $("#redditlink").val()
             entry.imageText = bhs.user.imageText
+            this.initVotes(entry)
 
             if (!this.last || this.last.uid === bhs.user.uid || bhs.isRole("admin")) {
                 if (typeof this.entries === "undefined")
                     this.entries = []
 
-                ok = $("#imgtable").is(":visible")
+                ok = $("#imgtable").is(":visible")  // do we have an image to upload?
 
-                if (ok) {
-                    this.initVotes(entry)
-
-                    this.entries[entry.type]?.push(entry)
-                    this.displayListEntry(entry, true)
-
+                if (ok) 
                     this.updateEntry(entry)
-                    await this.updateScreenshot(entry)
-
-                    $("#imgtable").hide()
-                } else
+                 else
                     bhs.status("ERROR: screenshot required")
             } else {
                 bhs.status("ERROR: Entry not saved. " + bhs.user._name + " is not creator of " + entry.type + " " + entry.Name)
@@ -1634,12 +1627,8 @@ class NMSCE {
             }
         }
 
-        if (ok) {
-            this.extractEntry().then((ok) => {
-                if (ok)
-                    this.clearPanel();
-            });
-        }
+        if (ok) 
+            this.extractEntry()
     }
 
     saveUserImageText() {
@@ -1669,27 +1658,27 @@ class NMSCE {
         })
     }
 
-    saveSystem(evt) {
-        let ok = bhs.user.uid
+    // saveSystem(evt) {
+    //     let ok = bhs.user.uid
 
-        if (!this.last || this.last.uid === bhs.user.uid) {
-            let user = this.extractUser()
-            ok = bhs.validateUser(user)
+    //     if (!this.last || this.last.uid === bhs.user.uid) {
+    //         let user = this.extractUser()
+    //         ok = bhs.validateUser(user)
 
-            if (ok) {
-                bhs.user = mergeObjects(bhs.user, user)
-                let ref = doc(bhs.fs, "users", bhs.user.uid)
-                setDoc(ref, bhs.user, {
-                    merge: true
-                }).then().catch(err => {
-                    bhs.status("ERROR: " + err)
-                })
-            }
-        }
+    //         if (ok) {
+    //             bhs.user = mergeObjects(bhs.user, user)
+    //             let ref = doc(bhs.fs, "users", bhs.user.uid)
+    //             setDoc(ref, bhs.user, {
+    //                 merge: true
+    //             }).then().catch(err => {
+    //                 bhs.status("ERROR: " + err)
+    //             })
+    //         }
+    //     }
 
-        if (ok)
-            this.lastsys = this.extractSystem()
-    }
+    //     if (ok)
+    //         this.lastsys = this.extractSystem()
+    // }
 
     changeName(uid, newname) { }
 
@@ -3882,14 +3871,14 @@ class NMSCE {
         }
     }
 
-    deleteSystem() {
-        if (this.lastsys && bhs.deleteEntry(this.lastsys)) {
-            this.lastsys = null
-            $("#save-system").text("Save System")
-            $("#delete-system").addClass("disabled")
-            $("#delete-system").prop("disabled", true)
-        }
-    }
+    // deleteSystem() {
+    //     if (this.lastsys && bhs.deleteEntry(this.lastsys)) {
+    //         this.lastsys = null
+    //         // $("#save-system").text("Save System")
+    //         // $("#delete-system").addClass("disabled")
+    //         // $("#delete-system").prop("disabled", true)
+    //     }
+    // }
 
     async updateScreenshot(entry) {
         if (!$("#imgtable").is(":visible"))
@@ -3930,6 +3919,7 @@ class NMSCE {
             });
 
             UploadImages(images);
+            $("#imgtable").hide()
 
             $("#dltab-" + entry.type).click()
 
@@ -3938,14 +3928,12 @@ class NMSCE {
             if (loc.length > 0) {
                 let url = thumb.toDataURL()
                 loc.attr("src", url)
+
+                $('html, body').animate({
+                    scrollTop: loc.offset().top
+                }, 500)
             }
-
-            $('html, body').animate({
-                scrollTop: loc.offset().top
-            }, 500)
         }
-
-        return true
     }
 
     async updateEntry(entry) {
@@ -3961,23 +3949,29 @@ class NMSCE {
         let ref
 
         if (created || typeof entry.id === "undefined") {
-            let doc = {}
+            let d
 
             do {
                 entry.id = uuidv4() + "2" // add char to make sure we don't generate over old image uuids
                 ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
-                doc = await getDoc(ref)
-            } while (doc.exists)
+                d = await getDoc(ref)
+            } while (d.exists())
         }
 
         if (typeof entry.Photo === "undefined")
             entry.Photo = entry.id + ".jpg"
+
+        this.entries[entry.type]?.push(entry)
+        this.displayListEntry(entry)
+
+        this.updateScreenshot(entry)
 
         if (!ref)
             ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
         setDoc(ref, entry).then(() => {
             bhs.status(entry.type + " " + entry.Name + " saved.")
+            this.clearPanel()
 
             if (created)
                 this.incrementTotals(entry, 1)
@@ -4744,15 +4738,15 @@ class NMSCE {
     displayListEntry(entry) {
         let loc = $("#displayPanels #list-" + entry.type)
         let eloc = loc.find("#row-" + entry.id)
-        let all = $("#displayPanels #list-All")
-        let aloc = all.find("#row-" + entry.id)
+        // let all = $("#displayPanels #list-All")
+        // let aloc = all.find("#row-" + entry.id)
 
         if (eloc.length === 0) {
             this.addDisplayListEntry(entry, loc, true)
-            this.addDisplayListEntry(entry, all, true)
+            // this.addDisplayListEntry(entry, all, true)
         } else {
             this.updateDisplayListEntry(entry, eloc)
-            this.updateDisplayListEntry(entry, aloc)
+            // this.updateDisplayListEntry(entry, aloc)
         }
     }
 
@@ -5391,7 +5385,7 @@ const objectList = [{
         name: "Photo",
         type: "img",
         ttip: "Use this to upload a screenshot for glyph translation and/or the image for this entry.",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Freighter",
@@ -5461,7 +5455,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }, {
         name: "Parts",
         type: "map",
@@ -5524,7 +5518,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     },]
 }, {
     name: "Multi-Tool",
@@ -5646,7 +5640,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Fauna",
@@ -5721,7 +5715,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Planet",
@@ -5815,7 +5809,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Base",
@@ -5897,7 +5891,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
 
 }]
