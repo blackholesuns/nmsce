@@ -1060,8 +1060,13 @@ class NMSCE {
 
         if (entry.parts) {
             let map = $("#pnl-map #pnl-" + entry.type)
-            if (entry.Type)
+            map.show()
+
+            if (entry.Type) {
                 map = map.find("#slist-" + entry.Type)
+                map.show()
+                this.setMapSize(map)
+            }
 
             let list = Object.keys(entry.parts)
             for (let i of list) {
@@ -4989,11 +4994,6 @@ class NMSCE {
         let i = getIndex(this.entries[type], "id", id)
         let e = this.entries[type][i]
         this.displaySingle(e)
-
-        // getDoc(doc(bhs.fs, "nmsceCombined/" + e.id)).then(doc => {
-        //     if (doc.exists())
-        //         this.displaySingle(doc.data())
-        // })
     }
 }
 
@@ -5151,13 +5151,14 @@ function getEntry() {
 
     if (gal && type && addr && name) {
         let q = query(collection(bhs.fs, "nmsceCombined"),
-            where("Galaxy", "==", gal),
+            where("galaxy", "==", gal),
+            where("type", "==", type),
             where("Name", "==", name),
             where("addr", "==", addr))
 
         getDocs(q).then(snapshot => {
             if (!snapshot.empty) {
-                nmsce.displaySingle(snapshot.docs[0].data())
+                nmsce.displaySingle(snapshot.docs[0].data(), true)
                 $("#typePanels .active #row-Name .fa-check").show()
             }
         })
