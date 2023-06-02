@@ -7,11 +7,10 @@ admin.initializeApp({
 require('events').EventEmitter.defaultMaxListeners = 0
 
 // recalc all totals
-// fix duplicate ids
-// check for economies === number
-// copy all items when switching to new code jic some were entered between states
+// copy all items after switching to new code jic some were entered between states
 
 // *** done ***
+// fix duplicate ids
 // validate galaxies delete invalid inc images
 // move living ships to normal ships
 // fix resources on planets, tags to resources. e.g. faecium
@@ -39,19 +38,42 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // }
 // fixLs()
 
-// async function combineGalaxies() {
+// const duplicates = [
+//     { id: "5f2b6925-825e-4fee-bba5-d076310b626f", path: ["nmsce/Eissentam/Ship", "nmsce/Eissentam/Freighter"] },
+//     { id: "8ae898da-84b6-4cca-b989-6f79ff68b014", path: ["nmsce/Eissentam/Ship", "nmsce/Eissentam/Planet"] },
+//     { id: "1008b970-063f-4eb0-ba73-8468d4efda35", path: ["nmsce/Euclid/Planet", "nmsce/Euclid/Fauna"] },
+//     { id: "47d36dcc-b11e-4275-af97-f5f8161cf7a3", path: ["nmsce/Euclid/Planet", "nmsce/Euclid/Base"] },
+//     { id: "0630-0080-0179-0074-dance-of-the-robeo", path: ["nmsce/Euclid/Ship", "nmsce/Euclid/Planet"] },
+//     { id: "2782a1cb-642b-4b85-b6a2-2d673ef77a13", path: ["nmsce/Euclid/Ship", "nmsce/Euclid/Frigate"] },
+//     { id: "3a534034-f3b0-4a64-9e2b-203e901148b9", path: ["nmsce/Euclid/Ship", "nmsce/Euclid/Multi-Tool"] },
+//     { id: "9efc237a-9642-4539-a072-7d5fb5ae5e3c", path: ["nmsce/Euclid/Ship", "nmsce/Eissentam/Ship"] },
+//     { id: "bc44b33d-461b-4e86-9deb-720b547f6b05", path: ["nmsce/Euclid/Ship", "nmsce/Eissentam/Ship"] },
+//     { id: "e2e9a2b2-b39f-4f3d-87eb-1c7453759fa2", path: ["nmsce/Euclid/Ship", "nmsce/Euclid/Freighter"] },
+//     { id: "0a59d848-e98c-4143-a172-443d55eb02b5", path: ["nmsce/Hilbert Dimension/Ship", "nmsce/Eissentam/Ship"] },
+//     { id: "b8c5ecba-8437-4f2c-a4bf-4352f2823e8c", path: ["nmsce/Paholiang/Planet", "nmsce/Paholiang/Fauna"] }]
+
+// async function fixDuplicates() {
+//     for (let i of duplicates) {
+//         let ref = admin.firestore().doc(i.path[1] + "/" + i.id)
+//         let doc = await ref.get()
+
+//         if (doc.exists) {
+//             let d = doc.data()
+//             let ref = admin.firestore().doc("nmsceCombined/" + d.id)
+//             console.log(d.id, i.id)
+//             await ref.set(d)
+//         }
+//     }
+// }
+// fixDuplicates()
+
+// async function checkDuplicateIDs() {
 //     let ref = admin.firestore().collection("nmsce")
 //     let galaxies = await ref.listDocuments()
-//     let count = 0
-//     let totals = {}
-
-//     ref = admin.firestore().collection("nmsceCombined")
-//     let cids = await ref.listDocuments()
+//     let tids = {}
+//     let all = {}
 
 //     for (let g of galaxies) {
-//         if (g.id < "Euclid")
-//             continue
-
 //         let ref = admin.firestore().doc(g.path)
 //         let types = await ref.listCollections()
 
@@ -60,72 +82,81 @@ require('events').EventEmitter.defaultMaxListeners = 0
 //                 continue
 
 //             let ref = admin.firestore().collection(t.path)
-//             let tids = await ref.listDocuments()
+//             tids[t.path] = await ref.listDocuments()
 
-//             for (let item of tids) {
-//                 if (cids.find(elem => elem.id === item.id)) {
-//                     console.error("duplicate", g.id, t.id, item.id)
-//                     continue
+//             for (let i of tids[t.path])
+//                 if (typeof all[i.id] !== "undefined") {
+//                     console.log(i.id, t.path, all[i.id])
 //                 }
-
-//                 let doc = await ref.doc(item.id).get()
-//                 if (!doc.exists) {
-//                     console.error("!exist", g.id, t.id, item.id)
-//                     continue
-//                 }
-
-//                 let d = doc.data()
-
-//                 let keys = Object.keys(d)
-//                 for (let key of keys)
-//                     if (key.startsWith("old")) // old tag copies
-//                         delete d[key]
-
-//                 if (d.type === "Living-Ship") {
-//                     d.type = "Ship"
-//                     d.Type = "Living"
-//                 }
-
-//                 console.log("copy", g.id, t.id, d.id)
-//                 let newref = admin.firestore().doc("nmsceCombined/" + d.id)
-//                 await newref.set(d)
-
-//                 let votes = await doc.ref.collection("votes").get()
-//                 for (let vdoc of votes.docs) {
-//                     let v = vdoc.data()
-//                     await newref.collection("votes").doc(v.uid).set(v)
-//                 }
-
-//                 // if (typeof totals[d.uid] === "undefined")
-//                 //     totals[d.uid] = {}
-
-//                 // if (typeof totals[d.uid][d.type] === "undefined")
-//                 //     totals[d.uid][d.type] = 0
-
-//                 // totals[d.uid][d.type]++
-
-//                 ++count
-
-//                 // if (count > 6000)
-//                 //     break
-//             }
-
-//             // if (count > 6000)
-//             //     break
+//                 else
+//                     all[i.id] = t.path
 //         }
-
-//         // if (count > 6000)
-//         //     break
 //     }
 
-//     // let uids = object.keys(totals)
-//     // for (let uid of uids) {
-//     //     console.log(JSON.stringify(uid, totals[uid]))
-//     //     let ref = admin.firestore().doc("users/" + d.id)
-//     //     // await ref.set(totals[uid], { merge: true })
-//     // }
+//     let keys = Object.keys(tids)
+//     console.log(keys)
 // }
-// combineGalaxies()
+// checkDuplicateIDs()
+
+async function combineGalaxies() {
+    let ref = admin.firestore().collection("nmsce")
+    let galaxies = await ref.listDocuments()
+
+    ref = admin.firestore().collection("nmsceCombined")
+    let cids = await ref.listDocuments()
+
+    for (let g of galaxies) {
+        if (g.id < "Euclid")
+            continue
+
+        let ref = admin.firestore().doc(g.path)
+        let types = await ref.listCollections()
+
+        for (let t of types) {
+            if (t.id === "Living-Ship")
+                continue
+
+            let ref = admin.firestore().collection(t.path)
+            let tids = await ref.listDocuments()
+
+            for (let item of tids) {
+                if (cids.find(elem => elem.id === item.id)) {
+                    console.error("duplicate", g.id, t.id, item.id)
+                    continue
+                }
+
+                let doc = await ref.doc(item.id).get()
+                if (!doc.exists) {
+                    console.error("!exist", g.id, t.id, item.id)
+                    continue
+                }
+
+                let d = doc.data()
+
+                let keys = Object.keys(d)
+                for (let key of keys)
+                    if (key.startsWith("old")) // old tag copies
+                        delete d[key]
+
+                if (d.type === "Living-Ship") {
+                    d.type = "Ship"
+                    d.Type = "Living"
+                }
+
+                console.log("copy", g.id, t.id, d.id)
+                let newref = admin.firestore().doc("nmsceCombined/" + d.id)
+                await newref.set(d)
+
+                let votes = await doc.ref.collection("votes").get()
+                for (let vdoc of votes.docs) {
+                    let v = vdoc.data()
+                    await newref.collection("votes").doc(v.uid).set(v)
+                }
+            }
+        }
+    }
+}
+combineGalaxies()
 
 // async function addLStoShipTotals() {
 //     let ref = admin.firestore().collection("users")

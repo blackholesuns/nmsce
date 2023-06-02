@@ -870,13 +870,13 @@ class NMSCE {
                         if (loc.length > 0)
                             entry[id] = loc.attr("id").stripID().nameToId()
                         break
-                    case "img":
-                        if (!fnmsce) {
-                            let canvas = $("#id-canvas")[0]
-                            if (typeof canvas !== "undefined" && typeof entry[id] === "undefined")
-                                entry[id] = uuidv4() + ".jpg"
-                        }
-                        break
+                    // case "img":
+                    //     if (!fnmsce) {
+                    //         let canvas = $("#id-canvas")[0]
+                    //         if (typeof canvas !== "undefined" && typeof entry[id] === "undefined")
+                    //             entry[id] = uuidv4() + ".jpg"
+                    //     }
+                    //     break
                 }
 
                 if (ok && data.req && !fnmsce) {
@@ -928,22 +928,20 @@ class NMSCE {
                 if (typeof this.entries === "undefined")
                     this.entries = []
 
-                this.initVotes(entry)
+                ok = $("#imgtable").is(":visible")
 
-                if (typeof entry.id === "undefined")
-                    entry.id = uuidv4()
+                if (ok) {
+                    this.initVotes(entry)
 
-                this.entries[entry.type]?.push(entry)
-                this.displayListEntry(entry, true)
+                    this.entries[entry.type]?.push(entry)
+                    this.displayListEntry(entry, true)
 
-                if (!(ok = await this.updateScreenshot(entry)))
-                    bhs.status("Error: Photo required.")
-                else {
                     this.updateEntry(entry)
+                    await this.updateScreenshot(entry)
 
-                    bhs.status(entry.type + " " + entry.Name + " validated, saving...")
                     $("#imgtable").hide()
-                }
+                } else
+                    bhs.status("ERROR: screenshot required")
             } else {
                 bhs.status("ERROR: Entry not saved. " + bhs.user._name + " is not creator of " + entry.type + " " + entry.Name)
                 ok = false
@@ -1420,7 +1418,7 @@ class NMSCE {
                     val = loc.val()
                     if (val) {
                         val = val.stripNumber().stripMarginWS().replaceAll("-", " ")
-                        if (val !== " Nothing Selected") 
+                        if (val !== " Nothing Selected")
                             val = ""
                     }
                     break
@@ -3899,7 +3897,7 @@ class NMSCE {
 
         if ($("#id-canvas").is(":visible") || $("#ck-updateScreenshot").is(":visible") && $("#ck-updateScreenshot").prop("checked")) {
             if (typeof entry.Photo === "undefined")
-                entry.Photo = entry.type + "-" + entry.id + ".jpg"
+                entry.Photo = entry.id + ".jpg"
 
             /** @type {{path: string, blob: Blob}[]} */
             const images = []
@@ -3950,7 +3948,7 @@ class NMSCE {
         return true
     }
 
-    updateEntry(entry) {
+    async updateEntry(entry) {
         entry.modded = Timestamp.now()
         this.initVotes(entry)
         let created = false
@@ -3960,13 +3958,23 @@ class NMSCE {
             created = true
         }
 
-        if (typeof entry.id === "undefined")
-            entry.id = uuidv4()
+        let ref
+
+        if (created || typeof entry.id === "undefined") {
+            let doc = {}
+
+            do {
+                entry.id = uuidv4() + "2" // add char to make sure we don't generate over old image uuids
+                ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
+                doc = await getDoc(ref)
+            } while (doc.exists)
+        }
 
         if (typeof entry.Photo === "undefined")
             entry.Photo = entry.id + ".jpg"
 
-        let ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
+        if (!ref)
+            ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
         setDoc(ref, entry).then(() => {
             bhs.status(entry.type + " " + entry.Name + " saved.")
