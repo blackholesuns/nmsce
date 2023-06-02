@@ -165,7 +165,7 @@ const tFloat = `
     </div>`;
 const tTags = `
     <div id="row-idname" class="row pl-10 pr-10" data-type="tags" data-allowhide="ihide" data-req="ifreq">
-        <div id="id-idname" class="col-lg-2 col-4"></div>
+        <div id="id-idname" class="col-lg-6 col-7"></div>
         <div id="add-idname" class="col row hidden">
             <input id="txt-idname" type="text" class="col-7"></input>
             <button id="add-idname" type="text" class="col-2 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
@@ -219,7 +219,7 @@ const resultsItem = `
 
 function showLatLong() {
     let loc = $("#typePanels #hdr-Ship")
-    let type = loc.find("#menu-Type").val().replace("-", " ")
+    let type = loc.find("#menu-Type").val().replaceAll("-", " ")
     type = loc.find("#slist-" + type)
     let chk = type.find("#ck-Crashed")
 
@@ -341,7 +341,7 @@ class NMSCE {
     }
 
     setGalaxy(evt) {
-        let galaxy = $("#menu-Galaxy").val().stripNumber().replace("-", " ")
+        let galaxy = $("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
         if (galaxy !== "Search All")
             bhs.updateUser({
                 galaxy: galaxy
@@ -802,15 +802,16 @@ class NMSCE {
                 entry.created = this.last.created
                 entry.id = this.last.id
                 entry.Photo = this.last.Photo
-                entry.reddit = this.last.reddit
-                entry.redditlink = this.last.redditlink
                 entry._name = this.last._name
                 entry.uid = this.last.uid
+
+                if (typeof this.last.reddit !== "undefined" && this.last.reddit)
+                    entry.reddit = this.last.reddit
+                if (typeof this.last.reddit !== "undefined" && this.last.redditlink)
+                    entry.redditlink = this.last.redditlink
             } else {
                 entry._name = bhs.user._name
                 entry.uid = bhs.user.uid
-                // entry.Platform = bhs.user.Platform
-                // entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
                 entry.galaxy = bhs.user.galaxy
             }
 
@@ -847,13 +848,18 @@ class NMSCE {
                             if (t)
                                 entry[id][t] = true
                         }
-
                         break
                     case "menu":
                         if (loc.attr("id").search("menu") < 0)
                             loc = loc.find("[id|='menu']")
-                        entry[id] = loc.val().stripMarginWS().replace("-", " ")
-                        if (entry[id] === " Nothing Selected")
+
+                        entry[id] = loc.val()
+
+                        if (entry[id]) {
+                            entry[id] = entry[id].stripMarginWS().replaceAll("-", " ")
+                            if (entry[id] === " Nothing Selected")
+                                entry[id] = ""
+                        } else
                             entry[id] = ""
                         break
                     case "checkbox":
@@ -1210,7 +1216,7 @@ class NMSCE {
 
         if (!bhs.user.uid || !bhs.isPatreon(2)) {
             if (typeof (Storage) !== "undefined") {
-                window.localStorage.setItem('nmsce-galaxy', $("#menu-Galaxy").val().stripNumber().replace("-", " "))
+                window.localStorage.setItem('nmsce-galaxy', $("#menu-Galaxy").val().stripNumber().replaceAll("-", " "))
 
                 search.uid = window.localStorage.getItem('nmsce-tempuid')
                 if (!search.uid) {
@@ -1345,7 +1351,7 @@ class NMSCE {
     }
 
     extractSearch() {
-        let galaxy = $("#menu-Galaxy").val().stripNumber().replace("-", " ")
+        let galaxy = $("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
         let s = {}
         s.search = []
         let search = s.search
@@ -1403,7 +1409,7 @@ class NMSCE {
                 case "menu":
                     if (loc.param("id").search("menu") < 0)
                         loc.find("#menu-" + fld.id.stripID())
-                    val = loc.val().stripNumber().replace("-", " ")
+                    val = loc.val().stripNumber().replaceAll("-", " ")
                     break
                 case "radio":
                     loc = loc.find(":checked")
@@ -1478,7 +1484,7 @@ class NMSCE {
                 case "menu":
                     if (loc.param("id").search("menu") < 0)
                         loc.find("#menu-" + itm.name)
-                    val = loc.val().stripMarginWS().replace("-", " ")
+                    val = loc.val().stripMarginWS().replaceAll("-", " ")
                     if (val) {
                         val = val.stripNumber()
                         if (val !== " Nothing Selected") {
@@ -1595,9 +1601,6 @@ class NMSCE {
      * @memberOf NMSCE
      */
     saveEntry(evt) {
-        if (!NMSCE.EnsureValidForm(evt))
-            return false;
-
         let ok = bhs.user.uid
 
         if (!this.last || this.last.uid === bhs.user.uid) {
@@ -1656,9 +1659,6 @@ class NMSCE {
     }
 
     saveSystem(evt) {
-        if (!NMSCE.EnsureValidForm(evt))
-            return false;
-
         let ok = bhs.user.uid
 
         if (!this.last || this.last.uid === bhs.user.uid) {
@@ -1688,7 +1688,7 @@ class NMSCE {
 
         u.version = latestversion
         u._name = loc.find("#id-Player").val()
-        u.galaxy = loc.find("#menu-Galaxy").val().stripNumber().replace("-", " ")
+        u.galaxy = loc.find("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
 
         // loc = loc.find("#id-Platform :checked")
         // if (loc.length > 0)
@@ -1747,7 +1747,7 @@ class NMSCE {
 
             loc = loc.find("#manu-Type")
             if (loc.length > 0) {
-                let type = loc.val().stripMarginWS().replace("-", " ")
+                let type = loc.val().stripMarginWS().replaceAll("-", " ")
                 mloc = mloc.find("#slist-" + type)
                 mloc.show()
             }
@@ -1844,7 +1844,7 @@ class NMSCE {
                 case "blank":
                     itm.append(inpHdr + inpEnd)
                     break
-                case "menu":
+                case "menu": {
                     appenditem(itm, tMenu, f.name, id, null, null, null, f.inputHide)
                     let lst = itm.find("#row-" + id)
 
@@ -1854,6 +1854,10 @@ class NMSCE {
                     f.labelsize = "col-5"
                     f.menusize = "col"
                     f.sort = true
+
+                    let l = f.sub ? slist[f.sub] : f.list
+                    if (l[0].name !== " Nothing Selected")
+                        l.unshift({ name: " Nothing Selected" })
 
                     bhs.buildMenu(lst, f.name, f.sub ? slist[f.sub] : f.list, f.sublist ? this.selectSublist.bind(this) : null, f, f.onchange)
 
@@ -1870,6 +1874,7 @@ class NMSCE {
                         }
                     }
                     break
+                }
                 case "tags":
                     if (!f.sub || slist[f.sub]) {
                         appenditem(itm, tTags, "", id, f.ttip, f.required, inpLongHdr, f.inputHide)
@@ -1879,13 +1884,16 @@ class NMSCE {
 
                         if (f.list) {
                             bhs.buildMenu(loc, f.name, f.list, nmsce.addTag, {
-                                nolabel: true,
+                                // nolabel: true,
                                 ttip: f.ttip,
                                 sort: true,
-                                required: f.required
+                                required: f.required,
+                                labelsize: "col-lg-4 col-md-5 col-sm-6 col-7",
+                                menusize: "col-7"
                             })
 
-                            itm.find("#menu-" + id).val(f.name)
+                            // let l = itm.find("#menu-" + id)
+                            // l.val(f.name)
                         } else {
                             let ref = doc(bhs.fs, "tags/" + itmid)
                             getDoc(ref).then(doc => {
@@ -1910,11 +1918,13 @@ class NMSCE {
                                     })
 
                                 bhs.buildMenu(loc, f.name, tags, nmsce.addTag, {
-                                    nolabel: true,
-                                    ttip: f.ttip
+                                    // nolabel: true,
+                                    ttip: f.ttip,
+                                    labelsize: "col-lg-4 col-md-5 col-sm-6 col-7",
+                                    menusize: "col-7"
                                 })
 
-                                loc.find("#menu-" + id).val(f.name)
+                                // loc.find("#menu-" + id).val(f.name)
                             })
                         }
                     }
@@ -1966,7 +1976,7 @@ class NMSCE {
 
             if (f.onchange) {
                 rloc.find("input").change(f.onchange)
-                rloc.find("button").click(f.onchange)
+                rloc.find("menu").change(f.onchange)
             }
 
             if (f.imgText) {
@@ -1985,14 +1995,14 @@ class NMSCE {
     addTag(evt) {
         let row = $(evt).closest("[id|='row']")
         let data = row.data()
-        let text = $(evt).text().stripMarginWS()
+        let text = $(evt).val().stripMarginWS().replaceAll("-", " ")
         let id = row.attr("id").stripID()
         let tags = row.find("[id|='tag']")
 
-        if (data.max && tags.length >= data.max) {
-            row.find("#menu-" + id).val(id.idToName())
+        row.find("#menu-" + id).val(id.idToName())
+
+        if (data.max && tags.length >= data.max)
             return
-        }
 
         if (tags.length > 0)
             for (let t of tags)
@@ -2017,7 +2027,7 @@ class NMSCE {
         let id = row.attr("id").stripID()
         let text = row.find("[id|='txt']").val().toLowerCase()
 
-        if (text !== "" && row.find("#item-" + text.nameToId()).length === 0) {
+        if (text !== "" && row.find("[value='" + text.nameToId() + "']").length === 0) {
             let pnl = $(evt).closest("[id|='pnl']").attr("id").stripID()
 
             setDoc(doc(bhs.fs, "tags/" + pnl), {
@@ -2026,13 +2036,12 @@ class NMSCE {
                 merge: true
             })
 
-            $(evt).val("")
-            let h = row.find("#item-Add-new-tag")[0].outerHTML
+            let loc = row.find("[value='Add-new-tag']")
+            let h = loc[0].outerHTML
             let id = text.nameToId()
             h = /Add-new-tag/[Symbol.replace](h, id)
             h = /Add new tag/[Symbol.replace](h, text)
-            row.find("#list").append(h)
-            bhs.bindMenuChange(row.find("#item-" + id), this.addTag)
+            loc = loc.parent().append(h)
 
             h = /idname/[Symbol.replace](tTag, id)
             h = /title/[Symbol.replace](h, text)
@@ -2041,7 +2050,7 @@ class NMSCE {
 
         row.find("#add-" + id).hide()
         row.find("#txt-" + id).val("")
-        row.find("#menu-" + id).val(row.attr("id").stripID())
+        row.find("#menu-" + id).val(id.idToName())
     }
 
     cancelTag(evt) {
@@ -2544,7 +2553,7 @@ class NMSCE {
                 case "menu":
                     if (loc.attr("id").search("menu") < 0)
                         loc = loc.find("[id|='menu']")
-                    text = loc.val().stripNumber().replace("-", " ")
+                    text = loc.val().stripNumber().replaceAll("-", " ")
                     break
                 case "tags":
                     loc = loc.find("[id|='tag']")
@@ -5138,7 +5147,7 @@ function getEntry() {
     let addr = $("#panels #id-addr").val()
     let name = $(this).val()
     let type = $("#typePanels .active").attr("id").stripID()
-    let gal = $("#menu-Galaxy").val().stripNumber().replace("-", " ")
+    let gal = $("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
 
     if (gal && type && addr && name) {
         let q = query(collection(bhs.fs, "nmsceCombined"),

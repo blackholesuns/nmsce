@@ -7,9 +7,9 @@ admin.initializeApp({
 require('events').EventEmitter.defaultMaxListeners = 0
 
 // recalc all totals
-// copy votes but not common to get rid of galaxy. copy to new db collection
-// delete "old"+type when copy to new db collection
 // fix duplicate ids
+// check for economies === number
+// copy all items when switching to new code jic some were entered between states
 
 // *** done ***
 // validate galaxies delete invalid inc images
@@ -20,6 +20,8 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // tags to element=true instead of arrays
 // clean up garbage in seed
 // Fix type & Type for living ships in nmsceCombined
+// copy votes but not common to get rid of galaxy. copy to new db collection
+// delete "old"+type when copy to new db collection
 
 // async function fixLs() {
 //     let ref = admin.firestore().collection("nmsceCombined")
@@ -37,93 +39,93 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // }
 // fixLs()
 
-async function combineGalaxies() {
-    let ref = admin.firestore().collection("nmsce")
-    let galaxies = await ref.listDocuments()
-    let count = 0
-    let totals = {}
+// async function combineGalaxies() {
+//     let ref = admin.firestore().collection("nmsce")
+//     let galaxies = await ref.listDocuments()
+//     let count = 0
+//     let totals = {}
 
-    ref = admin.firestore().collection("nmsceCombined")
-    let cids = await ref.listDocuments()
+//     ref = admin.firestore().collection("nmsceCombined")
+//     let cids = await ref.listDocuments()
 
-    for (let g of galaxies) {
-        if (g.id < "Euclid")
-            continue
+//     for (let g of galaxies) {
+//         if (g.id < "Euclid")
+//             continue
 
-        let ref = admin.firestore().doc(g.path)
-        let types = await ref.listCollections()
+//         let ref = admin.firestore().doc(g.path)
+//         let types = await ref.listCollections()
 
-        for (let t of types) {
-            if (t.id === "Living-Ship")
-                continue
+//         for (let t of types) {
+//             if (t.id === "Living-Ship")
+//                 continue
 
-            let ref = admin.firestore().collection(t.path)
-            let tids = await ref.listDocuments()
+//             let ref = admin.firestore().collection(t.path)
+//             let tids = await ref.listDocuments()
 
-            for (let item of tids) {
-                if (cids.find(elem => elem.id === item.id)) {
-                    console.error("duplicate", g.id, t.id, item.id)
-                    continue
-                }
+//             for (let item of tids) {
+//                 if (cids.find(elem => elem.id === item.id)) {
+//                     console.error("duplicate", g.id, t.id, item.id)
+//                     continue
+//                 }
 
-                let doc = await ref.doc(item.id).get()
-                if (!doc.exists) {
-                    console.error("!exist", g.id, t.id, item.id)
-                    continue
-                }
+//                 let doc = await ref.doc(item.id).get()
+//                 if (!doc.exists) {
+//                     console.error("!exist", g.id, t.id, item.id)
+//                     continue
+//                 }
 
-                let d = doc.data()
+//                 let d = doc.data()
 
-                let keys = Object.keys(d)
-                for (let key of keys)
-                    if (key.startsWith("old")) // old tag copies
-                        delete d[key]
+//                 let keys = Object.keys(d)
+//                 for (let key of keys)
+//                     if (key.startsWith("old")) // old tag copies
+//                         delete d[key]
 
-                if (d.type === "Living-Ship") {
-                    d.type = "Ship"
-                    d.Type = "Living"
-                }
+//                 if (d.type === "Living-Ship") {
+//                     d.type = "Ship"
+//                     d.Type = "Living"
+//                 }
 
-                console.log("copy", g.id, t.id, d.id)
-                let newref = admin.firestore().doc("nmsceCombined/" + d.id)
-                await newref.set(d)
+//                 console.log("copy", g.id, t.id, d.id)
+//                 let newref = admin.firestore().doc("nmsceCombined/" + d.id)
+//                 await newref.set(d)
 
-                let votes = await doc.ref.collection("votes").get()
-                for (let vdoc of votes.docs) {
-                    let v = vdoc.data()
-                    await newref.collection("votes").doc(v.uid).set(v)
-                }
+//                 let votes = await doc.ref.collection("votes").get()
+//                 for (let vdoc of votes.docs) {
+//                     let v = vdoc.data()
+//                     await newref.collection("votes").doc(v.uid).set(v)
+//                 }
 
-                // if (typeof totals[d.uid] === "undefined")
-                //     totals[d.uid] = {}
+//                 // if (typeof totals[d.uid] === "undefined")
+//                 //     totals[d.uid] = {}
 
-                // if (typeof totals[d.uid][d.type] === "undefined")
-                //     totals[d.uid][d.type] = 0
+//                 // if (typeof totals[d.uid][d.type] === "undefined")
+//                 //     totals[d.uid][d.type] = 0
 
-                // totals[d.uid][d.type]++
+//                 // totals[d.uid][d.type]++
 
-                ++count
+//                 ++count
 
-                if (count > 2000)
-                    break
-            }
+//                 // if (count > 6000)
+//                 //     break
+//             }
 
-            if (count > 2000)
-                break
-        }
+//             // if (count > 6000)
+//             //     break
+//         }
 
-        if (count > 2000)
-            break
-    }
+//         // if (count > 6000)
+//         //     break
+//     }
 
-    // let uids = object.keys(totals)
-    // for (let uid of uids) {
-    //     console.log(JSON.stringify(uid, totals[uid]))
-    //     let ref = admin.firestore().doc("users/" + d.id)
-    //     // await ref.set(totals[uid], { merge: true })
-    // }
-}
-combineGalaxies()
+//     // let uids = object.keys(totals)
+//     // for (let uid of uids) {
+//     //     console.log(JSON.stringify(uid, totals[uid]))
+//     //     let ref = admin.firestore().doc("users/" + d.id)
+//     //     // await ref.set(totals[uid], { merge: true })
+//     // }
+// }
+// combineGalaxies()
 
 // async function addLStoShipTotals() {
 //     let ref = admin.firestore().collection("users")
