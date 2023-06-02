@@ -1376,14 +1376,17 @@ class NMSCE {
                 val: name
             })
 
-        let val = $("#menu-Version").val().stripMarginWS()
-        if (val.length > 0 && val !== " Nothing Selected") {
-            search.push({
-                name: "version",
-                type: "menu",
-                id: "menu-Version",
-                val: val
-            })
+        let val = $("#menu-Version")
+        if (val.length > 0) {
+            val = val.val().stripMarginWS().replaceAll("-", " ")
+            if (val.length > 0 && val !== " Nothing Selected") {
+                search.push({
+                    name: "version",
+                    type: "menu",
+                    id: "menu-Version",
+                    val: val
+                })
+            }
         }
 
         let date = $("#id-Created").val()
@@ -1412,9 +1415,14 @@ class NMSCE {
 
             switch (fld.type) {
                 case "menu":
-                    if (loc.param("id").search("menu") < 0)
-                        loc.find("#menu-" + fld.id.stripID())
-                    val = loc.val().stripNumber().replaceAll("-", " ")
+                    if (!loc.attr("id").startsWith("menu"))
+                        loc = loc.find("#menu-" + itm.name)
+                    val = loc.val()
+                    if (val) {
+                        val = val.stripNumber().stripMarginWS().replaceAll("-", " ")
+                        if (val !== " Nothing Selected") 
+                            val = ""
+                    }
                     break
                 case "radio":
                     loc = loc.find(":checked")
@@ -1487,11 +1495,11 @@ class NMSCE {
                     }
                     break
                 case "menu":
-                    if (loc.param("id").search("menu") < 0)
-                        loc.find("#menu-" + itm.name)
-                    val = loc.val().stripMarginWS().replaceAll("-", " ")
+                    if (!loc.attr("id").startsWith("menu"))
+                        loc = loc.find("#menu-" + itm.name)
+                    val = loc.val()
                     if (val) {
-                        val = val.stripNumber()
+                        val = val.stripNumber().stripMarginWS().replaceAll("-", " ")
                         if (val !== " Nothing Selected") {
                             itm.val = val
                             search.push(itm)
