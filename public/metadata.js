@@ -5,7 +5,10 @@ export const ChangeLog = [
         Title: " ",
         Authors: ["spip01"],
         Changes: [
-            "Get rid of required galaxy selection on searching. Use 'Select All' (default) to search across all galaxies."
+            "Got rid of required galaxy selection on searching. Use 'Select All' (default) to search across all galaxies.",
+            "Platform requirement has been removed.",
+            "Player listings now include all galaxies.",
+            "Menus are rewritten so you can type to get to any item."
         ]
     }, {
         Version: "1.1.9",

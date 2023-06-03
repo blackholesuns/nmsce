@@ -2033,7 +2033,8 @@ export const faunaList = [
     { name: "Lizard, flying" },
     { name: "Wraith / snake, flying" },
     { name: "Protoflyer" },
-    { name: "Butterfly" }
+    { name: "Butterfly" },
+    { name: "Worm, imortal giant" }
 ]
 
 export const faunaProductKilled = [{

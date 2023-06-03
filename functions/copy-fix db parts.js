@@ -8,6 +8,7 @@ require('events').EventEmitter.defaultMaxListeners = 0
 
 // recalc all totals
 // copy all items after switching to new code jic some were entered between states
+// delete/rename collection votes on nmsce after last copy
 
 // *** done ***
 // fix duplicate ids
