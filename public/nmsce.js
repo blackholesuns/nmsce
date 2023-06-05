@@ -707,7 +707,7 @@ class NMSCE {
         this.last.id = null
         this.last.created = null
         this.last.Photo = null
-        
+
         if (fcedata) {
             let canvas = document.getElementById("id-canvas")
             let ctx = canvas.getContext("2d")
@@ -736,9 +736,12 @@ class NMSCE {
         entry.uid = this.last.uid ? this.last.uid : bhs.user.uid
         entry.galaxy = this.last.galaxy ? this.last.galaxy : bhs.user.galaxy
         entry.version = this.last.version ? this.last.version : latestversion
+
         entry.id = this.last.id ? this.last.id : null
         entry.created = this.last.created ? this.last.created : null
         entry.Photo = this.last.Photo ? this.last.Photo : null
+        entry.reddit = this.last.reddit ? this.last.reddit : null
+        entry.redditlink = this.last.redditlink ? this.last.redditlink : null
 
         entry.page = "nmsce"
 
@@ -937,7 +940,7 @@ class NMSCE {
             }
         }
 
-        this.last = mergeObjects({},entry)
+        this.last = mergeObjects({}, entry)
 
         if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
             this.changeAddr(null, entry.addr, entry)
@@ -3858,7 +3861,6 @@ class NMSCE {
 
         if (typeof entry.created === "undefined" || !entry.created) {
             entry.created = Timestamp.now()
-            entry.Photo = null
             created = true
         }
 
@@ -3874,6 +3876,9 @@ class NMSCE {
             } while (d.exists())
         }
 
+        if (!entry.Photo)
+            entry.Photo = entry.id + ".jpg"
+
         if (!ref)
             ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
@@ -3884,10 +3889,11 @@ class NMSCE {
                 if (created) {
                     this.entries[entry.type].push(entry)
                     this.incrementTotals(entry, 1)
+                    entry.Photo = null  // force screenshot write
                 }
 
                 this.displayListEntry(entry)    // before update screenshot because it creates the display space
-                this.updateScreenshot(entry)    // must finish before clearPanel happens
+                this.updateScreenshot(entry)
 
                 bhs.status(entry.type + " " + entry.Name + " saved.")
             }
