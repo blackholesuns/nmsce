@@ -43,18 +43,12 @@ blackHoleSuns.prototype.doLoggedout = function () {
         $("#searchlocal").show();
         $("#searchlocaltt").show();
         $("#row-savesearch").hide();
+        $("#id-notifySearch").hide();
     }
 };
 
 blackHoleSuns.prototype.doLoggedin = function (user) {
-    nmsce.displayUser()
     $("#favorite").show();
-
-    if (fnmsce) {
-        $("#searchlocal").hide();
-        $("#searchlocaltt").hide();
-        $("#row-savesearch").show();
-    }
 
     getDoc(doc(this.fs, "admin/" + bhs.user.uid))
         .then((doc) => {
@@ -64,6 +58,7 @@ blackHoleSuns.prototype.doLoggedin = function (user) {
                 if (bhs.roles.includes("nmsceEditor")) {
                     $("#edchoice").show();
                     $("#id-private").show();
+                    $("#id-notifySearch").show();
                 }
 
                 if (bhs.roles.includes("nmsceAdmin")) {
@@ -98,6 +93,8 @@ blackHoleSuns.prototype.doLoggedin = function (user) {
                     }
                 }
             }
+            
+            nmsce.displayUser()
         })
         .catch((err) => {
             bhs.status("ERROR: " + err.code);
@@ -237,6 +234,8 @@ blackHoleSuns.prototype.buildMenu = function (loc, label, list, changefcn, optio
         menu.append(h)
         bhs.bindMenuChange(menu, changefcn)
     }
+
+    menu.val("")
 }
 
 blackHoleSuns.prototype.bindMenuChange = function (loc, fcn) {
@@ -246,3 +245,27 @@ blackHoleSuns.prototype.bindMenuChange = function (loc, fcn) {
             fcn($(this))
     })
 }
+
+blackHoleSuns.prototype.setMenu = function (loc, val) {
+    let text = loc.find("option:contains('" + val + "')")
+    loc.val(text.val())
+}
+
+blackHoleSuns.prototype.getMenu = function (loc) {
+    let val = ""
+
+    if (loc.length > 0) {
+        val = loc.val()
+
+        if (val) {
+            loc = loc.find("[value='" + val + "']")
+            val = loc.text()
+
+            if (val === " Nothing Selected" || val === "Search All")
+                val = ""
+        }
+    }
+
+    return val
+}
+

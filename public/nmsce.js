@@ -46,7 +46,7 @@ $(document).ready(() => {
 
     // Bad hack. Should not be used
     window.nmsce = nmsce = new NMSCE()
-    nmsce.last = null
+    nmsce.last = {}
 
     if (!fpreview) {
         nmsce.buildPanels()
@@ -343,8 +343,8 @@ class NMSCE {
     }
 
     setGalaxy(evt) {
-        let galaxy = $("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
-        if (galaxy !== "Search All")
+        let galaxy = bhs.getMenu($("#menu-Galaxy"))
+        if (galaxy)
             bhs.updateUser({
                 galaxy: galaxy
             })
@@ -425,8 +425,6 @@ class NMSCE {
                         if (!snapshot.empty) {
                             let e = snapshot.docs[0].data()
                             this.last.sys = e.sys
-                            if (entry)
-                                entry.sys = e.sys
                             this.displaySys(this.last)
                         }
                     })
@@ -437,8 +435,6 @@ class NMSCE {
                         if (!snapshot.empty) {
                             let e = snapshot.docs[0].data()
                             this.last.Lifeform = e.Lifeform
-                            if (entry)
-                                entry.Lifeform = e.Lifeform
                             setRadio($("#id-Lifeform"), e.Lifeform)
                         }
                     })
@@ -449,8 +445,6 @@ class NMSCE {
                         if (!snapshot.empty) {
                             let e = snapshot.docs[0].data()
                             this.last.Economy = e.Economy
-                            if (entry)
-                                entry.Economy = e.Economy
                             setRadio($("#id-Economy"), e.Economy)
                         }
                     })
@@ -471,8 +465,6 @@ class NMSCE {
                         if (!snapshot.empty) {
                             let e = snapshot.docs[0].data()
                             this.last.reg = e.reg
-                            if (entry)
-                                entry.reg = e.reg
                             this.displayReg(this.last)
                         }
                     })
@@ -516,8 +508,7 @@ class NMSCE {
         let loc = $("#panels")
 
         let menu = $("#menu-Galaxy")
-        let text = menu.find("option:contains('" + entry.galaxy + "')")
-        menu.val(text.val())
+        bhs.setMenu(menu, entry.galaxy)
 
         this.dispAddr(loc, entry.addr)
 
@@ -590,13 +581,17 @@ class NMSCE {
         }
 
         let menu = $("#menu-Galaxy")
-        let txt = menu.find("option:contains('" + bhs.user.galaxy + "')")
-        menu.val(txt.val())
+        bhs.setMenu(menu, bhs.user.galaxy)
 
         if (fcedata)
             $("#id-Player").val(bhs.user._name)
 
         $("#searchlocaltt").hide()
+        $("#searchlocal").hide()
+        $("#row-savesearch").show()
+
+        if (bhs.isPatreon(2))
+            $("#id-notifySearch").show()
 
         this.getSearches()
     }
@@ -702,14 +697,15 @@ class NMSCE {
             $(loc).find("#list-" + id).empty()
         }
 
-        this.last = null
-
         let tab = $("#typeTabs .active").attr("id").stripID()
         if (tab === "Freighter")
             $("#pnl-map #pnl-Freighter").show()
 
         // if (tab === "Living-Ship")
         //     $("#pnl-map #pnl-Living-Ship").show()
+
+        this.last.id = null
+        this.last.created = null
 
         if (fcedata) {
             let canvas = document.getElementById("id-canvas")
@@ -735,18 +731,12 @@ class NMSCE {
 
         let loc = $("#panels")
 
-        if (this.last) {
-            entry._name = this.last._name
-            entry.uid = this.last.uid
-            entry.created = this.last.created
-            entry.galaxy = this.last.galaxy
-            entry.version = this.last.version ? this.last.version : latestversion
-        } else {
-            entry._name = bhs.user._name
-            entry.uid = bhs.user.uid
-            entry.galaxy = bhs.user.galaxy
-            entry.version = latestversion
-        }
+        entry._name = this.last._name ? this.last._name : bhs.user._name
+        entry.uid = this.last.uid ? this.last.uid : bhs.user.uid
+        entry.galaxy = this.last.galaxy ? this.last.galaxy : bhs.user.galaxy
+        entry.version = this.last.version ? this.last.version : latestversion
+        entry.id = this.last.id ? this.last.id : null
+        entry.created = this.last.created ? this.last.created : null
 
         entry.page = "nmsce"
 
@@ -780,25 +770,6 @@ class NMSCE {
         let ok = entry !== null
 
         if (ok) {
-            delete entry.created
-
-            if (this.last) {
-                entry.created = this.last.created
-                entry.id = this.last.id
-                entry.Photo = this.last.Photo
-                entry._name = this.last._name
-                entry.uid = this.last.uid
-
-                if (typeof this.last.reddit !== "undefined" && this.last.reddit)
-                    entry.reddit = this.last.reddit
-                if (typeof this.last.reddit !== "undefined" && this.last.redditlink)
-                    entry.redditlink = this.last.redditlink
-            } else {
-                entry._name = bhs.user._name
-                entry.uid = bhs.user.uid
-                entry.galaxy = bhs.user.galaxy
-            }
-
             entry.private = $("#id-private").is(":visible") && $("#ck-private").prop("checked") && bhs.isPatreon(3)
 
             let tab = $("#typeTabs .active").attr("id").stripID()
@@ -837,17 +808,7 @@ class NMSCE {
                         if (loc.attr("id").search("menu") < 0)
                             loc = loc.find("[id|='menu']")
 
-                        let val = loc.val()
-
-                        if (val) {
-                            loc = loc.find("[value='" + val + "']")
-                            val = loc.text()
-                            entry[id] = val
-
-                            if (entry[id] === " Nothing Selected")
-                                entry[id] = ""
-                        } else
-                            entry[id] = ""
+                        entry[id] = bhs.getMenu(loc)
                         break
                     case "checkbox":
                         entry[id] = loc.find("input").prop("checked")
@@ -912,20 +873,20 @@ class NMSCE {
             entry.imageText = bhs.user.imageText
             this.initVotes(entry)
 
-            // if (!this.last || this.last.uid === bhs.user.uid || bhs.isRole("admin")) {
-            if (typeof this.entries === "undefined")
-                this.entries = []
+            if (typeof this.last.uid === "undefined" || this.last.uid === bhs.user.uid || bhs.isRole("admin")) {
+                if (typeof this.entries === "undefined")
+                    this.entries = []
 
-            ok = $("#imgtable").is(":visible")  // do we have an image to upload?
+                ok = $("#imgtable").is(":visible")  // do we have an image to upload?
 
-            if (ok)
-                this.updateEntry(entry)
-            else
-                bhs.status("ERROR: screenshot required")
-            // } else {
-            //     bhs.status("ERROR: Entry not saved. " + bhs.user._name + " is not creator of " + entry.type + " " + entry.Name)
-            //     ok = false
-            // }
+                if (ok)
+                    this.updateEntry(entry)
+                else
+                    bhs.status("ERROR: screenshot required")
+            } else {
+                bhs.status("ERROR: Entry not saved. " + bhs.user._name + " is not creator of " + entry.type + " " + entry.Name)
+                ok = false
+            }
         }
 
         return ok
@@ -936,7 +897,6 @@ class NMSCE {
             return
 
         this.clearPanel(true)
-        this.last = entry
 
         if (!noscroll)
             $('html, body').animate({
@@ -974,6 +934,8 @@ class NMSCE {
                     entry.reg = ""
             }
         }
+
+        this.last = entry
 
         if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
             this.changeAddr(null, entry.addr, entry)
@@ -1016,8 +978,7 @@ class NMSCE {
                         break
                     case "menu":
                         let menu = row.find("#menu-" + id.nameToId())
-                        let text = menu.find("option:contains('" + entry[id] + "')")
-                        menu.val(text.val())
+                        bhs.setMenu(menu, entry[id])
 
                         if (fld.sublist)
                             disp(fld.sublist, pnltype, "#slist-" + entry[id].nameToId())
@@ -1086,18 +1047,28 @@ class NMSCE {
     displaySearch(search) {
         this.clearPanel(true)
 
+        $("#searchname").val(search.name)
+
         let menu = $("#menu-Galaxy")
-        let text = menu.find("option:contains('" + search.galaxy + "')")
-        menu.val(text.val)
+        bhs.setMenu(menu, search.galaxy)
 
         $("#ck-notify").prop("checked", search.notify)
-        $("#id-Player").text(search.name)
+        if (search.page !== "/upload" && search._name !== bhs.user.name)
+            $("#id-Player").text(search._name)
 
-        let tloc = $("#pnl-" + search.type.nameToId())
-        tloc.click()
+        let loc = $("#tab-" + search.type.nameToId())
+        loc.click()
+
+        loc = $("#typePanels #pnl-" + search.type.nameToId())
+
+        let i = getIndex(search.search, "name", "Type")
+        if (i >= 0) {
+            let menu = loc.find("#menu-Type")
+            bhs.setMenu(menu, search.search[i].val)
+            nmsce.selectSublist(menu)
+        }
 
         for (let itm of search.search) {
-            let loc = itm.id ? $("#panels " + itm.id) : tloc.find("#row-" + itm.name.nameToId())
             switch (itm.type) {
                 case "number":
                 case "float":
@@ -1108,12 +1079,9 @@ class NMSCE {
                     loc.find("#id-" + itm.name.nameToId()).val(itm.date)
                     break
                 case "menu":
-                    if (itm.name === "Type")
-                        loc.find("#item-" + itm.val.nameToId()).click()
-                    else {
-                        let menu = $("#menu-" + (itm.id ? itm.id.stripID() : itm.name.nameToId()))
-                        let text = menu.find("option:contains('" + itm.val + "')")
-                        menu.val(text.val)
+                    if (itm.name !== "Type") {
+                        let menu = loc.find("#menu-" + itm.name.nameToId())
+                        bhs.setMenu(menu, itm.val)
                     }
                     break
                 case "checkbox":
@@ -1123,17 +1091,24 @@ class NMSCE {
                     loc.find("#rdo-" + itm.val).prop("checked", true)
                     break
                 case "tags":
-                    for (let i of itm.list)
-                        loc.find("#item-" + i.nameToId()).click()
+                    loc = loc.find("#menu-" + itm.name.nameToId())
+
+                    for (let t of itm.list) {
+                        bhs.setMenu(loc, t)
+                        nmsce.addTag(loc)
+                    }
                     break
                 case "map":
-                    let map = $("#pnl-map #pnl-" + itm.page)
+                    let map = $("#pnl-map #pnl-" + itm.tab)
+                    map.show()
+
                     if (itm.Type)
                         map = map.find("#slist-" + itm.Type)
-                    map = map.find("#row-" + itm.name)
 
-                    for (let i of list)
-                        this.selectMap(map.find("#map-" + i), true)
+                    for (let i of itm.list) {
+                        let loc = map.find("#map-" + i)
+                        this.selectMap(loc, true)
+                    }
                     break
             }
         }
@@ -1210,7 +1185,8 @@ class NMSCE {
 
         if (!bhs.user.uid || !bhs.isPatreon(2)) {
             if (typeof (Storage) !== "undefined") {
-                window.localStorage.setItem('nmsce-galaxy', $("#menu-Galaxy").val().stripNumber().replaceAll("-", " "))
+                let galaxy = bhs.getMenu($("#menu-Galaxy"))
+                window.localStorage.setItem('nmsce-galaxy', galaxy)
 
                 search.uid = window.localStorage.getItem('nmsce-tempuid')
                 if (!search.uid) {
@@ -1250,22 +1226,14 @@ class NMSCE {
                 this.searchlist.push(search)
 
                 let loc = $("#menu-Saved")
-                if (loc.find("#list").length > 0) {
-                    let item
-                    if (loc.first("[id|='item]").is("li"))
-                        item = `<li id="item-idname" class="dropdown-item" type="button" style="rgbcolor cursor: pointer">iname</li>`
-                    else
-                        item = `<button id="item-idname" class="dropdown-item border-bottom" type="button" style="rgbcolor cursor: pointer">iname</button>`
-
+                if (loc.length > 0) {
+                    const item = `<option value="idname" style=" cursor: pointer">iname</option>`;
                     let h = /idname/[Symbol.replace](item, search.name.nameToId())
                     h = /iname/[Symbol.replace](h, search.name)
 
-                    let lloc = loc.find("#list")
-                    lloc.append(h)
-                    loc = loc.find("#item-" + search.name.nameToId())
-                    bhs.bindMenuChange(loc, this.executeSaved)
+                    loc.append(h)
                 } else
-                    bhs.buildMenu($("#entrybuttons"), "Saved", this.searchlist, this.executeSaved, {
+                    bhs.buildMenu($("#row-Saved"), "Saved", this.searchlist, this.executeSaved, {
                         sort: true,
                         labelsize: "col-sm-2",
                         menusize: "col"
@@ -1291,7 +1259,7 @@ class NMSCE {
                     bhs.status(name + " search deleted.")
 
                     this.searchlist.splice(i, 1)
-                    let loc = $("#menu-Saved #item-" + name.nameToId())
+                    let loc = $("#menu-Saved option:contains('" + name + ')')
                     loc.remove()
                 })
             } else {
@@ -1305,7 +1273,6 @@ class NMSCE {
             return
 
         let ref = collection(bhs.fs, "users/" + bhs.user.uid + "/nmsce-saved-searches")
-        ref = query(ref, where("uid", "==", bhs.user.uid))
 
         getDocs(ref).then(snapshot => {
             this.searchlist = []
@@ -1315,20 +1282,22 @@ class NMSCE {
             }
 
             if (this.searchlist.length > 0)
-                bhs.buildMenu($("#entrybuttons"), "Saved", this.searchlist, this.executeSaved, {
+                bhs.buildMenu($("#row-Saved"), "Saved", this.searchlist, this.executeSaved, {
                     sort: true
                 })
         }).catch(err => console.log(err.message))
     }
 
-    executeSaved(evt) {
-        let name = $(evt).text().stripMarginWS()
-        let i = getIndex(this.searchlist, "name", name)
+    executeSaved(menu) {
+        let name = bhs.getMenu(menu)
+        let i = getIndex(nmsce.searchlist, "name", name)
 
         if (i !== -1) {
-            this.displaySearch(this.searchlist[i])
-            this.search(this.searchlist[i])
+            nmsce.displaySearch(nmsce.searchlist[i])
+            nmsce.search(nmsce.searchlist[i])
         }
+
+        menu.val("")
     }
 
     searchLocal(evt) {
@@ -1338,14 +1307,14 @@ class NMSCE {
             if (s) {
                 s = JSON.parse(s)
 
-                this.displaySearch(s)
-                this.search(s)
+                nmsce.displaySearch(s)
+                nmsce.search(s)
             }
         }
     }
 
     extractSearch() {
-        let galaxy = $("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
+        let galaxy = bhs.getMenu($("#menu-Galaxy"))
         let s = {}
         s.search = []
         let search = s.search
@@ -1365,20 +1334,14 @@ class NMSCE {
                 val: name
             })
 
-        let vloc = $("#menu-Version")
-        if (vloc.length > 0) {
-            let val = vloc.val()
-            if (val)
-                val = val.replaceAll("-", " ")
-
-            if (val && val.length > 0 && val !== " Nothing Selected") {
-                search.push({
-                    name: "version",
-                    type: "menu",
-                    id: "menu-Version",
-                    val: val
-                })
-            }
+        let ver = bhs.getMenu($("#menu-Version"))
+        if (ver) {
+            search.push({
+                name: "version",
+                type: "menu",
+                id: "menu-Version",
+                val: val
+            })
         }
 
         let date = $("#id-Created").val()
@@ -1410,15 +1373,7 @@ class NMSCE {
                     if (!loc.attr("id").startsWith("menu"))
                         loc = loc.find("#menu-" + itm.name)
 
-                    val = loc.val()
-
-                    if (val) {
-                        loc = loc.find("[value='" + val + "']")
-                        val = loc.text()
-
-                        if (val !== " Nothing Selected")
-                            val = ""
-                    }
+                    val = bhs.getMenu(loc)
                     break
                 case "radio":
                     loc = loc.find(":checked")
@@ -1494,17 +1449,10 @@ class NMSCE {
                     if (!loc.attr("id").startsWith("menu"))
                         loc = loc.find("#menu-" + itm.name)
 
-                    val = loc.val()
+                    itm.val = bhs.getMenu(loc)
 
-                    if (val) {
-                        loc = loc.find("[value='" + val + "']")
-                        val = loc.text()
-
-                        if (val !== " Nothing Selected") {
-                            itm.val = val
-                            search.push(itm)
-                        }
-                    }
+                    if (itm.val)
+                        search.push(itm)
                     break
                 case "checkbox":
                     if (fcedata) {
@@ -1543,6 +1491,8 @@ class NMSCE {
             if (list.length > 0) {
                 search.push({
                     name: "parts",
+                    tab: s.type,
+                    Type: i >= 0 ? search[i].val : "",
                     type: "map",
                     list: list
                 })
@@ -1616,7 +1566,7 @@ class NMSCE {
     saveEntry(evt) {
         let ok = bhs.user.uid
 
-        if (!this.last || this.last.uid === bhs.user.uid) {
+        if (typeof this.last.uid === "undefined" || this.last.uid === bhs.user.uid) {
             let user = this.extractUser()
             ok = bhs.validateUser(user)
 
@@ -1641,21 +1591,14 @@ class NMSCE {
     }
 
     saveUserImageText() {
-        if (!this.last || this.last.uid === bhs.user.uid) {
-            let user = this.extractUser()
+        bhs.user.imageText = this.extractImageText()
 
-            if (bhs.validateUser(user)) {
-                bhs.user = mergeObjects(bhs.user, user)
-                bhs.user.imageText = this.extractImageText()
-
-                let ref = doc(bhs.fs, "users", bhs.user.uid)
-                setDoc(ref, bhs.user, {
-                    merge: true
-                }).then().catch(err => {
-                    bhs.status("ERROR: " + err)
-                })
-            }
-        }
+        let ref = doc(bhs.fs, "users", bhs.user.uid)
+        setDoc(ref, bhs.user, {
+            merge: true
+        }).then().catch(err => {
+            bhs.status("ERROR: " + err)
+        })
     }
 
     loadUserImageText() {
@@ -1675,13 +1618,7 @@ class NMSCE {
 
         u.version = latestversion
         u._name = loc.find("#id-Player").val()
-        u.galaxy = loc.find("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
-
-        // loc = loc.find("#id-Platform :checked")
-        // if (loc.length > 0)
-        //     u.Platform = loc.prop("id").stripID()
-
-        // u.platform = u.Platform === "PS4" ? "PS4" : u.Platform === "PC" || u.Platform === "XBox" ? "PC-XBox" : ""
+        u.galaxy = bhs.getMenu(loc.find("#menu-Galaxy"))
 
         u.nmscesettings = {}
         u.nmscesettings.expandPanels = $("#hidden").is(":visible")
@@ -2537,7 +2474,7 @@ class NMSCE {
                 case "menu":
                     if (loc.attr("id").search("menu") < 0)
                         loc = loc.find("[id|='menu']")
-                    text = loc.val().stripNumber().replaceAll("-", " ")
+                    text = bhs.getMenu(loc)
                     break
                 case "tags":
                     loc = loc.find("[id|='tag']")
@@ -2738,7 +2675,7 @@ class NMSCE {
             $("#imageTextBlock").show()
             $("#editingScreenshot").show()
 
-            if (this.last) {
+            if (typeof this.last.Photo !== "undefined") {
                 $("#updateScreenshot").show()
                 $("#ck-updateScreenshot").prop("checked", true)
             }
@@ -2810,7 +2747,7 @@ class NMSCE {
     }
 
     editScreenshot() {
-        if (this.last)
+        if (typeof this.last.Photo !== "undefined")
             this.loadScreenshot(null, this.last.Photo, true)
     }
 
@@ -3051,8 +2988,8 @@ class NMSCE {
     editSelected(evt) {
         let e = this.last
 
-        if (e && bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin"))) {
-            let link = "/upload?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
+        if (bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin"))) {
+            let link = "/upload?i=" + e.id + "&g=" + e.galaxy.nameToId()
             window.open(link, "_self")
         }
     }
@@ -3303,14 +3240,8 @@ class NMSCE {
     redditPost() {
         let loc = $("#redditPost")
         let sr = loc.find("#menu-SubReddit").val().stripMarginWS()
-        let flair = loc.find("#menu-Flair")
+        let flair = bhs.getMenu(loc.find("#menu-Flair"))
         let title = loc.find("#id-Title").val()
-
-        let val = flair.val()
-
-        if (val)
-            flair = flair.find("[value='" + val + "']").text()
-
 
         if (!sr) {
             nmsce.postStatus("Please select SubReddit")
@@ -3564,8 +3495,7 @@ class NMSCE {
                 let loc = $("#imgtable")
 
                 let font = loc.find("#menu-Font")
-                let txt = font.find("option:contains('" + text.font + "')")
-                font.val(txt.val())
+                bhs.setMenu(font, text.font)
 
                 loc.find("#sel-size").val(text.fSize)
 
@@ -3827,10 +3757,20 @@ class NMSCE {
     }
 
     deleteEntry() {
-        if (this.last) {
-            let entry = this.last
-            this.last = null
-            let docRef = doc(bhs.fs, "nmsceCombined/" + entry.id)
+        let entry = this.last
+        let docRef = doc(bhs.fs, "nmsceCombined/" + entry.id)
+
+        let vref = collection(docRef, "votes")
+        getDocs(vref).then(snapshot => {
+            for (let doc of snapshot.docs)
+                deleteDoc(doc.ref);
+        })
+
+        deleteDoc(docRef).then(async () => {
+            bhs.status(entry.type + " deleted.")
+            $("#save").text("Save All")
+            $("#delete-item").addClass("disabled")
+            $("#delete-item").prop("disabled", true)
 
             let vref = collection(docRef, "votes")
             getDocs(vref).then(snapshot => {
@@ -3838,31 +3778,18 @@ class NMSCE {
                     deleteDoc(doc.ref);
             })
 
-            deleteDoc(docRef).then(async () => {
-                bhs.status(entry.id + " deleted.")
-                $("#save").text("Save All")
-                $("#delete-item").addClass("disabled")
-                $("#delete-item").prop("disabled", true)
+            // Little trick to get array of all different paths
+            let ImagePaths = [
+                GetDisplayPath,
+                GetOriginalPath,
+                GetThumbnailPath
+            ].map(func => func(entry.Photo));
 
-                let vref = collection(docRef, "votes")
-                getDocs(vref).then(snapshot => {
-                    for (let doc of snapshot.docs)
-                        deleteDoc(doc.ref);
-                })
-
-                // Little trick to get array of all different paths
-                let ImagePaths = [
-                    GetDisplayPath,
-                    GetOriginalPath,
-                    GetThumbnailPath
-                ].map(func => func(entry.Photo));
-
-                await DeleteImages(ImagePaths);
-            }).catch(err => {
-                bhs.status("ERROR: " + err.code)
-                console.log(err)
-            })
-        }
+            await DeleteImages(ImagePaths);
+        }).catch(err => {
+            bhs.status("ERROR: " + err.code)
+            console.log(err)
+        })
     }
 
     async updateScreenshot(entry) {
@@ -3925,14 +3852,14 @@ class NMSCE {
         this.initVotes(entry)
         let created = false
 
-        if (typeof entry.created === "undefined") {
+        if (typeof entry.created === "undefined" || !entry.created) {
             entry.created = Timestamp.now()
             created = true
         }
 
         let ref
 
-        if (created || typeof entry.id === "undefined") {
+        if (typeof entry.id === "undefined" || !entry.id || created) {
             let d
 
             do {
@@ -3942,23 +3869,28 @@ class NMSCE {
             } while (d.exists())
         }
 
-        if (typeof entry.Photo === "undefined")
+        if (typeof entry.Photo === "undefined" || created)
             entry.Photo = entry.id + ".jpg"
 
         if (!ref)
             ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
         setDoc(ref, entry).then(() => {
-            bhs.status(entry.type + " " + entry.Name + " saved.")
-            this.last = entry
+            if (entry.uid === bhs.user.uid) {
+                this.last = mergeObjects({}, entry)
 
-            this.entries[entry.type]?.push(entry)
-            this.displayListEntry(entry)    // before update screenshot because it creates the display space
+                if (created) {
+                    this.entries[entry.type].push(entry)
+                    this.incrementTotals(entry, 1)
+                }
 
-            this.updateScreenshot(entry)    // must finish before clearPanel happens
+                this.displayListEntry(entry)    // before update screenshot because it creates the display space
+                this.updateScreenshot(entry)    // must finish before clearPanel happens
 
-            if (created)
-                this.incrementTotals(entry, 1)
+                bhs.status(entry.type + " " + entry.Name + " saved.")
+            }
+            else
+                this.last = {}
         }).catch(err => {
             bhs.status("ERROR: " + err.code)
         })
@@ -4478,16 +4410,15 @@ class NMSCE {
     }
 
     async vote(evt) {
-        if (this.last && bhs.user.uid) {
+        if (bhs.user.uid) {
             let v = 1
-            let e = this.last
             let id = $(evt).attr("id")
 
-            let ref = doc(bhs.fs, "nmsceCombined/" + e.id)
+            let ref = doc(bhs.fs, "nmsceCombined/" + this.last.id)
 
             let res = await getDoc(doc(collection(ref, "votes"), bhs.user.uid));
 
-            e = {}
+            let e = {}
 
             if (res.exists()) {
                 e = res.data()
@@ -4503,7 +4434,7 @@ class NMSCE {
             e._name = this.last._name
             e.created = this.last.created
             e.type = this.last.type
-            if (this.last.Type)
+            if (typeof this.last.Type !== "undefined")
                 e.Type = this.last.Type
 
             await setDoc(res.ref, e, {
@@ -4547,10 +4478,10 @@ class NMSCE {
 
     displaySelected(e) {
         let row = `
-    <div id="id-idname" class="row border-bottom txt-label-def">
-        <div class="col-sm-5">title</div>
-        <div id="val-idname" class="col font clr-def">value</div>
-    </div>`
+            <div id="id-idname" class="row border-bottom txt-label-def">
+                <div class="col-sm-5">title</div>
+                <div id="val-idname" class="col font clr-def">value</div>
+            </div>`
 
         $("#imgtable").show()
 
@@ -5121,7 +5052,7 @@ function getPlanet(evt) {
     if (!fcedata)
         return
 
-    let gal = $("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
+    let gal = bhs.getMenu($("#menu-Galaxy"))
     let addr = $("#panels #id-addr").val()
     let planet = $(evt.target ? evt.target : evt).val()
 
@@ -5154,7 +5085,7 @@ function getEntry() {
     let addr = $("#panels #id-addr").val()
     let name = $(this).val()
     let type = $("#typePanels .active").attr("id").stripID()
-    let gal = $("#menu-Galaxy").val().stripNumber().replaceAll("-", " ")
+    let gal = bhs.getMenu($("#menu-Galaxy"))
 
     if (gal && type && addr && name) {
         let q = query(collection(bhs.fs, "nmsceCombined"),

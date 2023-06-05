@@ -219,35 +219,38 @@
                                 <div class="card-header txt-def h5">Search</div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <button id="search" type="button" class="col-md-4 col-6 btn btn-sm btn-def" onclick="nmsce.search()">Search</button>&nbsp;
-                                        <button id="clear" type="button" class="col-md-4 col-6 btn btn-sm btn-def"
+                                        <button id="search" type="button" class="col-3 btn btn-sm btn-def"
+                                            onclick="nmsce.search()">Search</button>&nbsp;
+                                        <button id="clear" type="button" class="col-3 btn btn-sm btn-def"
                                             onclick="nmsce.clearPanel(true)">Reset</button>&nbsp;
                                     </div>
-                                    <div id="row-savesearch" class="row" data-allowhide=true>
-                                        <button id="searchlocal" type="button" class="col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.searchLocal()">Saved Search</button>
-                                        <div id="id-Saved" class="col-md-4 col-6"></div>&nbsp;
-                                        <label class="col-md-7 col-14 txt-label-def">
-                                            Name&nbsp;
-                                            <input id="searchname" class="col-10" type="text" placeholder="Search Name">
-                                        </label>
-                                        <label id="id=notifySearch" class="col txt-label-def hidden">
-                                            <input id="ck-notify" type="checkbox">
-                                            Notify&nbsp;
-                                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
-                                                data-html="true" data-placement="bottom"
-                                                title="Check box and save to receive an email for future matches of this search. To disable uncheck and re-save.">
-                                            </i>
-                                        </label>
-                                        <button id="savesearch" type="button" class="col-md-4 col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.saveSearch()">Save</button>&nbsp;
-                                        <i id="searchlocaltt" class="far fa-question-circle text-danger"
-                                            data-toggle="tooltip" data-html="true" data-placement="bottom"
-                                            title="You can save multiple searches by logging in.">
-                                        </i>&nbsp;
-                                        <button id="deletesearch" type="button"
-                                            class="col-md-4 col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.deleteSearch()">Delete</button>&nbsp;
+                                    <div id="row-savesearch" data-allowhide=true>
+                                        <div class="row">
+                                            <button id="searchlocal" type="button" class="col-5 btn btn-sm btn-def"
+                                                onclick="nmsce.searchLocal()">Saved Search</button>
+                                            <div id="row-Saved" class="col-lg-5 col-md-6 col-14">
+                                                <div id="id-Saved" class="txt-label-def">Name&nbsp;</div>
+                                            </div>
+                                            <input id="searchname" class="col-5" type="text" placeholder="Search Name">
+                                            <label id="notifySearch" class="col-5 txt-label-def hidden">
+                                                <input id="ck-notify" type="checkbox">
+                                                Notify&nbsp;
+                                                <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
+                                                    data-html="true" data-placement="bottom"
+                                                    title="Check box and save to receive an email for future matches of this search. To disable uncheck and re-save.">
+                                                </i>
+                                            </label>
+                                        </div>
+                                        <div class="row">
+                                            <button id="savesearch" type="button" class="col-3 btn btn-sm btn-def"
+                                                onclick="nmsce.saveSearch()">Save</button>&nbsp;
+                                            <i id="searchlocaltt" class="far fa-question-circle text-danger"
+                                                data-toggle="tooltip" data-html="true" data-placement="bottom"
+                                                title="You can save multiple searches by logging in.">
+                                            </i>&nbsp;
+                                            <button id="deletesearch" type="button" class="col-3 btn btn-sm btn-def"
+                                                onclick="nmsce.deleteSearch()">Delete</button>&nbsp;
+                                        </div>
                                     </div>
                                     <br>
                                     <div class="row">
@@ -272,7 +275,7 @@
                     <div id="imgtable" class="row bkg-white txt-center" style="display:none">
                         <div id="imgcol" class="col-lg-10 col-md-9 col-14">
                             <a id="permalink-img" href="">
-                                <img id="dispimage" style="width: 100%;"/>
+                                <img id="dispimage" style="width: 100%;" />
                             </a>
                             <div class="row">
                                 <a id="permalink" class="col-10 h2 pl-30" href="">

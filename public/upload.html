@@ -89,8 +89,7 @@
         <div class="card">
             <div class="card-body bkg-white">
                 <div class="row">
-                    <div id="panels" class="col-md-9 col-14"
-                        style="border-width:3px; border-color:black;">
+                    <div id="panels" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
                         <div id="row-playerInput" class="row" data-allowhide=true>
                             <div class="col-sm-4 col-6 txt-label-def">
                                 Player Name&nbsp;
@@ -298,13 +297,11 @@
                                         class="col-6 btn btn-sm btn-def">Search</button>
                                 </div>
                                 <div class="row">
-                                    <div id="id-Saved" class="col-lg-4 col-md-6 col-14"></div>
-                                    <label class="col-lg-7 col-md-8 col-14 txt-label-def">
-                                        Name&nbsp;
-                                        <input id="searchname" class="col-10" type="text"
-                                            placeholder="Search Name">&nbsp;
-                                    </label>
-                                    <label id="id-notifySearch" class="col-lg-3 col-md-7 col-14 txt-label-def hidden">
+                                    <div id="row-Saved" class="col-lg-5 col-md-6 col-14">
+                                        <div id="id-Saved" class="txt-label-def">Name&nbsp;</div>
+                                    </div>
+                                    <input id="searchname" class="col-4" type="text" placeholder="Search Name">&nbsp;
+                                    <label id="id-notifySearch" class="col-4 txt-label-def hidden">
                                         <input id="ck-notify" type="checkbox">
                                         Notify&nbsp;
                                         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
@@ -314,9 +311,9 @@
                                     </label>
                                 </div>
                                 <div class="row">
-                                    <button id="savesearch" type="button" class="col-6 btn btn-sm btn-def"
+                                    <button id="savesearch" type="button" class="col-3 btn btn-sm btn-def"
                                         onclick="nmsce.saveSearch()">Save Search</button>&nbsp;&nbsp;
-                                    <button id="deletesearch" type="button" class="col-6 btn btn-sm btn-def"
+                                    <button id="deletesearch" type="button" class="col-3 btn btn-sm btn-def"
                                         onclick="nmsce.deleteSearch()">Delete Search</button>&nbsp;
                                 </div>
                             </span>
@@ -455,7 +452,8 @@
                             </button-->
                         </div>
                         <br>
-                        <p class="border-top text-danger h6">You can select information to add to the screenshot using the
+                        <p class="border-top text-danger h6">You can select information to add to the screenshot using
+                            the
                             checkboxes
                             below. Use click & drag to reposition and resize items displayed. Shift click to select
                             multiple items.</p>
