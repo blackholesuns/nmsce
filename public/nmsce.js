@@ -706,7 +706,8 @@ class NMSCE {
 
         this.last.id = null
         this.last.created = null
-
+        this.last.Photo = null
+        
         if (fcedata) {
             let canvas = document.getElementById("id-canvas")
             let ctx = canvas.getContext("2d")
@@ -737,6 +738,7 @@ class NMSCE {
         entry.version = this.last.version ? this.last.version : latestversion
         entry.id = this.last.id ? this.last.id : null
         entry.created = this.last.created ? this.last.created : null
+        entry.Photo = this.last.Photo ? this.last.Photo : null
 
         entry.page = "nmsce"
 
@@ -877,7 +879,7 @@ class NMSCE {
                 if (typeof this.entries === "undefined")
                     this.entries = []
 
-                ok = $("#imgtable").is(":visible")  // do we have an image to upload?
+                ok = $("#id-canvas").is(":visible") || entry.Photo // do we have an image to upload?
 
                 if (ok)
                     this.updateEntry(entry)
@@ -935,7 +937,7 @@ class NMSCE {
             }
         }
 
-        this.last = entry
+        this.last = mergeObjects({},entry)
 
         if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
             this.changeAddr(null, entry.addr, entry)
@@ -1007,7 +1009,7 @@ class NMSCE {
             map.show()
 
             let loc = $("#pnl-" + entry.type + " #menu-Type")
-            if (entry.type) {
+            if (loc.length > 0) {
                 nmsce.selectSublist(loc)
                 map = map.find("#slist-" + entry.Type)
             }
@@ -2988,7 +2990,7 @@ class NMSCE {
     editSelected(evt) {
         let e = this.last
 
-        if (bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin"))) {
+        if (bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin") || bhs.hasRole("nmsceEditor"))) {
             let link = "/upload?i=" + e.id + "&g=" + e.galaxy.nameToId()
             window.open(link, "_self")
         }
@@ -3793,8 +3795,10 @@ class NMSCE {
     }
 
     async updateScreenshot(entry) {
-        if (!$("#imgtable").is(":visible") && $("#id-canvas").is(":visible") || $("#ck-updateScreenshot").is(":visible") && $("#ck-updateScreenshot").prop("checked")) {
-            if (typeof entry.Photo === "undefined")
+        if ($("#id-canvas").is(":visible") &&
+            (!entry.Photo || !$("#ck-updateScreenshot").is(":visible") || $("#ck-updateScreenshot").prop("checked"))) {
+
+            if (typeof entry.Photo === "undefined" || !entry.Photo)
                 entry.Photo = entry.id + ".jpg"
 
             /** @type {{path: string, blob: Blob}[]} */
@@ -3854,6 +3858,7 @@ class NMSCE {
 
         if (typeof entry.created === "undefined" || !entry.created) {
             entry.created = Timestamp.now()
+            entry.Photo = null
             created = true
         }
 
@@ -3868,9 +3873,6 @@ class NMSCE {
                 d = await getDoc(ref)
             } while (d.exists())
         }
-
-        if (typeof entry.Photo === "undefined" || created)
-            entry.Photo = entry.id + ".jpg"
 
         if (!ref)
             ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
@@ -4383,7 +4385,7 @@ class NMSCE {
         let loc = $("#displayPanels #list-" + type.nameToId())
 
         for (let e of entries) {
-            if (!k && e.private && e.uid !== bhs.user.uid && !bhs.hasRole("nmsceEditor"))
+            if (!k && e.private && e.uid !== bhs.user.uid && !bhs.hasRole("admin") && !bhs.hasRole("nmsceEditor"))
                 continue
 
             // if (type === "Hall-of-Fame" && e.votes.hof < 1)
@@ -4466,7 +4468,7 @@ class NMSCE {
             this.last = e
             this.displaySelected(e)
 
-            if (bhs.user.uid && (e.uid === bhs.user.uid || bhs.hasRole("admin")))
+            if (bhs.user.uid && (e.uid === bhs.user.uid || bhs.hasRole("admin") || bhs.hasRole("nmsceEditor")))
                 $("#btn-ceedit").show()
             else
                 $("#btn-ceedit").hide()

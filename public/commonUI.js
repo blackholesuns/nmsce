@@ -122,7 +122,7 @@ blackHoleSuns.prototype.doLoggedin = function (user) {
 };
 
 blackHoleSuns.prototype.isPatreon = function (tier) {
-    return bhs.hasRole("nmsceAdmin")
+    return bhs.hasRole("nmsceEditor")|| bhs.hasRole("admin")
         ? true
         : typeof bhs.patreon === "number"
             ? bhs.patreon >= tier
