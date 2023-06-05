@@ -410,7 +410,7 @@ class NMSCE {
                 pnl.find("#foundsys").hide()
 
                 if (entry)
-                    this.last = entry
+                    this.last = mergeObjects({}, entry)
 
                 if (typeof this.last === "undefined")
                     this.last = {}
@@ -942,10 +942,10 @@ class NMSCE {
 
         this.last = mergeObjects({}, entry)
 
+        this.displaySystem(entry)
+
         if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
             this.changeAddr(null, entry.addr, entry)
-
-        this.displaySystem(entry)
 
         let link = `/preview?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
         $("[id|='permalink']").attr("href", link)
@@ -4406,7 +4406,7 @@ class NMSCE {
             l = /galaxy/[Symbol.replace](l, e.galaxy)
             l = /imgsrc/[Symbol.replace](l, GetThumbnailUrl(e.Photo))
             l = /byname/[Symbol.replace](l, e._name)
-            l = /date/[Symbol.replace](l, e.created ? e.created.toDate().toDateLocalTimeString() : "")
+            l = /date/[Symbol.replace](l, e.created ? new Timestamp(e.created.seconds, e.created.nanoseconds).toDate().toDateLocalTimeString() : "")
 
             if (e.private)
                 l = /bkg-white/[Symbol.replace](l, "bkg-yellow")
@@ -4440,7 +4440,7 @@ class NMSCE {
             e.galaxy = this.last.galaxy
             e.Photo = this.last.Photo
             e._name = this.last._name
-            e.created = this.last.created
+            e.created = new Timestamp(this.last.created.seconds, this.last.created.nanoseconds)
             e.type = this.last.type
             if (typeof this.last.Type !== "undefined")
                 e.Type = this.last.Type
@@ -4563,7 +4563,7 @@ class NMSCE {
 
         h = /idname/g[Symbol.replace](row, "Created")
         h = /title/[Symbol.replace](h, "Date")
-        h = /value/[Symbol.replace](h, e.created ? e.created.toDate().toDateLocalTimeString() : "")
+        h = /value/[Symbol.replace](h, e.created ? new Timestamp(e.created.seconds, e.created.nanoseconds).toDate().toDateLocalTimeString() : "")
         h = /font/[Symbol.replace](h, "")
         loc.append(h)
 
@@ -4853,7 +4853,7 @@ class NMSCE {
         } else {
             let l = /idname/g[Symbol.replace](itm, "Created")
             l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.created ? "Created " + e.created.toDate().toDateLocalTimeString() : "")
+            h += /title/[Symbol.replace](l, e.created ? "Created " + new Timestamp(e.created.seconds, e.created.nanoseconds).toDate().toDateLocalTimeString() : "")
             l = /idname/g[Symbol.replace](itm, "Modified")
             l = /pointer/[Symbol.replace](l, "")
             h += /title/[Symbol.replace](l, e.modded ? "Modified " + e.modded.toDate().toDateLocalTimeString() : "")
