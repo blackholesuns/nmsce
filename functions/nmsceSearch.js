@@ -30,7 +30,7 @@ exports.checkSearch = async function (e) {
         let found = false
         for (let i = 0; i < searches.length; ++i) {
             let cur = searches[i]
-            if (cur.uid === s.uid && cur.name === s.name) {
+            if (cur.uid === s.uid && cur._name === s._name && cur.name === s.name) {
                 cur = s
                 found = true
                 if (!s.email || !s.notify)
@@ -51,10 +51,10 @@ exports.checkSearch = async function (e) {
         if (sent.includes(s.uid))
             ok = false
 
-        // if (s.uid === e.uid)
-        //     ok = false
+        if (s.uid === e.uid)
+            ok = false
 
-        if (s.galaxy && s.galaxy !== s.galaxy)
+        if (s.galaxy && s.galaxy !== e.galaxy)
             ok = false
 
         if (s.type && s.type !== e.type)
@@ -71,25 +71,17 @@ exports.checkSearch = async function (e) {
                         for (let l of q.list)
                             if (!e[q.name].includes(l))
                                 ok = false
-                        if (ok)
-                            console.log("tags", JSON.stringify(q.list, JSON.stringify(e[q.name])))
                         break
                     case "map":
                         for (let l of q.list)
                             if (!e[q.name][l])
                                 ok = false
-                        if (ok)
-                            console.log("map", JSON.stringify(q.list, JSON.stringify(e[q.name])))
                         break
                     case "checkbox":
                         ok = e[q.name] === (q.val === "True")
-                        if (ok)
-                            console.log("ck", q.val, e[q.name])
                         break
                     default:
                         ok = q.query === ">=" ? e[q.name] >= q.val : e[q.name] === q.val
-                        if (ok)
-                            console.log("def " + q.type, q.query ? q.query : "", q.val, e[q.name])
                         break
                 }
 
@@ -127,5 +119,5 @@ exports.checkSearch = async function (e) {
 }
 
 String.prototype.nameToId = function () {
-    return /[^a-z0-9_-]/ig [Symbol.replace](this, "-")
+    return /[^a-z0-9_-]/ig[Symbol.replace](this, "-")
 }

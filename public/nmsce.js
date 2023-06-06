@@ -515,11 +515,11 @@ class NMSCE {
         loc.find("#id-sys").val(entry.sys)
         loc.find("#id-reg").val(entry.reg)
 
-        if (entry.sys)
-            loc.find("#foundsys").show()
+        // if (entry.sys)
+        //     loc.find("#foundsys").show()
 
-        if (entry.reg)
-            loc.find("#foundreg").show()
+        // if (entry.reg)
+        //     loc.find("#foundreg").show()
 
         // loc.find("#id-by").html("<h6>" + entry.sys ? entry._name : "" + "</h6>")
 
@@ -738,7 +738,7 @@ class NMSCE {
         entry.version = this.last.version ? this.last.version : latestversion
 
         entry.id = this.last.id ? this.last.id : null
-        entry.created = this.last.created ? this.last.created : null
+        entry.created = this.last.created ? new Timestamp(this.last.created.seconds, this.last.created.nanoseconds) : null
         entry.Photo = this.last.Photo ? this.last.Photo : null
         entry.reddit = this.last.reddit ? this.last.reddit : null
         entry.redditlink = this.last.redditlink ? this.last.redditlink : null
@@ -905,7 +905,7 @@ class NMSCE {
 
         if (!noscroll)
             $('html, body').animate({
-                scrollTop: $('#panels').offset().top
+                scrollTop: $('#sysinfo').offset().top
             }, 500)
 
         let tloc = $("#tab-" + entry.type.nameToId())
@@ -1184,6 +1184,11 @@ class NMSCE {
         let search = this.extractSearch()
         if (!search)
             return
+
+        if (search.list.length === 1) {
+            bhs.status("Saved search requires more than 1 element.")
+            return
+        }
 
         search.saved = true
         search.page = window.location.pathname
@@ -3846,7 +3851,7 @@ class NMSCE {
                 loc.attr("src", url)
 
                 $('html, body').animate({
-                    scrollTop: loc.offset().top
+                    scrollTop: $("#id-table").offset().top
                 }, 500)
             }
         }
@@ -3990,10 +3995,10 @@ class NMSCE {
                 this.displayTotals(doc.data(), "bhs/nmsceTotals")
         })
 
-        getDoc(doc(bhs.fs, "bhs/nmsceMonthly")).then(doc => {
-            if (doc.exists())
-                this.displayTotals(doc.data(), "bhs/nmsceMonthly")
-        })
+        // getDoc(doc(bhs.fs, "bhs/nmsceMonthly")).then(doc => {
+        //     if (doc.exists())
+        //         this.displayTotals(doc.data(), "bhs/nmsceMonthly")
+        // })
 
         getDoc(doc(bhs.fs, "bhs/patreon")).then(doc => {
             if (doc.exists())
@@ -4125,9 +4130,9 @@ class NMSCE {
                 let s = ""
 
                 for (let k of Object.keys(e))
-                    if (typeof e[k] === "number") {
+                    if (k !== "Living-Ship" && typeof e[k] === "number") {
                         t += e[k]
-                        s += (s !== "" ? ",&nbsp;" : "") + k + ": " + e[k]
+                        s += k + ": " + e[k] + " "
                     }
 
                 let l = loc.find("#row-" + k)
@@ -4136,7 +4141,7 @@ class NMSCE {
                     let h = /uid/[Symbol.replace](rows, k)
                     h = /nameS/[Symbol.replace](h, e.name)
                     h = /detailT/[Symbol.replace](h, s)
-                    if (e.mod) {
+                    if (e.name === "Bad Wolf") {    //was e.mod
                         h = /ismod/[Symbol.replace](h, "modT")
                         h = /border-bottom/[Symbol.replace](h, "border-bottom hidden")
                     }
