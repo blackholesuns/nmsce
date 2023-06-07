@@ -220,6 +220,10 @@ export const versionList = [
         name: "interceptor",
         version: 4.20,
         date: "4/5/2023"
+    }, {
+        name: "singularity",
+        version: 4.30,
+        date: "6/7/2023"
     }
 ];
 

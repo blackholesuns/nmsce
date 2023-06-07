@@ -474,13 +474,13 @@ function checkNewPosters(posts) {
 function checkReported(posts) {
     let p = []
     for (let post of posts) {
-        if (post.author.name === "AutoModerator" || post.author.name === "nmsceBot")
+        if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot") && post.body()[0] !== '!')
             p.push(post.approve())  // idiots reporting automod & bot comments
 
-        if (post.name.startsWith("t1") && !post.banned_by)
-            for (let r of post.user_reports)
-                if (r[0].includes("poiler"))
-                    p.push(post.reply("!Filter-Spoiler").catch(err => error(err)))
+        // if (post.name.startsWith("t1") && !post.banned_by)
+        //     for (let r of post.user_reports)
+        //         if (r[0].includes("poiler"))
+        //             p.push(post.reply("!filter-spoiler").catch(err => error(err)))
     }
 
     return Promise.all(p)

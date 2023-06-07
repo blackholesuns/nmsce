@@ -87,7 +87,8 @@ $(document).ready(() => {
             passed[decodeURI(obj[0])] = obj[1] ? decodeURI(obj[1]) : true
             if (obj[0] === 'g') {
                 let i = getIndex(galaxyList, "name", passed.g.idToName())
-                passed.g = galaxyList[i].name
+                if (i >= 0)
+                    passed.g = galaxyList[i].name
             }
         }
     }
@@ -116,6 +117,15 @@ $(document).ready(() => {
                     nmsce.displaySingle(doc.data())
             }
         })
+    } else if (passed.s && passed.t) {
+        nmsce.last.addr = reformatAddress(passed.s)
+        nmsce.last.Type = passed.t
+        nmsce.searchType()
+
+    } else if (passed.f) {
+        nmsce.last.Genus = passed.f
+        nmsce.searchFauna()
+
     }
 })
 
@@ -139,41 +149,41 @@ const tText = `&nbsp;
         <i class="far fa-question-circle text-danger h6"></i>
     </span>`;
 
-const inpHdr = `<div class="col-lg-7 col-sm-14" data-allowhide="ihide">`;
-const inpLongHdr = `<div class="col-sm-14" data-allowhide="ihide">`;
+const inpHdr = `<div class="col-lg-7 col-14" data-allowhide="ihide">`;
+const inpLongHdr = `<div class="col-14" data-allowhide="ihide">`;
 const inpEnd = `</div>`;
 
 const tString = `
     <div id="row-idname" data-type="string" data-req="ifreq" class="row">
-        <div class="col-lg-6 col-sm-4 txt-label-def">titlettip&nbsp;</div>
-        <input id="id-idname" class="rounded col-lg-7 col-sm-9">&nbsp;
+        <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
+        <input id="id-idname" class="rounded col-lg-7 col-9">&nbsp;
         <!--i class="fas fa-check text-success hidden"></i-->
     </div>`;
-const tMap = `<div id="row-idname" class="col-sm-14" data-type="map"></div>`;
+const tMap = `<div id="row-idname" class="col-14" data-type="map"></div>`;
 const tLongString = `
     <div id="row-idname" data-type="string" data-allowhide="ihide" data-req="ifreq" class="row">
-        <div class="col-lg-6 col-sm-4 pl-15 txt-label-def">titlettip&nbsp;</div>
+        <div class="col-lg-6 col-4 pl-15 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" class="rounded col">
     </div>`;
 const tNumber = `
     <div id="row-idname" data-type="number" data-allowhide="ihide" data-req="ifreq" data-search="stype" class="row">
-        <div class="col-lg-6 col-sm-4 txt-label-def">titlettip&nbsp;</div>
-        <input id="id-idname" type="number" class="rounded col-lg-7 col-sm-9" min=-1 max=range value=-1>
+        <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
+        <input id="id-idname" type="number" class="rounded col-lg-7 col-9" min=-1 max=range value=-1>
     </div>`;
 const tFloat = `
     <div id="row-idname" data-type="float" data-allowhide="ihide" data-req="ifreq" data-search="stype" class="row">
-        <div class="col-lg-6 col-sm-4 txt-label-def">titlettip&nbsp;</div>
-        <input id="id-idname" type="number" class="rounded col-lg-7 col-sm-9" step=0.01 max=range value=-1>
+        <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
+        <input id="id-idname" type="number" class="rounded col-lg-7 col-9" step=0.01 max=range value=-1>
     </div>`;
 const tTags = `
     <div id="row-idname" class="row pl-10 pr-10" data-type="tags" data-allowhide="ihide" data-req="ifreq">
-        <div id="id-idname" class="col-lg-6 col-sm-7"></div>
-        <div id="add-idname" class="col-sm-7 row hidden">
-            <input id="txt-idname" type="text" class="col-sm-5"></input>
-            <button id="add-idname" type="text" class="col-sm-4 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
-            <button id="cancel-idname" type="text" class="col-sm-4 btn btn-def btn-sm" onclick="nmsce.cancelTag(this)">Cancel</button>
+        <div id="id-idname" class="col-lg-6 col-7"></div>
+        <div id="add-idname" class="col-7 row hidden">
+            <input id="txt-idname" type="text" class="col-5"></input>
+            <button id="add-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
+            <button id="cancel-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.cancelTag(this)">Cancel</button>
         </div>
-        <div class="col-sm-7 border">
+        <div class="col-7 border">
             <div id="list-idname" class="row"></div>
         </div>
     </div>`;
@@ -184,7 +194,7 @@ const tMenu = `
     </div>`;
 const tRadio = `
     <div id="row-idname" data-type="radio" data-allowhide="ihide" data-req="ifreq" class="row pl-0">
-        <div class="radio col-lg-5 col-sm-4 txt-label-def">titlettip</div>
+        <div class="radio col-lg-5 col-4 txt-label-def">titlettip</div>
         <div class="col">
             <div id="list" class="row"></div>
         </div>&nbsp;
@@ -203,13 +213,13 @@ const tCkItem = `
     </div>`;
 const tImg = `
     <div id="row-idname" data-req="ifreq" data-type="img" class="row">
-        <div class="col-lg-2 col-sm-4 txt-label-def">titlettip&nbsp;</div>
+        <div class="col-lg-2 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" type="file" class="col form-control form-control-sm" 
             accept="image/*" name="files[]"  data-type="img" onchange="nmsce.loadScreenshot(this)">&nbsp
     </div>`;
 
 const resultsItem = `
-    <div id="row-idname" class="col-lg-p250 col-md-p333 col-sm-7 col-sm-14 pointer bkg-white txt-label-def border rounded h6"
+    <div id="row-idname" class="col-lg-p250 col-md-p333 col-sm-7 col-14 pointer bkg-white txt-label-def border rounded h6"
         onclick="nmsce.selectResult(this)" style="pad-bottom:3px">
         galaxy<br>
         byname<br>
@@ -280,13 +290,13 @@ class NMSCE {
         bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
             tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
             required: true,
-            labelsize: "col-md-5 col-sm-4",
+            labelsize: "col-md-5 col-4",
             menusize: "col",
         })
 
         if (fnmsce) {
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
-                labelsize: "col-md-5 col-sm-4",
+                labelsize: "col-md-5 col-4",
                 menusize: "col",
             })
         }
@@ -426,6 +436,9 @@ class NMSCE {
                             let e = snapshot.docs[0].data()
                             this.last.sys = e.sys
                             this.displaySys(this.last)
+
+                            if (entry)
+                                setDoc(snapshot.docs[0].ref, { sys: e.sys }, { merge: true })
                         }
                     })
                 }
@@ -436,6 +449,9 @@ class NMSCE {
                             let e = snapshot.docs[0].data()
                             this.last.Lifeform = e.Lifeform
                             setRadio($("#id-Lifeform"), e.Lifeform)
+
+                            if (entry)
+                                setDoc(snapshot.docs[0].ref, { Lifeform: e.Lifeform }, { merge: true })
                         }
                     })
                 }
@@ -446,6 +462,9 @@ class NMSCE {
                             let e = snapshot.docs[0].data()
                             this.last.Economy = e.Economy
                             setRadio($("#id-Economy"), e.Economy)
+
+                            if (entry)
+                                setDoc(snapshot.docs[0].ref, { Economy: e.Economy }, { merge: true })
                         }
                     })
                 }
@@ -466,6 +485,9 @@ class NMSCE {
                             let e = snapshot.docs[0].data()
                             this.last.reg = e.reg
                             this.displayReg(this.last)
+
+                            if (entry)
+                                setDoc(doc(bhs.fs, "nmsceCombined/" + entry.id), { reg: e.reg }, { merge: true })
                         }
                     })
                 }
@@ -1245,7 +1267,7 @@ class NMSCE {
                 } else
                     bhs.buildMenu($("#row-Saved"), "Saved", this.searchlist, this.executeSaved, {
                         sort: true,
-                        labelsize: "col-sm-2",
+                        labelsize: "col-2",
                         menusize: "col"
                     })
             }
@@ -1566,6 +1588,47 @@ class NMSCE {
         })
     }
 
+    searchType() {
+        if (!this.last)
+            return
+
+        this.entries["Search-Results"] = []
+
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
+            where("addr", "==", this.last.addr),
+            where("Type", "==", this.last.Type))
+
+        getDocs(ref).then(snapshot => {
+            let list = []
+            for (let doc of snapshot.docs)
+                list.push(doc.data())
+
+            $("#dltab-Search-Results").click()
+            $("#displayPanels #list-Search-Results").empty()
+            this.displayResultList(list, "Search-Results")
+        })
+    }
+
+    searchFauna() {
+        if (!this.last)
+            return
+
+        this.entries["Search-Results"] = []
+
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
+            where("Genus", "==", nmsce.last.Genus))
+
+        getDocs(ref).then(snapshot => {
+            let list = []
+            for (let doc of snapshot.docs)
+                list.push(doc.data())
+
+            $("#dltab-Search-Results").click()
+            $("#displayPanels #list-Search-Results").empty()
+            this.displayResultList(list, "Search-Results")
+        })
+    }
+
     /**
      * 
      * 
@@ -1785,7 +1848,7 @@ class NMSCE {
                     if (f.ttip)
                         f.tip = slist ? slist[f.ttip] : f.ttip
 
-                    f.labelsize = "col-sm-5"
+                    f.labelsize = "col-5"
                     f.menusize = "col"
                     f.sort = true
 
@@ -1822,8 +1885,8 @@ class NMSCE {
                                 ttip: f.ttip,
                                 sort: true,
                                 required: f.required,
-                                labelsize: "col-lg-4 col-md-5 col-sm-6 col-sm-7",
-                                menusize: "col-sm-7"
+                                labelsize: "col-lg-4 col-md-5 col-sm-6 col-7",
+                                menusize: "col-7"
                             })
                         } else {
                             let ref = doc(bhs.fs, "tags/" + itmid)
@@ -1851,8 +1914,8 @@ class NMSCE {
                                 bhs.buildMenu(loc, f.name, tags, nmsce.addTag, {
                                     // nolabel: true,
                                     ttip: f.ttip,
-                                    labelsize: "col-lg-4 col-md-5 col-sm-6 col-sm-7",
-                                    menusize: "col-sm-7"
+                                    labelsize: "col-lg-4 col-md-5 col-sm-6 col-7",
+                                    menusize: "col-7"
                                 })
                             })
                         }
@@ -2250,7 +2313,7 @@ class NMSCE {
 
     buildImageText() {
         const ckbox = `
-        <label class="col-lg-2 col-md-3 col-sm-4 col-sm-7">
+        <label class="col-lg-2 col-md-3 col-sm-4 col-7">
             <input id="ck-idname" type="checkbox" ftype loc row sub onchange="nmsce.getImageText(this, true)">
             &nbsp;title
         </label>`
@@ -2263,7 +2326,7 @@ class NMSCE {
                 data-placement="bottom" title="Use Line break, <br>, to separate multiple lines.">
             </i>&nbsp;
         </label>
-        <input id="id-Text" class="rounded col-md-5 col-sm-7" type="text"
+        <input id="id-Text" class="rounded col-md-5 col-7" type="text"
             onchange="nmsce.getImageText(this, true)">
 
         <label class="col-md-2 col-sm-7 txt-label-def ">
@@ -2365,7 +2428,7 @@ class NMSCE {
             loc.append(l.html)
 
         bhs.buildMenu($("#imgtable"), "Font", fontList, this.setFont, {
-            labelsize: "col-sm-5",
+            labelsize: "col-5",
             menusize: "col",
             sort: true,
             font: true,
@@ -3194,7 +3257,7 @@ class NMSCE {
                     }
                     bhs.buildMenu($("#redditPost"), "SubReddit", nmsce.subReddits, nmsce.setSubReddit, {
                         required: true,
-                        labelsize: "col-sm-4",
+                        labelsize: "col-4",
                         menusize: "col",
                         sort: true
                     })
@@ -3236,7 +3299,7 @@ class NMSCE {
 
                     bhs.buildMenu($("#redditPost"), "Flair", nmsce.subRedditFlair, null, {
                         required: true,
-                        labelsize: "col-sm-4",
+                        labelsize: "col-4",
                         menusize: "col"
                     })
                 },
@@ -4011,11 +4074,11 @@ class NMSCE {
         <div id="patronCard" class="card">
             <div class="card-header pl-15 txt-def">
                 <div class="row">
-                    <div class="col-sm-4">Thanks To All Our Supporters!</div>
-                    <div class="col-sm-3">
+                    <div class="col-4">Thanks To All Our Supporters!</div>
+                    <div class="col-3">
                         <a href="https://www.patreon.com/bePatron?u=28538540" style="background-color:red; color:white; border-radius:12px">&nbsp;&nbsp;Become a Patron!&nbsp;&nbsp;</a>
                     </div>
-                    <!--div class="col-sm-5">You can also get patron benefits by entering data.&nbsp;
+                    <!--div class="col-5">You can also get patron benefits by entering data.&nbsp;
                         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                             data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
                         </i>
@@ -4023,7 +4086,7 @@ class NMSCE {
                 </div>
                 <br>
                 <div class="row h6 border-top">
-                    <div class="col-sm-4">Name</div>
+                    <div class="col-4">Name</div>
                     <div class="col-sm-2 pl-15">Date Joined</div>
                 </div>
             </div>
@@ -4039,7 +4102,7 @@ class NMSCE {
         const rows = `
         <div id="row-uid" class="border-bottom h6">
             <div class="row">
-                <div id="id-name" class="col-sm-3">dname</div>
+                <div id="id-name" class="col-3">dname</div>
                 <div id="id-date" class="col-sm-2 txt-right">ddate</div>
             </div>
         </div>`
@@ -4064,17 +4127,17 @@ class NMSCE {
     buildTotals() {
         const header = `
         <div id="totalsCard" class="row">
-            <div class="col-md-9 col-sm-14">
+            <div class="col-md-9 col-14">
                 <div class="card">
                     <div class="card-header pl-15 txt-def">
                         <div class="row">
-                            <div class="col-sm-3">
+                            <div class="col-3">
                                 <label>
                                     <input id="ck-idname" type="checkbox" onclick="nmsce.showModTotals(this)">
                                     &nbsp;Show All
                                 </label>
                             </div>
-                            <!--div class="col-sm-5">You can get patron benefits by entering data.&nbsp;
+                            <!--div class="col-5">You can get patron benefits by entering data.&nbsp;
                                 <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                                     data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
                                 </i>
@@ -4089,7 +4152,7 @@ class NMSCE {
                     <div id="userTotals" class="card-body scroll txt-black" style="height:600px"></div>
                 </div>
             </div>
-            <div class="col-md-5 col-sm-14">
+            <div class="col-md-5 col-14">
                 <div class="card">
                     <div class="card-header pl-15 txt-def">Totals</div>
                     <div id="totalsTable" class="txt-black pl-15"></div>
@@ -4106,7 +4169,7 @@ class NMSCE {
         const rows = `
         <div id="row-uid" name="ismod" class="border-bottom h6">
             <div class="row pointer" onclick="nmsce.expandTotals(this)">
-                <div id="id-name" class="col-sm-8"><i class="far fa-caret-square-down txt-input"></i> nameS</div>
+                <div id="id-name" class="col-8"><i class="far fa-caret-square-down txt-input"></i> nameS</div>
                 <div id="id-total" class="col-sm-2 txt-right">totalT</div>
                 <!--div id="id-monthly" class="col-sm-2 txt-right">monthlyT</div-->
             </div>
@@ -4116,8 +4179,8 @@ class NMSCE {
         </div>`
         const totals = `
         <div class="row">
-            <div class="col-sm-5">name</div>
-            <div id="id-name" class="col-sm-3">qty</div>
+            <div class="col-5">name</div>
+            <div id="id-name" class="col-3">qty</div>
         </div>`
 
         let total = 0
@@ -4492,7 +4555,7 @@ class NMSCE {
     displaySelected(e) {
         let row = `
             <div id="id-idname" class="row border-bottom txt-label-def">
-                <div class="col-sm-5">title</div>
+                <div class="col-5">title</div>
                 <div id="val-idname" class="col font clr-def">value</div>
             </div>`
 

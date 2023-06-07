@@ -572,6 +572,9 @@ export function buildGalaxyInfo() {
             j += step++ % 2 ? l.step1 : l.step2
         }
 
+    for (let i = 0; i < galaxyList.length; ++i) 
+        galaxyList[i].name += "  (" + (i + 1) + ")"
+
     for (let l of economyList)
         l.color = levelRgb[l.number]
 }
