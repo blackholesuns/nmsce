@@ -6,12 +6,11 @@ admin.initializeApp({
 })
 require('events').EventEmitter.defaultMaxListeners = 0
 
-// recalc all totals
 // remove orphaned images. check for images used by multiple entries
-
-// delete/rename collection votes on nmsce after last copy
+// delete/rename collection votes on nmsce after last copy (make backup first)
 
 // *** done ***
+// recalc all totals
 // fix duplicate ids
 // validate galaxies delete invalid inc images
 // move living ships to normal ships

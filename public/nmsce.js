@@ -3270,7 +3270,7 @@ class NMSCE {
     }
 
     setSubReddit(evt, accessToken) {
-        let name = typeof evt === "string" ? evt.split("_")[1] : $(evt).text().stripMarginWS()
+        let name = bhs.getMenu(evt)
         let i = getIndex(nmsce.subReddits, "name", name)
 
         if (!accessToken)
@@ -3312,7 +3312,7 @@ class NMSCE {
 
     redditPost() {
         let loc = $("#redditPost")
-        let sr = loc.find("#menu-SubReddit").val().stripMarginWS()
+        let sr = bhs.getMenu(loc.find("#menu-SubReddit"))
         let flair = bhs.getMenu(loc.find("#menu-Flair"))
         let title = loc.find("#id-Title").val()
 
