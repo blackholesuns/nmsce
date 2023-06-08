@@ -113,6 +113,7 @@ exports.nmsceItemCreated = functions.firestore.document("nmsceCombined/{id}")
             if (typeof d[e.type] === "undefined")
                 d[e.type] = 0
 
+            d.Total++
             d[e.type]++
             d[e.uid][e.type]++
             d[e.uid].name = e._name

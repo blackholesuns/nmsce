@@ -9,7 +9,6 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // recalc all totals
 // remove orphaned images. check for images used by multiple entries
 
-// copy all items after switching to new code jic some were entered between states
 // delete/rename collection votes on nmsce after last copy
 
 // *** done ***
@@ -24,66 +23,7 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // Fix type & Type for living ships in nmsceCombined
 // copy votes but not common to get rid of galaxy. copy to new db collection
 // delete "old"+type when copy to new db collection
-
-async function combineGalaxies() {
-    let ref = admin.firestore().collection("nmsce")
-    let galaxies = await ref.listDocuments()
-
-    ref = admin.firestore().collection("nmsceCombined")
-    let cids = await ref.listDocuments()
-
-    for (let g of galaxies) {
-        if (g.id < "Euclid")
-            continue
-
-        let ref = admin.firestore().doc(g.path)
-        let types = await ref.listCollections()
-
-        for (let t of types) {
-            if (t.id === "Living-Ship")
-                continue
-
-            let ref = admin.firestore().collection(t.path)
-            let tids = await ref.listDocuments()
-
-            for (let item of tids) {
-                if (cids.find(elem => elem.id === item.id)) {
-                    console.error("duplicate", g.id, t.id, item.id)
-                    continue
-                }
-
-                let doc = await ref.doc(item.id).get()
-                if (!doc.exists) {
-                    console.error("!exist", g.id, t.id, item.id)
-                    continue
-                }
-
-                let d = doc.data()
-
-                let keys = Object.keys(d)
-                for (let key of keys)
-                    if (key.startsWith("old")) // old tag copies
-                        delete d[key]
-
-                if (d.type === "Living-Ship") {
-                    d.type = "Ship"
-                    d.Type = "Living"
-                }
-
-                console.log("copy", g.id, t.id, d.id)
-                let newref = admin.firestore().doc("nmsceCombined/" + d.id)
-                await newref.set(d)
-
-                let votes = await doc.ref.collection("votes").get()
-                for (let vdoc of votes.docs) {
-                    let v = vdoc.data()
-                    await newref.collection("votes").doc(v.uid).set(v)
-                }
-            }
-        }
-    }
-}
-combineGalaxies()
+// copy all items after switching to new code jic some were entered between states
 
 async function fixTotals() {
     let users = {}
@@ -98,59 +38,124 @@ async function fixTotals() {
 
     let ref = admin.firestore().collection("nmsceCombined")
     let docs = await ref.listDocuments(ref)
+    console.log("total entries", docs.length)
+    all.Total = docs.length
 
     let count = 0
 
     for (let d of docs) {
-        let snapshot = await d.ref.get()
-        let doc = snapshot.data()
-        if (typeof user[doc.id] === "undefined") {
-            user[doc.id] = {}
-            user[doc.id].Ship = 0
-            user[doc.id].Freighter = 0
-            user[doc.id].Frigate = 0
-            user[doc.id]["Multi-Tool"] = 0
-            user[doc.id].Fauna = 0
-            user[doc.id].Planet = 0
-            user[doc.id].Base = 0
+        let ref = admin.firestore().doc(d.path)
+        let snapshot = await ref.get()
 
-            user.name = doc._name
+        let doc = snapshot.data()
+        if (typeof users[doc.uid] === "undefined") {
+            users[doc.uid] = {}
+            users[doc.uid].Ship = 0
+            users[doc.uid].Freighter = 0
+            users[doc.uid].Frigate = 0
+            users[doc.uid]["Multi-Tool"] = 0
+            users[doc.uid].Fauna = 0
+            users[doc.uid].Planet = 0
+            users[doc.uid].Base = 0
+
+            users[doc.uid].name = doc._name
         }
 
-        user[doc.id][doc.type]++
+        users[doc.uid][doc.type]++
         all[doc.type]++
 
-        if (++count > 100)
-            break
+        // if (++count > 500)
+        //     break
     }
 
-    let ids = Object.keys(user)
+    let ids = Object.keys(users)
 
-    for (let id of ids) {
-        let types = Object.keys(user[id])
+    for (let uid of ids) {
+        let types = Object.keys(users[uid])
 
         for (let t of types)
-            if (user[id][t] === 0)
-                delete user[id][t]
+            if (users[uid][t] === 0)
+                delete users[uid][t]
     }
 
     ref = admin.firestore().doc("bhs/nmsceTotals")
     all = mergeObjects(all, users)
-    console.log(all)
-    // ref.set(all)
+    // console.log(all)
+    ref.set(all)
 
-    console.log("num users", ids.length)
+    console.log("contributing users", ids.length)
 
     for (let id of ids) {
         let ref = admin.firestore().doc("users/" + id)
-        delete user[id].name
+        delete users[id].name
 
         let u = {}
-        u.nmsceTotals = user[id]
+        u.nmsceTotals = users[id]
         console.log(u)
-        // ref.set(user[id], { merge: true })
+        ref.set(u, { merge: true })
     }
 }
+fixTotals()
+
+// async function combineGalaxies() {
+//     let ref = admin.firestore().collection("nmsce")
+//     let galaxies = await ref.listDocuments()
+
+//     ref = admin.firestore().collection("nmsceCombined")
+//     let cids = await ref.listDocuments()
+
+//     for (let g of galaxies) {
+//         if (g.id < "Euclid")
+//             continue
+
+//         let ref = admin.firestore().doc(g.path)
+//         let types = await ref.listCollections()
+
+//         for (let t of types) {
+//             if (t.id === "Living-Ship")
+//                 continue
+
+//             let ref = admin.firestore().collection(t.path)
+//             let tids = await ref.listDocuments()
+
+//             for (let item of tids) {
+//                 if (cids.find(elem => elem.id === item.id)) {
+//                     console.error("duplicate", g.id, t.id, item.id)
+//                     continue
+//                 }
+
+//                 let doc = await ref.doc(item.id).get()
+//                 if (!doc.exists) {
+//                     console.error("!exist", g.id, t.id, item.id)
+//                     continue
+//                 }
+
+//                 let d = doc.data()
+
+//                 let keys = Object.keys(d)
+//                 for (let key of keys)
+//                     if (key.startsWith("old")) // old tag copies
+//                         delete d[key]
+
+//                 if (d.type === "Living-Ship") {
+//                     d.type = "Ship"
+//                     d.Type = "Living"
+//                 }
+
+//                 console.log("copy", g.id, t.id, d.id)
+//                 let newref = admin.firestore().doc("nmsceCombined/" + d.id)
+//                 await newref.set(d)
+
+//                 let votes = await doc.ref.collection("votes").get()
+//                 for (let vdoc of votes.docs) {
+//                     let v = vdoc.data()
+//                     await newref.collection("votes").doc(v.uid).set(v)
+//                 }
+//             }
+//         }
+//     }
+// }
+// combineGalaxies()
 
 function mergeObjects(o, n) {
     if (typeof n !== "object") {

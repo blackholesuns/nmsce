@@ -4186,7 +4186,6 @@ class NMSCE {
             <div id="id-name" class="col-3">qty</div>
         </div>`
 
-        let total = 0
         let loc = $("#totalsCard")
 
         for (let k of Object.keys(list)) {
@@ -4215,10 +4214,11 @@ class NMSCE {
                     if (path === "bhs/nmsceTotals") {
                         h = /totalT/[Symbol.replace](h, t)
                         // h = /monthlyT/[Symbol.replace](h, "")
-                    } else if (path === "bhs/nmsceMonthly") {
-                        h = /totalT/[Symbol.replace](h, "")
-                        // h = /monthlyT/[Symbol.replace](h, t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
-                    }
+                    } 
+                    // else if (path === "bhs/nmsceMonthly") {
+                    //     h = /totalT/[Symbol.replace](h, "")
+                    //     // h = /monthlyT/[Symbol.replace](h, t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
+                    // }
 
                     l = loc.find("#userTotals")
                     l.append(h)
@@ -4229,7 +4229,7 @@ class NMSCE {
                     // else if (path === "bhs/nmsceMonthly")
                     //     $(l).find("#id-monthly").text(t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
                 }
-            } else if (typeof e === "number" && path === "bhs/nmsceTotals") {
+            } else if (typeof e === "number" && path === "bhs/nmsceTotals" && k !== "Total") {
                 let l = loc.find("#id-" + k)
                 if (l.length === 0) {
                     let h = /name/g[Symbol.replace](totals, k)
@@ -4239,8 +4239,6 @@ class NMSCE {
                     l.append(h)
                 } else
                     l.text(e)
-
-                total += e
             }
         }
 
@@ -4249,11 +4247,10 @@ class NMSCE {
             if (l.length === 0) {
                 let l = loc.find("#totalsTable")
                 let h = /name/g[Symbol.replace](totals, "Total")
-                h = /qty/[Symbol.replace](h, total)
+                h = /qty/[Symbol.replace](h,list.Total)
                 h = /row/[Symbol.replace](h, "row border-top")
                 l.append(h)
-            } else
-                l.text(total)
+            }
         }
 
         this.sortTotals(null, "id-name")
