@@ -146,10 +146,10 @@ function glyphToAddr(glyph) {
 }
 
 export function mergeObjects(o, n) {
-    if (typeof n != "object") {
+    if (typeof n !== "object") {
         o = n
     } else if (n) {
-        if (typeof o == "undefined")
+        if (typeof o === "undefined")
             o = {}
         for (let x of Object.keys(n))
             o[x] = mergeObjects(o[x], n[x])

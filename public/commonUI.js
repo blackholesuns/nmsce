@@ -259,7 +259,7 @@ blackHoleSuns.prototype.getMenu = function (loc) {
 
         if (val) {
             loc = loc.find("[value='" + val + "']")
-            val = loc.text()
+            val = loc.text().replace(/(.*?)  \(.*/, "$1")
 
             if (val === " Nothing Selected" || val === "Search All")
                 val = ""

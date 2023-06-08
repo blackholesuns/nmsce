@@ -8,10 +8,10 @@ import { biomeList, classList, colorList, economyList, economyListTier, faunaLis
 import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
 import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, GetThumbnailUrl, UploadImages } from "./storage.js";
-import { GetClosestParentElement } from "./util.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
+    
 // Copyright 2019-2023 Black Hole Suns
 // Written by Stephen Piper
 
@@ -3958,6 +3958,9 @@ class NMSCE {
                     this.entries[entry.type].push(entry)
                     this.incrementTotals(entry, 1)
                     entry.Photo = null  // force screenshot write
+                } else{
+                    let e = this.entries[entry.type].findIndex(x=>x.id === entry.id)
+                    this.entries[entry.type][e] = entry
                 }
 
                 this.displayListEntry(entry)    // before update screenshot because it creates the display space
@@ -3968,7 +3971,7 @@ class NMSCE {
             else
                 this.last = {}
         }).catch(err => {
-            bhs.status("ERROR: " + err.code)
+            bhs.status("ERROR: " + err)
         })
     }
 
@@ -4211,10 +4214,10 @@ class NMSCE {
 
                     if (path === "bhs/nmsceTotals") {
                         h = /totalT/[Symbol.replace](h, t)
-                        h = /monthlyT/[Symbol.replace](h, "")
+                        // h = /monthlyT/[Symbol.replace](h, "")
                     } else if (path === "bhs/nmsceMonthly") {
                         h = /totalT/[Symbol.replace](h, "")
-                        h = /monthlyT/[Symbol.replace](h, t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
+                        // h = /monthlyT/[Symbol.replace](h, t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
                     }
 
                     l = loc.find("#userTotals")
@@ -4223,8 +4226,8 @@ class NMSCE {
                     $(l).find("#id-details").text(s)
                     if (path === "bhs/nmsceTotals")
                         $(l).find("#id-total").text(t)
-                    else if (path === "bhs/nmsceMonthly")
-                        $(l).find("#id-monthly").text(t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
+                    // else if (path === "bhs/nmsceMonthly")
+                    //     $(l).find("#id-monthly").text(t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
                 }
             } else if (typeof e === "number" && path === "bhs/nmsceTotals") {
                 let l = loc.find("#id-" + k)
