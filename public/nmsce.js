@@ -11,7 +11,7 @@ import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOrigin
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
-    
+
 // Copyright 2019-2023 Black Hole Suns
 // Written by Stephen Piper
 
@@ -201,7 +201,7 @@ const tRadio = `
     </div>`;
 const tRadioItem = `
     <label class="col h6 txt-blue">
-        <input type="radio" class="radio" id="rdo-tname" data-last=false onclick="nmsce.toggleRadio(this)">
+        <input type="radio" class="radio txt-label-def" id="rdo-tname" data-last=false onclick="nmsce.toggleRadio(this)">
         &nbsp;titlettip
     </label>`;
 const tCkItem = `
@@ -729,6 +729,8 @@ class NMSCE {
         this.last.id = null
         this.last.created = null
         this.last.Photo = null
+        this.last.reddit = null
+        this.last.redditlink = null
 
         if (fcedata) {
             let canvas = document.getElementById("id-canvas")
@@ -3958,8 +3960,8 @@ class NMSCE {
                     this.entries[entry.type].push(entry)
                     this.incrementTotals(entry, 1)
                     entry.Photo = null  // force screenshot write
-                } else{
-                    let e = this.entries[entry.type].findIndex(x=>x.id === entry.id)
+                } else {
+                    let e = this.entries[entry.type].findIndex(x => x.id === entry.id)
                     this.entries[entry.type][e] = entry
                 }
 
@@ -4214,7 +4216,7 @@ class NMSCE {
                     if (path === "bhs/nmsceTotals") {
                         h = /totalT/[Symbol.replace](h, t)
                         // h = /monthlyT/[Symbol.replace](h, "")
-                    } 
+                    }
                     // else if (path === "bhs/nmsceMonthly") {
                     //     h = /totalT/[Symbol.replace](h, "")
                     //     // h = /monthlyT/[Symbol.replace](h, t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
@@ -4247,7 +4249,7 @@ class NMSCE {
             if (l.length === 0) {
                 let l = loc.find("#totalsTable")
                 let h = /name/g[Symbol.replace](totals, "Total")
-                h = /qty/[Symbol.replace](h,list.Total)
+                h = /qty/[Symbol.replace](h, list.Total)
                 h = /row/[Symbol.replace](h, "row border-top")
                 l.append(h)
             }
@@ -4927,7 +4929,7 @@ class NMSCE {
             h += /title/[Symbol.replace](l, e.modded ? "Modified " + e.modded.toDate().toDateLocalTimeString() : "")
             l = /idname/g[Symbol.replace](itm, "Posted")
             l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.reddit ? "Posted " + e.reddit.toDate().toDateLocalTimeString() : "")
+            h += /title/[Symbol.replace](l, e.reddit && typeof e.reddit.toDate !== "undefined" ? "Posted " + e.reddit.toDate().toDateLocalTimeString() : e.redditlink ? "Posted" : "")
         }
 
         h += end
