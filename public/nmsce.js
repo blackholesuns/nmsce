@@ -178,7 +178,7 @@ const tFloat = `
 const tTags = `
     <div id="row-idname" class="row pl-10 pr-10" data-type="tags" data-allowhide="ihide" data-req="ifreq">
         <div id="id-idname" class="col-lg-6 col-7"></div>
-        <div id="add-idname" class="col-7 row hidden">
+        <div id="newtag-idname" class="col-7 row hidden">
             <input id="txt-idname" type="text" class="col-5"></input>
             <button id="add-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
             <button id="cancel-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.cancelTag(this)">Cancel</button>
@@ -714,7 +714,7 @@ class NMSCE {
         for (let loc of tags) {
             let id = $(loc).attr("id").stripID()
 
-            $(loc).find("#add-" + id).hide()
+            $(loc).find("#newtag-" + id).hide()
             $(loc).find("#menu-" + id).val("")
             $(loc).find("#list-" + id).empty()
         }
@@ -2003,8 +2003,8 @@ class NMSCE {
                     return
                 }
 
-        if (text === "Add new tag")
-            row.find("#add-" + id).show()
+        if (text === "Add new tag") 
+            row.find("#newtag-" + id).show()
         else {
             let h = /idname/[Symbol.replace](tTag, text.nameToId())
             h = /title/[Symbol.replace](h, text)
@@ -2040,13 +2040,13 @@ class NMSCE {
             row.find("#list-" + row.attr("id").stripID()).append(h)
         }
 
-        row.find("#add-" + id).hide()
+        row.find("#newtag-" + id).hide()
         row.find("#txt-" + id).val("")
     }
 
     cancelTag(evt) {
         let row = $(evt).closest("[id|='row']")
-        row.find("[id|='add']").hide()
+        row.find("[id|='newtag']").hide()
         row.find("[id|='txt']").first().val("")
         row.find("[id|='btn']").first().text(row.attr("id").stripID())
     }
