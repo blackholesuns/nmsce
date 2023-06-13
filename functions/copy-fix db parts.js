@@ -8,6 +8,7 @@ require('events').EventEmitter.defaultMaxListeners = 0
 
 // remove orphaned images. check for images used by multiple entries
 // delete/rename collection votes on nmsce after last copy (make backup first)
+// recalculate votes. some favorites are < 0. some favorites are true instead of 1
 
 // *** done ***
 // recalc all totals
