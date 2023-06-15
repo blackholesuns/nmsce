@@ -649,6 +649,7 @@ function setupAdvertiser(post, op) {
                     ad.flair = field[1]
                 break
             }
+            case "contact":
             case "contacts": {
                 let contacts = field[1].split(",")
                 for (let c of contacts)
@@ -882,7 +883,7 @@ function setupContest(post, op) {
 
 async function listContest(post, op) {
     let today = new Date()
-    let text = "!-Contest  \n"
+    let text = "!Current Contest  \n"
 
     let contest = await settings.contest.filter(x => {
         let start = new Date(x.start).valueOf()
