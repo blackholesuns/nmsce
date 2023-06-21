@@ -39,9 +39,9 @@
      inkscape:window-height="1157"
      id="namedview2097"
      showgrid="false"
-     inkscape:zoom="1.099667"
-     inkscape:cx="110.03331"
-     inkscape:cy="437.85982"
+     inkscape:zoom="1.555164"
+     inkscape:cx="-22.505665"
+     inkscape:cy="468.43935"
      inkscape:current-layer="shuttle-bodies"
      inkscape:document-rotation="0"
      inkscape:window-x="305"
@@ -4364,226 +4364,6 @@
        d="m 15.447,19.415 c 0.39,0.028 0.78,0.056 1.091,0.06 0.31,0.005 0.541,-0.013 0.732,-0.033 0.19,-0.02 0.339,-0.041 1.201,-0.196 0.862,-0.154 2.445,-0.442 4.01,-0.729"
        stroke-width="0.0489" />
   </g>
-  <path
-     id="bdr-h120"
-     d="m 18.65,18.409 -4.637,2.65 0.53,11.66 6.227,-2.451 4.837,-4.505 0.132,-4.903 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4997">Filter</title>
-  </path>
-  <path
-     id="bdr-h121"
-     d="m 35.961,59.515 -6.36,0.927 -4.837,4.306 -1.126,4.572 2.584,3.18 3.644,0.066 11.062,-1.259 0.597,-6.757 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4971">Omega Cap</title>
-  </path>
-  <path
-     id="bdr-h102"
-     d="m 6.9125,48.935 -1.4598,3.6156 0.4866,2.9901 4.3773,1.8083 9.8652,0.13854 3.1273,-3.476 -0.41739,-4.8677 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title2961">Fork</title>
-  </path>
-  <path
-     id="bdr-h118"
-     d="m 16.795,35.358 -2.716,2.186 1.126,8.15 9.805,1.523 3.445,-3.379 0.861,-7.552 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4993">Round Chin</title>
-  </path>
-  <path
-     id="bdr-h105"
-     d="M 7.5745,19.58 H 2.1849 l -1.2781,2.1268 v 9.2188 l 7.447,1.2758 4.4669,-4.9632 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4991">Angled Chin</title>
-  </path>
-  <path
-     id="bdr-h103"
-     d="m 2.6693,72.3 16.893,0.265 4.373,1.722 -0.265,7.288 -2.716,2.053 -18.55,-1.788 -0.994,-4.505 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4975">Straight Turbine</title>
-  </path>
-  <path
-     id="bdr-h106"
-     d="m 3.0656,57.884 h 2.716 l 1.856,1.59 11.99,1.259 -1.59,8.546 -9.407,-0.397 -2.781,1.722 -3.048,0.265 -1.921,-3.577 0.729,-7.023 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4977">Tapered Turbine</title>
-  </path>
-  <path
-     id="bdr-h124"
-     d="m 0.3475,35.999 6.029,-0.795 5.896,1.259 -0.199,8.48 -2.517,1.325 -9.474,-1.259 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4995">Cowl Light</title>
-  </path>
-  <path
-     id="bdr-h122"
-     d="m 66.89,14.41 6.758,-5.366 h 2.716 l 6.625,4.174 0.53,5.3 -2.982,4.439 -7.75,0.066 -6.03,-3.909 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title2957">Triple Engine</title>
-  </path>
-  <path
-     id="bdr-h123"
-     d="m 78.491,31.372 2.981,1.657 2.451,4.836 -1.457,5.432 -4.24,2.12 -4.903,-1.457 -2.584,-5.102 0.994,-4.306 2.65,-2.451 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title2955">Single Engine</title>
-  </path>
-  <path
-     id="bdr-h119"
-     d="m 2.5512,1.2884 10.004,0.53 0.066,9.474 -4.969,2.584 -7.287,0.066 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title5007">Micro Thruster</title>
-  </path>
-  <path
-     id="bdr-h125"
-     d="m 32.476,1.3041 0.56252,-0.18867 15.488,-0.56317 0.78319,9.6561 -3.8806,5.8502 -12.766,0.09504 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4989">Fat Boy</title>
-  </path>
-  <path
-     id="bdr-h113"
-     d="m 23.643,0.78836 -8.0038,5.6989 -1.3433,3.4568 0.57502,4.9944 7.7477,1.152 5.122,-0.63976 1.7927,-4.1623 0.06378,-2.561 0.19232,-5.122 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4985">Afterburner</title>
-  </path>
-  <path
-     id="bdr-h109"
-     d="m 2.1900915,86.544008 25.3740005,-1.392 6.956,5.367 2.385,7.95 -7.883,0.861 -11.727,-1.524 -16.8930005,-2.451 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4967">Voyager</title>
-  </path>
-  <path
-     id="bdr-h112"
-     d="m 59.606,0.1325 h 8.546 v 6.426 l -8.547,10.401 -5.763,0.265 -2.849,-1.391 -0.397,-4.77 1.788,-4.571 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4987">Retro Booster</title>
-  </path>
-  <path
-     id="bdr-h110"
-     d="m 49.538,98.473 0.464,-5.963 10.666,-6.492 23.784,-1.126 -0.663,5.101 0.994,5.896 -0.464,2.518 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4965">Grill Wing</title>
-  </path>
-  <path
-     id="bdr-h107"
-     d="m 45.970064,72.122968 -3.2619,1.2896 -2.385,5.697 0.331,5.3 1.259,4.704 2.318,1.523 15.56,-4.2121 1.3229,-4.9333 -1.7976,-3.6782 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title4973">Magnatreme Adapter</title>
-  </path>
-  <path
-     id="bdr-h111"
-     d="m 37.523,38.976 -5.433,5.234 -0.265,11.262 1.59,1.524 23.652,-0.862 2.12,-0.728 10.136,-0.53 1.656,-7.023 -1.524,-8.148 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title2951">Tube Body</title>
-  </path>
-  <path
-     id="bdr-h108"
-     d="m 32.885,17.714 -2.385,6.227 -0.795,11.064 2.584,3.047 28.223,-1.523 7.353,0.132 2.452,-4.969 -1.855,-9.208 -8.944,-3.512 -13.051,-1.192 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title2953">Double Tube</title>
-  </path>
-  <path
-     id="bdr-h104"
-     d="m 44.761,58.501 -1.6881,7.724 3.8095,5.8198 9.7131,1.7501 26.071,-1.7847 2.3777,-10.204 -5.4192,-4.5289 z"
-     fill-opacity="0"
-     stroke="#22223a"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title2949">Box Body</title>
-  </path>
   <g
      id="map-h126"
      transform="matrix(-0.020936,-0.0046554,-0.0046554,0.020936,90.045,74.908)">
@@ -4790,17 +4570,6 @@
        stroke-linejoin="round"
        stroke-width="3" />
   </g>
-  <path
-     id="bdr-h126"
-     d="m 68.681,77.104 -1.5592,3.8201 0.93554,3.8981 13.643,-0.93554 -4.2099,-4.2879 z"
-     fill-opacity="0"
-     stroke="#000000"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.3975">
-    <title
-       id="title5017">Cargo Vent</title>
-  </path>
   <g
      id="map-h3"
      transform="matrix(0.0286,0.0154,-0.0154,0.0286,0.5733,51.314)"
@@ -8144,266 +7913,6 @@
          stroke-width="2" />
     </g>
   </g>
-  <path
-     id="bdr-h32"
-     d="m 2.3013,98.42 8.898,-0.101 3.838,5.943 v 2.174 l -5.434,6.418 -6.997,-0.746 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title4983">Magnatreme Dome</title>
-  </path>
-  <path
-     id="bdr-h2"
-     d="m 20.233,99.27 -4.143,5.91 -0.544,5.943 5.027,2.343 4.993,-0.238 -0.816,-13.755 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title4981">Magnatreme Ring</title>
-  </path>
-  <path
-     id="bdr-h3"
-     d="m 31.509,99.202 -5.536,7.947 0.951,5.196 7.234,1.325 2.072,-3.974 -0.611,-7.2 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title4979">Magnatreme Sheild</title>
-  </path>
-  <path
-     id="bdr-h4"
-     d="m 39.287,103.55 -2.242,4.551 -0.17,3.974 19.665,1.426 1.664,-3.192 -0.102,-6.895 -5.196,-1.698 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2925">Hover Fan</title>
-  </path>
-  <path
-     id="bdr-h7"
-     d="m 15.513,125.12 0.713,4.822 9.374,1.495 3.973,-4.415 -3.464,-11.378 -7.404,-0.17 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2927">R2 Unit</title>
-  </path>
-  <path
-     id="bdr-h26"
-     d="m 32.019,115.16 -2.14,7.03 1.12,6.386 7.439,2.343 6.079,-1.698 3.057,-4.008 0.815,-5.264 -3.26,-3.498 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2929">Keg</title>
-  </path>
-  <path
-     id="bdr-h29"
-     d="m 51.853,117.81 -2.955,6.147 0.374,4.075 9.408,1.733 6.147,-2.072 0.068,-1.053 -3.6,-8.389 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title5019">Fuel Port</title>
-  </path>
-  <path
-     id="bdr-h30"
-     d="m 6.7682,131.97 -5.2313,4.3665 -0.0964,2.6634 18.65,0.0643 1.0586,-1.5084 0.03308,-2.6644 -4.9119,-2.5037 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.25046">
-    <title
-       id="title5025">Angled Vent</title>
-  </path>
-  <path
-     id="bdr-h8"
-     d="m 22.85,136.62 -0.38467,2.2475 15.216,0.0312 2.2787,-0.54534 -0.89788,-1.894 -3.2428,-3.274 -8.6669,0.22494 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.25046">
-    <title
-       id="title5027">Coolant Ports</title>
-  </path>
-  <path
-     id="bdr-h22"
-     d="m 45.32,131.71 -3.98,4.9431 -0.16068,2.4073 16.467,0.0321 -1.8298,-6.6443 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.25046">
-    <title
-       id="title5029">Fuel Compressor</title>
-  </path>
-  <path
-     id="bdr-h25"
-     d="m 63.536,100.22 -3.532,8.456 3.634,2.107 4.416,-0.374 3.09,-7.336 -2.649,-2.819 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title5013">Antenna</title>
-  </path>
-  <path
-     id="bdr-h14"
-     d="m 75.661,101.61 -4.007,7.812 7.336,1.324 3.566,-7.2 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title5015">Antenna</title>
-  </path>
-  <path
-     id="bdr-h9"
-     d="m 67.137,119.41 0.271,3.056 7.88,3.057 3.6,-0.306 5.774,-8.898 -3.668,-2.072 -6.555,-1.732 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2931">Air Foil</title>
-  </path>
-  <path
-     id="bdr-h31"
-     d="m 65.54,129.73 -0.237,9.17 4.38,1.223 4.79,-3.192 -0.17,-8.22 -4.687,-0.78 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2959">Lunch Box</title>
-  </path>
-  <path
-     id="bdr-h28"
-     d="m 75.899,129.43 0.238,9.645 4.585,0.238 2.615,-2.683 1.019,-1.494 -0.17,-6.114 -4.211,-2.275 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title5009">Vertical Intake</title>
-  </path>
-  <path
-     id="bdr-h10"
-     d="m 79.047,142.18 3.085,16.23 -0.591,0.876 -11.355,-3.884 -5.653,-8.056 -0.615,-6.948 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2941">Shield</title>
-  </path>
-  <path
-     id="bdr-h11"
-     d="m 19.957,148.87 -1.562,-0.034 -0.951,2.887 4.11,14.57 7.879,0.204 -0.306,-5.944 -1.494,-3.736 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title5001">Angled Rudder</title>
-  </path>
-  <path
-     id="bdr-h13"
-     d="m 0.62499,156.48 4.789,2.615 10.766,-5.332 -1.02,-3.43 -2.546,-0.816 -5.944,0.51 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title5003">Stabilizer</title>
-  </path>
-  <path
-     id="bdr-h17"
-     d="m 1.0067,171.36 2.275,1.936 8.729,-7.438 4.788,1.02 1.495,-1.461 0.204,-4.042 -4.382,-3.226 -4.075,0.30501 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title5011">Solar Panel</title>
-  </path>
-  <path
-     id="bdr-h12"
-     d="m 0.75466,181.33 0.034,5.536 3.125,-0.102 32.536,1.427 3.77,-1.02 0.646,-2.343 -2.174,-6.045 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2937">Glider</title>
-  </path>
-  <path
-     id="bdr-h16"
-     d="m 8.72807,188.06404 -6.1419,2.9416 1.332,7.6545 40.25,0.34746 0.18213,-1.5215 -3.583,-3.6571 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2935">Drop Wing</title>
-  </path>
-  <path
-     id="bdr-h19"
-     d="m 48.055,172.97 4.246,6.385 -4.823,0.578 -11.853,-3.668 -12.091,-0.136 -12.566,2.173 -1.02,-0.305 -0.577,-2.004 2.31,-7.914 21.906,1.121 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2939">Bent Wing</title>
-  </path>
-  <path
-     id="bdr-h21"
-     d="m 48.711,182.82 9.747,-0.408 3.6,2.616 h 14.06 l 7.167,2.886 0.611,6.997 -19.359,0.034 -4.992,4.313 -9.408,0.306 -1.834,-5.298 5.094,-2.14 -0.34,-3.872 -3.803,-2.276 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2933">Y-Wing</title>
-  </path>
-  <path
-     id="bdr-h23"
-     d="m 69.974,156.85 10.121,7.132 0.17,2.446 -2.038,0.984 -4.28,-2.886 -20.819,-5.469 -0.305,-3.803 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2943">X-Wing</title>
-  </path>
-  <path
-     id="bdr-h27"
-     d="m 80.503,170.41 0.068,2.343 -1.155,1.325 -2.343,0.441 -7.438,-5.842 -0.102,-2.071 0.917,-1.325 1.868,-0.475 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title4969">Tube Mount</title>
-  </path>
-  <path
-     id="bdr-h24"
-     d="m 57.899,143.08 1.596,2.344 -8.592,10.02 -0.646,3.803 10.699,6.86 0.034,3.16 -1.29,0.848 -16.27,-7.166 -1.493,-1.46 0.101,-6.046 3.363,-1.936 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2945">V-Wing</title>
-  </path>
   <g
      id="map-h6"
      transform="matrix(1.06,0,0,1.06,-3.1667,90.214)"
@@ -8805,16 +8314,6 @@
        d="m 20.59,4.677 c 0.012,0.245 0.024,0.49 0.084,0.712 0.06,0.22 0.168,0.417 0.276,0.613"
        stroke-width="0.13288" />
   </g>
-  <path
-     id="bdr-h6"
-     d="m 2.2333,127.46 0.95,2.208 6.861,0.95 4.144,-1.494 0.917,-2.445 -0.713,-2.276 -1.121,-10.97 -8.899,1.834 -1.867,3.906 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2946">Mr. Fusion</title>
-  </path>
   <g
      id="map-h18"
      transform="translate(-2.6567,92.284)">
@@ -8902,26 +8401,6 @@
          stroke-width="0.038" />
     </g>
   </g>
-  <path
-     id="bdr-h18"
-     d="m 79.757,177.29 v 2.072 l -1.495,2.48 -23.536,-1.461 0.136,-4.62 16.811,-3.701 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title2947">Low Wing</title>
-  </path>
-  <path
-     id="bdr-h15"
-     d="m 35.746,150.42 4.992,16.37 -4.415,0.442 -6.181,-1.767 1.256,-2.818 0.068,-11.786 z"
-     fill-opacity="0"
-     stroke="#000004"
-     stroke-linecap="round"
-     stroke-width="0.265">
-    <title
-       id="title4999">Rudder</title>
-  </path>
   <g
      id="map-h33"
      transform="translate(-0.7267,97.484)">
@@ -9008,17 +8487,6 @@
        stroke-linejoin="round"
        stroke-width="0.03628" />
   </g>
-  <path
-     id="bdr-h33"
-     d="m 39.083,193.14 2.4067,1.4567 2.28,-0.31667 2.1533,-10.957 -1.9,-1.3933 z"
-     fill-opacity="0"
-     stroke="#000000"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.3975">
-    <title
-       id="title5005">Delta Wing</title>
-  </path>
   <g
      id="map-h40"
      transform="matrix(0.032092,0,0,0.032092,-12.521,127.73)"
@@ -9319,17 +8787,6 @@
        d="m 698.62,515.54 60.069,0.85405"
        stroke-width="2.5" />
   </g>
-  <path
-     id="bdr-h40"
-     d="m 0.84323,140.3 v 6.3967 l 21.156,0.13097 3.3539,-1.081 0.12667,-3.1667 -4.8767,-2.09 z"
-     fill-opacity="0"
-     stroke="#000000"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title5023">Exhaust Cooling Channel</title>
-  </path>
   <g
      id="map-h41"
      transform="matrix(0.031814,0,0,0.034119,14.676,126.67)"
@@ -9458,17 +8915,6 @@
        d="m 425.43,481.86 v 11.216 l 29.91,-2.3613"
        stroke-width="2.5" />
   </g>
-  <path
-     id="bdr-h41"
-     d="m 30.293,140.61 -3.2933,1.8367 -0.12667,3.4833 3.61,0.82333 21.977,-0.12667 -0.12666,-4.75 -1.3933,-1.2667 z"
-     fill-opacity="0"
-     stroke="#000000"
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="0.265">
-    <title
-       id="title5021">Cooling Channel</title>
-  </path>
   <flowRoot
      id="flowRoot2908"
      transform="matrix(0.265,0,0,0.265,1.1273,-0.25448698)"
@@ -9916,4 +9362,611 @@
        inkscape:export-xdpi="299.95422"
        inkscape:export-ydpi="299.95422" />
   </g>
+  <path
+     id="bdr-h120"
+     d="m 18.65,18.409 -4.637,2.65 0.53,11.66 6.227,-2.451 4.837,-4.505 0.132,-4.903 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4997">Filter</title>
+  </path>
+  <path
+     id="bdr-h121"
+     d="m 35.961,59.515 -6.36,0.927 -4.837,4.306 -1.126,4.572 2.584,3.18 3.644,0.066 11.062,-1.259 0.597,-6.757 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4971">Omega Cap</title>
+  </path>
+  <path
+     id="bdr-h102"
+     d="m 6.9125,48.935 -1.4598,3.6156 0.4866,2.9901 4.3773,1.8083 9.8652,0.13854 3.1273,-3.476 -0.41739,-4.8677 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2961">Fork</title>
+  </path>
+  <path
+     id="bdr-h118"
+     d="m 16.795,35.358 -2.716,2.186 1.126,8.15 9.805,1.523 3.445,-3.379 0.861,-7.552 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4993">Round Chin</title>
+  </path>
+  <path
+     id="bdr-h105"
+     d="M 7.5745,19.58 H 2.1849 l -1.2781,2.1268 v 9.2188 l 7.447,1.2758 4.4669,-4.9632 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4991">Angled Chin</title>
+  </path>
+  <path
+     id="bdr-h103"
+     d="m 2.6693,72.3 16.893,0.265 4.373,1.722 -0.265,7.288 -2.716,2.053 -18.55,-1.788 -0.994,-4.505 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4975">Straight Turbine</title>
+  </path>
+  <path
+     id="bdr-h106"
+     d="m 3.0656,57.884 h 2.716 l 1.856,1.59 11.99,1.259 -1.59,8.546 -9.407,-0.397 -2.781,1.722 -3.048,0.265 -1.921,-3.577 0.729,-7.023 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4977">Tapered Turbine</title>
+  </path>
+  <path
+     id="bdr-h124"
+     d="m 0.3475,35.999 6.029,-0.795 5.896,1.259 -0.199,8.48 -2.517,1.325 -9.474,-1.259 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4995">Cowl Light</title>
+  </path>
+  <path
+     id="bdr-h122"
+     d="m 66.89,14.41 6.758,-5.366 h 2.716 l 6.625,4.174 0.53,5.3 -2.982,4.439 -7.75,0.066 -6.03,-3.909 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2957">Triple Engine</title>
+  </path>
+  <path
+     id="bdr-h123"
+     d="m 78.491,31.372 2.981,1.657 2.451,4.836 -1.457,5.432 -4.24,2.12 -4.903,-1.457 -2.584,-5.102 0.994,-4.306 2.65,-2.451 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2955">Single Engine</title>
+  </path>
+  <path
+     id="bdr-h119"
+     d="m 2.5512,1.2884 10.004,0.53 0.066,9.474 -4.969,2.584 -7.287,0.066 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5007">Micro Thruster</title>
+  </path>
+  <path
+     id="bdr-h125"
+     d="m 32.476,1.3041 0.56252,-0.18867 15.488,-0.56317 0.78319,9.6561 -3.8806,5.8502 -12.766,0.09504 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4989">Fat Boy</title>
+  </path>
+  <path
+     id="bdr-h113"
+     d="m 23.643,0.78836 -8.0038,5.6989 -1.3433,3.4568 0.57502,4.9944 7.7477,1.152 5.122,-0.63976 1.7927,-4.1623 0.06378,-2.561 0.19232,-5.122 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4985">Afterburner</title>
+  </path>
+  <path
+     id="bdr-h109"
+     d="m 2.1900915,86.544008 25.3740005,-1.392 6.956,5.367 2.385,7.95 -7.883,0.861 -11.727,-1.524 -16.8930005,-2.451 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4967">Voyager</title>
+  </path>
+  <path
+     id="bdr-h112"
+     d="m 59.606,0.1325 h 8.546 v 6.426 l -8.547,10.401 -5.763,0.265 -2.849,-1.391 -0.397,-4.77 1.788,-4.571 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4987">Retro Booster</title>
+  </path>
+  <path
+     id="bdr-h110"
+     d="m 49.538,98.473 0.464,-5.963 10.666,-6.492 23.784,-1.126 -0.663,5.101 0.994,5.896 -0.464,2.518 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4965">Grill Wing</title>
+  </path>
+  <path
+     id="bdr-h107"
+     d="m 45.970064,72.122968 -3.2619,1.2896 -2.385,5.697 0.331,5.3 1.259,4.704 2.318,1.523 15.56,-4.2121 1.3229,-4.9333 -1.7976,-3.6782 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4973">Magnatreme Adapter</title>
+  </path>
+  <path
+     id="bdr-h111"
+     d="m 37.523,38.976 -5.433,5.234 -0.265,11.262 1.59,1.524 23.652,-0.862 2.12,-0.728 10.136,-0.53 1.656,-7.023 -1.524,-8.148 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2951">Tube Body</title>
+  </path>
+  <path
+     id="bdr-h108"
+     d="m 32.885,17.714 -2.385,6.227 -0.795,11.064 2.584,3.047 28.223,-1.523 7.353,0.132 2.452,-4.969 -1.855,-9.208 -8.944,-3.512 -13.051,-1.192 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2953">Double Tube</title>
+  </path>
+  <path
+     id="bdr-h104"
+     d="m 44.761,58.501 -1.6881,7.724 3.8095,5.8198 9.7131,1.7501 26.071,-1.7847 2.3777,-10.204 -5.4192,-4.5289 z"
+     fill-opacity="0"
+     stroke="#22223a"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2949">Box Body</title>
+  </path>
+  <path
+     id="bdr-h126"
+     d="m 68.681,77.104 -1.5592,3.8201 0.93554,3.8981 13.643,-0.93554 -4.2099,-4.2879 z"
+     fill-opacity="0"
+     stroke="#000000"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.3975"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5017">Cargo Vent</title>
+  </path>
+  <path
+     id="bdr-h32"
+     d="m 2.3013,98.42 8.898,-0.101 3.838,5.943 v 2.174 l -5.434,6.418 -6.997,-0.746 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4983">Magnatreme Dome</title>
+  </path>
+  <path
+     id="bdr-h3"
+     d="m 31.509,99.202 -5.536,7.947 0.951,5.196 7.234,1.325 2.072,-3.974 -0.611,-7.2 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4979">Magnatreme Sheild</title>
+  </path>
+  <path
+     id="bdr-h4"
+     d="m 39.287,103.55 -2.242,4.551 -0.17,3.974 19.665,1.426 1.664,-3.192 -0.102,-6.895 -5.196,-1.698 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2925">Hover Fan</title>
+  </path>
+  <path
+     id="bdr-h7"
+     d="m 15.513,125.12 0.713,4.822 9.374,1.495 3.973,-4.415 -3.464,-11.378 -7.404,-0.17 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2927">R2 Unit</title>
+  </path>
+  <path
+     id="bdr-h26"
+     d="m 32.019,115.16 -2.14,7.03 1.12,6.386 7.439,2.343 6.079,-1.698 3.057,-4.008 0.815,-5.264 -3.26,-3.498 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2929">Keg</title>
+  </path>
+  <path
+     id="bdr-h29"
+     d="m 51.853,117.81 -2.955,6.147 0.374,4.075 9.408,1.733 6.147,-2.072 0.068,-1.053 -3.6,-8.389 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5019">Fuel Port</title>
+  </path>
+  <path
+     id="bdr-h30"
+     d="m 6.7682,131.97 -5.2313,4.3665 -0.0964,2.6634 18.65,0.0643 1.0586,-1.5084 0.03308,-2.6644 -4.9119,-2.5037 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.25046"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5025">Angled Vent</title>
+  </path>
+  <path
+     id="bdr-h8"
+     d="m 22.85,136.62 -0.38467,2.2475 15.216,0.0312 2.2787,-0.54534 -0.89788,-1.894 -3.2428,-3.274 -8.6669,0.22494 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.25046"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5027">Coolant Ports</title>
+  </path>
+  <path
+     id="bdr-h22"
+     d="m 45.32,131.71 -3.98,4.9431 -0.16068,2.4073 16.467,0.0321 -1.8298,-6.6443 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.25046"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5029">Fuel Compressor</title>
+  </path>
+  <path
+     id="bdr-h25"
+     d="m 63.536,100.22 -3.532,8.456 3.634,2.107 4.416,-0.374 3.09,-7.336 -2.649,-2.819 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5013">Antenna</title>
+  </path>
+  <path
+     id="bdr-h14"
+     d="m 75.661,101.61 -4.007,7.812 7.336,1.324 3.566,-7.2 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5015">Antenna</title>
+  </path>
+  <path
+     id="bdr-h9"
+     d="m 67.137,119.41 0.271,3.056 7.88,3.057 3.6,-0.306 5.774,-8.898 -3.668,-2.072 -6.555,-1.732 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2931">Air Foil</title>
+  </path>
+  <path
+     id="bdr-h31"
+     d="m 65.54,129.73 -0.237,9.17 4.38,1.223 4.79,-3.192 -0.17,-8.22 -4.687,-0.78 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2959">Lunch Box</title>
+  </path>
+  <path
+     id="bdr-h28"
+     d="m 75.899,129.43 0.238,9.645 4.585,0.238 2.615,-2.683 1.019,-1.494 -0.17,-6.114 -4.211,-2.275 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5009">Vertical Intake</title>
+  </path>
+  <path
+     id="bdr-h10"
+     d="m 79.047,142.18 3.085,16.23 -0.591,0.876 -11.355,-3.884 -5.653,-8.056 -0.615,-6.948 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2941">Shield</title>
+  </path>
+  <path
+     id="bdr-h11"
+     d="m 19.957,148.87 -1.562,-0.034 -0.951,2.887 4.11,14.57 7.879,0.204 -0.306,-5.944 -1.494,-3.736 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5001">Angled Rudder</title>
+  </path>
+  <path
+     id="bdr-h13"
+     d="m 0.62499,156.48 4.789,2.615 10.766,-5.332 -1.02,-3.43 -2.546,-0.816 -5.944,0.51 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5003">Stabilizer</title>
+  </path>
+  <path
+     id="bdr-h17"
+     d="m 1.0067,171.36 2.275,1.936 8.729,-7.438 4.788,1.02 1.495,-1.461 0.204,-4.042 -4.382,-3.226 -4.075,0.30501 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5011">Solar Panel</title>
+  </path>
+  <path
+     id="bdr-h12"
+     d="m 0.75466,181.33 0.034,5.536 3.125,-0.102 32.536,1.427 3.77,-1.02 0.646,-2.343 -2.174,-6.045 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2937">Glider</title>
+  </path>
+  <path
+     id="bdr-h16"
+     d="m 8.72807,188.06404 -6.1419,2.9416 1.332,7.6545 40.25,0.34746 0.18213,-1.5215 -3.583,-3.6571 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2935">Drop Wing</title>
+  </path>
+  <path
+     id="bdr-h19"
+     d="m 48.055,172.97 4.246,6.385 -4.823,0.578 -11.853,-3.668 -12.091,-0.136 -12.566,2.173 -1.02,-0.305 -0.577,-2.004 2.31,-7.914 21.906,1.121 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2939">Bent Wing</title>
+  </path>
+  <path
+     id="bdr-h21"
+     d="m 48.711,182.82 9.747,-0.408 3.6,2.616 h 14.06 l 7.167,2.886 0.611,6.997 -19.359,0.034 -4.992,4.313 -9.408,0.306 -1.834,-5.298 5.094,-2.14 -0.34,-3.872 -3.803,-2.276 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2933">Y-Wing</title>
+  </path>
+  <path
+     id="bdr-h23"
+     d="m 69.974,156.85 10.121,7.132 0.17,2.446 -2.038,0.984 -4.28,-2.886 -20.819,-5.469 -0.305,-3.803 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2943">X-Wing</title>
+  </path>
+  <path
+     id="bdr-h27"
+     d="m 80.503,170.41 0.068,2.343 -1.155,1.325 -2.343,0.441 -7.438,-5.842 -0.102,-2.071 0.917,-1.325 1.868,-0.475 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4969">Tube Mount</title>
+  </path>
+  <path
+     id="bdr-h24"
+     d="m 57.899,143.08 1.596,2.344 -8.592,10.02 -0.646,3.803 10.699,6.86 0.034,3.16 -1.29,0.848 -16.27,-7.166 -1.493,-1.46 0.101,-6.046 3.363,-1.936 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2945">V-Wing</title>
+  </path>
+  <path
+     id="bdr-h6"
+     d="m 2.2333,127.46 0.95,2.208 6.861,0.95 4.144,-1.494 0.917,-2.445 -0.713,-2.276 -1.121,-10.97 -8.899,1.834 -1.867,3.906 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2946">Mr. Fusion</title>
+  </path>
+  <path
+     id="bdr-h18"
+     d="m 79.757,177.29 v 2.072 l -1.495,2.48 -23.536,-1.461 0.136,-4.62 16.811,-3.701 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title2947">Low Wing</title>
+  </path>
+  <path
+     id="bdr-h15"
+     d="m 35.746,150.42 4.992,16.37 -4.415,0.442 -6.181,-1.767 1.256,-2.818 0.068,-11.786 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4999">Rudder</title>
+  </path>
+  <path
+     id="bdr-h33"
+     d="m 39.083,193.14 2.4067,1.4567 2.28,-0.31667 2.1533,-10.957 -1.9,-1.3933 z"
+     fill-opacity="0"
+     stroke="#000000"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.3975"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5005">Delta Wing</title>
+  </path>
+  <path
+     id="bdr-h40"
+     d="m 0.84323,140.3 v 6.3967 l 21.156,0.13097 3.3539,-1.081 0.12667,-3.1667 -4.8767,-2.09 z"
+     fill-opacity="0"
+     stroke="#000000"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5023">Exhaust Cooling Channel</title>
+  </path>
+  <path
+     id="bdr-h41"
+     d="m 30.293,140.61 -3.2933,1.8367 -0.12667,3.4833 3.61,0.82333 21.977,-0.12667 -0.12666,-4.75 -1.3933,-1.2667 z"
+     fill-opacity="0"
+     stroke="#000000"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title5021">Cooling Channel</title>
+  </path>
+  <path
+     id="bdr-h2"
+     d="m 20.233,99.27 -4.143,5.91 -0.544,5.943 5.027,2.343 4.993,-0.238 -0.816,-13.755 z"
+     fill-opacity="0"
+     stroke="#000004"
+     stroke-linecap="round"
+     stroke-width="0.265"
+     style="fill:#000000;fill-opacity:0">
+    <title
+       id="title4981">Magnatreme Ring</title>
+  </path>
 </svg>

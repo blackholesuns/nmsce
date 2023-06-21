@@ -77,7 +77,7 @@ $(document).ready(() => {
         nmsce.selectSublist(loc)
     }
 
-    //https://localhost:5000/preview?i=0547-0086-0E45-00A1-himodan-s-coup&g=Euclid&t=Ship
+    //https://localhost:5000/preview?i=0547-0086-0E45-00A1-himodan-s-coup
     let passed = {}
     let param = location.search.substring(1).split("&")
 
@@ -100,7 +100,7 @@ $(document).ready(() => {
         nmsce.last = {}
         nmsce.last.addr = reformatAddress(passed.s)
         nmsce.last.galaxy = passed.g
-        nmsce.searchSystem(passed.k)
+        nmsce.searchSystem()
 
     } else if (passed.r && passed.g) {
         nmsce.last = {}
@@ -219,13 +219,23 @@ const tImg = `
     </div>`;
 
 const resultsItem = `
-    <div id="row-idname" class="col-lg-p250 col-md-p333 col-sm-7 col-14 pointer bkg-white txt-label-def border rounded h6"
-        onclick="nmsce.selectResult(this)" style="pad-bottom:3px">
-        galaxy<br>
-        byname<br>
-        date<br>
-        <div class="pl-5 pr-5" style="min-height:20px">
-            <img id="img-idname" src="imgsrc" style="width: 100%;">
+    <div id="row-idname" class="col-lg-p250 col-md-p333 col-sm-7 col-14 pointer bkg-white txt-label-def border rounded h6">
+        <div class="row">
+            <div class="col-12" onclick="nmsce.selectResult(this)" style="pad-bottom:3px">
+                galaxy
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" onclick="nmsce.selectResult(this)" style="pad-bottom:3px">
+                byname<br>
+                date<br>
+            </div>
+            <div class="col-1">
+                <i id="favorite-idname" class="fas fa-thumbs-up h3" style="color:grey" onclick="nmsce.vote(this)"></i>
+            </div>
+        </div>
+        <div class="pl-15 pr-5 row" style="min-height:20px" onclick="nmsce.selectResult(this)">
+            <img id="img-idname" src="imgsrc" style="width: 97%;">
         </div>
     </div>`;
 
@@ -584,14 +594,21 @@ class NMSCE {
 
             this.updateTotals()
         } else if (fnmsce) {
-            if (!bhs.user.uid && typeof (Storage) !== "undefined" && !bhs.user.galaxy)
-                bhs.user.galaxy = window.localStorage.getItem('nmsce-galaxy')
-
             if (!bhs.user.galaxy)
                 bhs.user.galaxy = "Search All"
 
-            if (bhs.user.uid && typeof this.entries["My Favorites"] === "undefined")
-                this.getResultsLists("My Favorites")
+            if (bhs.user.uid) {
+                let tabs = Object.keys(this.entries)
+                for (let t of tabs) {
+                    if (t !== "My Favorites") {
+                        for (let l of this.entries[t])
+                            this.getVotes(l)
+                    }
+                }
+
+                if (typeof this.entries["My Favorites"] === "undefined")
+                    this.getResultsLists("My Favorites")
+            }
         }
 
         this.expandPanels(fcedata || (bhs.user.nmscesettings && bhs.user.nmscesettings.expandPanels))
@@ -1219,15 +1236,6 @@ class NMSCE {
 
         if (!bhs.user.uid || !bhs.isPatreon(2)) {
             if (typeof (Storage) !== "undefined") {
-                let galaxy = bhs.getMenu($("#menu-Galaxy"))
-                window.localStorage.setItem('nmsce-galaxy', galaxy)
-
-                search.uid = window.localStorage.getItem('nmsce-tempuid')
-                if (!search.uid) {
-                    search.uid = uuidv4()
-                    window.localStorage.setItem('nmsce-tempuid', search.uid)
-                }
-
                 window.localStorage.setItem('nmsce-search', JSON.stringify(search))
                 bhs.status("Search saved.")
             }
@@ -1288,7 +1296,6 @@ class NMSCE {
             let i = getIndex(this.searchlist, "name", name)
 
             if (i !== -1) {
-
                 deleteDoc(doc(bhs.fs, "users/" + bhs.user.uid + "/nmsce-saved-searches/" + name.nameToId())).then(() => {
                     bhs.status(name + " search deleted.")
 
@@ -1545,7 +1552,7 @@ class NMSCE {
         window.open("/?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
     }
 
-    searchSystem(k) {
+    searchSystem() {
         if (!this.last)
             return
 
@@ -1562,7 +1569,7 @@ class NMSCE {
 
             $("#dltab-Search-Results").click()
             $("#displayPanels #list-Search-Results").empty()
-            this.displayResultList(list, "Search-Results", k)
+            this.displayResultList(list, "Search-Results")
         })
     }
 
@@ -2003,7 +2010,7 @@ class NMSCE {
                     return
                 }
 
-        if (text === "Add new tag") 
+        if (text === "Add new tag")
             row.find("#newtag-" + id).show()
         else {
             let h = /idname/[Symbol.replace](tTag, text.nameToId())
@@ -3338,7 +3345,7 @@ class NMSCE {
         window.localStorage.setItem('nmsce-reddit-title', title)
 
         let e = nmsce.last
-        let link = `https://nmsce.com/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let link = `https://nmsce.com/preview?i=${e.id}`
         window.localStorage.setItem('nmsce-reddit-plink', link)
 
         link = `https://nmsce.com/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
@@ -3363,7 +3370,7 @@ class NMSCE {
 
             let plink = window.localStorage.getItem('nmsce-reddit-plink')
             let slink = window.localStorage.getItem('nmsce-reddit-slink')
-            let title = window.localStorage.getItem('nmsce-reddit-title') // + " <a href="+plink+">NMSCE app link</a>"
+            let title = window.localStorage.getItem('nmsce-reddit-title')
             let link = window.localStorage.getItem('nmsce-reddit-link')
 
             let url = reddit.api_oauth_url + reddit.submitLink_endpt
@@ -4361,15 +4368,7 @@ class NMSCE {
 
                     for (let doc of snapshot.docs) {
                         let e = doc.data()
-
-                        // hack because collection group votes is reading both copies of the db
-                        // could search the list for matches but checking the last entry is quicker  
-                        // and this goes away once the old db is deleted      
-                        if (entries.length > 0)
-                            l = entries[entries.length - 1]
-
-                        if (!l || l.id !== e.id)
-                            entries.push(e)
+                        entries.push(e)
                     }
 
                     obs.dispFcn(entries, obs.type)
@@ -4453,7 +4452,7 @@ class NMSCE {
             }
     }
 
-    displayResultList(entries, type, k) {
+    displayResultList(entries, type) {
         if (!entries || entries.length === 0)
             return
 
@@ -4461,14 +4460,22 @@ class NMSCE {
         let loc = $("#displayPanels #list-" + type.nameToId())
 
         for (let e of entries) {
-            if (!k && e.private && e.uid !== bhs.user.uid && !bhs.hasRole("admin") && !bhs.hasRole("nmsceEditor"))
+            if (e.private && e.uid !== bhs.user.uid && !bhs.hasRole("admin") && !bhs.hasRole("nmsceEditor"))
+                continue
+
+            if (type === "My-Favorites")
+                e.favorite = 1
+            else if (bhs.user.uid)
+                nmsce.getVotes(e)
+
+            if (type === "Top-Favorites" && e.votes.favorite < 1)
                 continue
 
             // if (type === "Hall-of-Fame" && e.votes.hof < 1)
             //     continue
 
-            if (type === "Patron-Favorites" && e.votes.patron < 1)
-                continue
+            // if (type === "Patron-Favorites" && e.votes.patron < 1)
+            //     continue
 
             nmsce.entries[type].push(e)
 
@@ -4477,6 +4484,7 @@ class NMSCE {
             l = /imgsrc/[Symbol.replace](l, GetThumbnailUrl(e.Photo))
             l = /byname/[Symbol.replace](l, e._name)
             l = /date/[Symbol.replace](l, e.created ? new Timestamp(e.created.seconds, e.created.nanoseconds).toDate().toDateLocalTimeString() : "")
+            l = /grey/[Symbol.replace](l, e.favorite ? "#00c000" : "grey")
 
             if (e.private)
                 l = /bkg-white/[Symbol.replace](l, "bkg-yellow")
@@ -4489,69 +4497,75 @@ class NMSCE {
 
     async vote(evt) {
         if (bhs.user.uid) {
-            let v = 1
-            let id = $(evt).attr("id")
+            let type = $(evt).closest("[id|='dl']").attr("id").stripID()
+            let voting = $(evt).attr("id").split("-")[0]
 
-            let ref = doc(bhs.fs, "nmsceCombined/" + this.last.id)
-
-            let res = await getDoc(doc(collection(ref, "votes"), bhs.user.uid));
-
-            let e = {}
-
-            if (res.exists()) {
-                e = res.data()
-                v = typeof e[id] === "undefined" ? 1 : e[id] ? 0 : 1
+            if (type !== "Selected") {
+                let id = $(evt).attr("id").stripID()
+                id = getIndex(this.entries[type], "id", id)
+                this.last = this.entries[type][id]
             }
 
-            e[id] = v
+            let ref = doc(bhs.fs, "nmsceCombined/" + this.last.id)
+            getDoc(doc(collection(ref, "votes"), bhs.user.uid)).then(res => {
+                let e = {}
+                let v = 1
 
-            e.uid = bhs.user.uid
-            e.id = this.last.id
-            e.galaxy = this.last.galaxy
-            e.Photo = this.last.Photo
-            e._name = this.last._name
-            e.created = new Timestamp(this.last.created.seconds, this.last.created.nanoseconds)
-            e.type = this.last.type
-            if (typeof this.last.Type !== "undefined")
-                e.Type = this.last.Type
+                if (res.exists()) {
+                    e = res.data()
+                    v = e[voting] ? 0 : 1
+                }
 
-            await setDoc(res.ref, e, {
-                merge: true
-            })
+                e[voting] = v
+                this.last[voting] = v
 
-            this.showVotes(e)
+                e.uid = bhs.user.uid
+                e.id = this.last.id
+                e.galaxy = this.last.galaxy
+                e.Photo = this.last.Photo
+                e._name = this.last._name
+                e.created = new Timestamp(this.last.created.seconds, this.last.created.nanoseconds)
+                e.type = this.last.type
+                if (typeof this.last.Type !== "undefined")
+                    e.Type = this.last.Type
 
-            e = {}
-            e[id] = increment(v ? 1 : -1)
+                setDoc(res.ref, e, {
+                    merge: true
+                })
 
-            await setDoc(ref, {
-                votes: e
-            }, {
-                merge: true
+                e = {}
+                e[voting] = increment(v ? 1 : -1)
+
+                setDoc(ref, {
+                    votes: e
+                }, {
+                    merge: true
+                })
+
+                if (type === "Selected")
+                    this.showVotes(this.last)
+                else
+                    this.showResultsVotes(this.last)
             })
         }
     }
 
     selectResult(evt) {
         let type = $(evt).closest("[id|='list']").attr("id").stripID()
-        let id = $(evt).attr("id").stripID()
+        let id = $(evt).closest("[id|='row']").attr("id").stripID()
 
         let i = getIndex(this.entries[type], "id", id)
         let e = this.entries[type][i]
 
-        getDoc(doc(bhs.fs, "nmsceCombined/" + e.id)).then(doc => {
-            let e = doc.data()
-            this.last = e
-            this.displaySelected(e)
+        this.displaySelected(e)
 
-            if (bhs.user.uid && (e.uid === bhs.user.uid || bhs.hasRole("admin") || bhs.hasRole("nmsceEditor")))
-                $("#btn-ceedit").show()
-            else
-                $("#btn-ceedit").hide()
+        if (bhs.user.uid && (e.uid === bhs.user.uid || bhs.hasRole("admin") || bhs.hasRole("nmsceEditor")))
+            $("#btn-ceedit").show()
+        else
+            $("#btn-ceedit").hide()
 
-            $("#dltab-Selected").show()
-            $("#dltab-Selected").click()
-        })
+        $("#dltab-Selected").show()
+        $("#dltab-Selected").click()
     }
 
     displaySelected(e) {
@@ -4564,12 +4578,6 @@ class NMSCE {
         $("#imgtable").show()
 
         this.last = e
-
-        if (bhs.user.uid) {
-            getDoc(doc(bhs.fs, "nmsceCombined/" + e.id + "/votes/" + bhs.user.uid)).then(doc => {
-                this.showVotes(doc.data())
-            })
-        }
 
         let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
         $("[id|='permalink']").attr("href", link)
@@ -4650,6 +4658,36 @@ class NMSCE {
             h = /font/[Symbol.replace](h, "")
             loc.append(h)
         }
+
+        nmsce.showVotes(e)
+    }
+
+    getVotes(entry) {
+        if (!entry.favorite)
+            getDoc(doc(bhs.fs, "nmsceCombined/" + entry.id + "/votes/" + bhs.user.uid)).then(doc => {
+                if (doc.exists()) {
+                    let e = doc.data()
+
+                    entry.favorite = e.favorite
+                    // entry.edchoice = e.edchoice
+                    // entry.bhspoi = e.bhspoi
+                    // entry.visited = e.visited
+                    // entry.report = e.report
+                    // entry.hof = e.hof
+                    // entry.patron = e.patron
+
+                    this.showResultsVotes(entry)
+                }
+            })
+    }
+
+    showResultsVotes(entry) {
+        let loc = $("[id|='favorite-" + entry.id + "']")
+        for (let l of loc)
+            if (typeof entry !== "undefined")
+                $(l).css("color", entry.favorite ? "#00c000" : "grey")
+            else
+                $(l).css("color", "grey")
     }
 
     showVotes(entry) {
@@ -4665,22 +4703,30 @@ class NMSCE {
             }
         }
 
-        if (typeof entry !== "undefined") {
-            $("#favorite").css("color", entry.favorite ? "#00c000" : "grey")
-            shvote($("#voted-edchoice"), entry.edchoice)
-            shvote($("#voted-bhspoi"), entry.bhspoi)
-            shvote($("#voted-visited"), entry.visited)
-            shvote($("#voted-report"), entry.report)
-            // shvote($("#voted-hof"), entry.hof)
-            shvote($("#voted-patron"), entry.patron)
+        if (bhs.user.uid) {
+            $("#favorite").show()
+            // $("#voted-report").show()
+
+            if (typeof entry !== "undefined") {
+                $("#favorite").css("color", entry.favorite ? "#00c000" : "grey")
+                // shvote($("#voted-edchoice"), entry.edchoice)
+                // shvote($("#voted-bhspoi"), entry.bhspoi)
+                // shvote($("#voted-visited"), entry.visited)
+                // shvote($("#voted-report"), entry.report)
+                // shvote($("#voted-hof"), entry.hof)
+                // shvote($("#voted-patron"), entry.patron)
+            } else {
+                $("#favorite").css("color", "grey")
+                // shvote($("#voted-edchoice"), false)
+                // shvote($("#voted-bhspoi"), false)
+                // shvote($("#voted-visited"), false)
+                // shvote($("#voted-report"), false)
+                // shvote($("#voted-hof"), false)
+                // shvote($("#voted-patron"), false)
+            }
         } else {
-            $("#favorite").css("color", "grey")
-            shvote($("#voted-edchoice"), false)
-            shvote($("#voted-bhspoi"), false)
-            shvote($("#voted-visited"), false)
-            shvote($("#voted-report"), false)
-            // shvote($("#voted-hof"), false)
-            shvote($("#voted-patron"), false)
+            $("#favorite").hide()
+            // $("#voted-report").hide()
         }
     }
 

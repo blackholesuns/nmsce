@@ -7,17 +7,18 @@ admin.initializeApp({
 require('events').EventEmitter.defaultMaxListeners = 0
 
 // remove orphaned images. check for images used by multiple entries
-// delete/rename collection votes on nmsce after last copy (make backup first)
 // recalculate votes. some favorites are < 0. some favorites are true instead of 1
 
 // *** done ***
+// update version for verified tags, *** add to main site somehow ***
+
+// delete/rename collection votes on nmsce after last copy (make backup first)
 // recalc all totals
 // fix duplicate ids
 // validate galaxies delete invalid inc images
 // move living ships to normal ships
 // fix resources on planets, tags to resources. e.g. faecium
 // rewrite fauna type to be description
-// update version for verified tags, *** add to main site somehow ***
 // tags to element=true instead of arrays
 // clean up garbage in seed
 // Fix type & Type for living ships in nmsceCombined
