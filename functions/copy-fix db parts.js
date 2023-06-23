@@ -6,6 +6,8 @@ admin.initializeApp({
 })
 require('events').EventEmitter.defaultMaxListeners = 0
 
+// *** Most of this file was outdated by the db change to a combined galaxy list. Save for reference 
+
 // remove orphaned images. check for images used by multiple entries
 // recalculate votes. some favorites are < 0. some favorites are true instead of 1
 

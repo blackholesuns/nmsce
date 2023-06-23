@@ -1684,12 +1684,16 @@ class NMSCE {
     }
 
     loadUserImageText() {
-        let ref = doc(bhs.fs, "users", bhs.user.uid)
-        getDoc(ref).then(doc => {
-            this.restoreImageText(doc.data().imageText, true)
-        }).catch(err => {
-            bhs.status("ERROR: " + err)
-        })
+        if (typeof bhs.user.imageText !== "undefined")
+            this.restoreImageText(bhs.user.imageText, true)
+        else {
+            let ref = doc(bhs.fs, "users", bhs.user.uid)
+            getDoc(ref).then(doc => {
+                this.restoreImageText(doc.data().imageText, true)
+            }).catch(err => {
+                bhs.status("ERROR: " + err)
+            })
+        }
     }
 
     changeName(uid, newname) { }
