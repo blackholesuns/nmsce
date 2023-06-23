@@ -575,6 +575,36 @@ class NMSCE {
             $("#searchPanel").hide()
     }
 
+    // hideSelf(evt) {
+    //     let hide = $(evt).prop("checked")
+
+    //     if (bhs.user.uid) {
+    //         if (hide !== bhs.user.nmscesettings.hideSelf) {
+    //             let settings = {}
+    //             settings.hideSelf = hide
+
+    //             let ref = doc(bhs.fs, "users/" + bhs.user.uid)
+    //             setDoc(ref, { nmscesettings: settings }, { merge: true })
+    //         }
+
+    //         let loc = $("#list-Latest")
+    //         let latest = nmsce.entries["Latest"]
+    //         let last
+
+    //         for (let item of latest) {
+    //             last = loc.find("#row-" + item.id)
+
+    //             if (bhs.user.uid === item.uid && hide)
+    //                 last.hide()
+    //             else
+    //                 last.show()
+    //         }
+
+    //         if (hide) 
+    //             nmsce.getWithObserver({target:last[0]})
+    //     }
+    // }
+
     expandPanels(show) {
         if (show) {
             $('[data-hide=true]').hide()
@@ -598,6 +628,12 @@ class NMSCE {
                 bhs.user.galaxy = "Search All"
 
             if (bhs.user.uid) {
+                // if (typeof bhs.user.nmscesettings.hideSelf === "undefined")
+                //     bhs.user.nmscesettings.hideSelf = false
+
+                // $("#ck-hideself").prop("checked", bhs.user.nmscesettings.hideSelf)
+                // this.hideSelf($("#ck-hideself"))
+
                 let tabs = Object.keys(this.entries)
                 for (let t of tabs) {
                     if (t !== "My Favorites") {
@@ -4046,6 +4082,11 @@ class NMSCE {
         <div id="dl-idname" class="tab-pane hidden pl-15 pr-15" role="tabpanel" aria-labelledby="dltab-idname">
             <div id="list-idname" class="scroll row" style="height:500px"></div>
         </div>`
+        // let ck = `
+        // <label class="txt-label-def pl-10">
+        //     <input id="ck-hideself" type="checkbox" onchange="nmsce.hideSelf(this)">
+        //     Hide my entries&nbsp;
+        // </label>`
 
         this.entries = {}
 
@@ -4063,12 +4104,13 @@ class NMSCE {
             $("#displayPanels").append(l)
         }
 
+        // $("#displayTabs").append(ck)
+
         let height = $("html")[0].clientHeight - 100
         $("#displayPanels .scroll").height(height + "px")
     }
 
     getTotals() {
-
         getDoc(doc(bhs.fs, "bhs/nmsceTotals")).then(doc => {
             if (doc.exists())
                 this.displayTotals(doc.data(), "bhs/nmsceTotals")
@@ -4368,7 +4410,6 @@ class NMSCE {
                     }
 
                     let entries = []
-                    let l = false
 
                     for (let doc of snapshot.docs) {
                         let e = doc.data()
@@ -4460,6 +4501,8 @@ class NMSCE {
         if (!entries || entries.length === 0)
             return
 
+        // let hideSelf = $("#ck-hideself").prop("checked")
+
         let h = ""
         let loc = $("#displayPanels #list-" + type.nameToId())
 
@@ -4492,6 +4535,9 @@ class NMSCE {
 
             if (e.private)
                 l = /bkg-white/[Symbol.replace](l, "bkg-yellow")
+
+            // if (type === "Latest" && bhs.user.uid === e.uid && hideSelf)
+            //     l = /rounded/[Symbol.replace](l, "rounded hidden")
 
             h += l
         }
