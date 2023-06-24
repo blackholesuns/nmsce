@@ -394,17 +394,27 @@ class NMSCE {
         }
     }
 
-    addGlyph(evt, val) {
+    addGlyph(evt) {
+        let a = $(evt).text().trim().slice(0, 1)
         let loc = $("#id-glyphInput").find("#id-glyph")
-        let a = loc.val() + (val ? val : $(evt).text().trim().slice(0, 1))
-        loc.val(a)
 
-        if (a.length === 12)
+        // loc.trigger($.Event("keydown", {keyCode: a}))
+
+        let start = loc[0].selectionStart
+        let end = loc[0].selectionEnd
+        let val = loc.val()
+        val = (val.slice(0, start) + a + val.slice(end)).slice(0,12)
+        loc.val(val)
+        loc.focus()
+        loc[0].setSelectionRange(start + 1, start + 1)
+
+        if (val.length === 12)
             this.changeAddr(loc)
     }
 
     changeAddr(evt, a, entry) {
-        let addr = a ? a : $(evt).val()
+        let glyphs = evt && ($(evt).prop("id") === "id-glyph")
+        let addr = a ? a : entry ? entry.addr : $(evt).val()
         let idx = $("[role='tabpanel'] [id='id-Planet-Index']")
         let planet = idx.val()
 
@@ -418,6 +428,9 @@ class NMSCE {
                         getPlanet(idx)
                 }
             }
+
+            if (glyphs)
+                addr = addr.slice(0, 12)
 
             addr = reformatAddress(addr)
             let pnl = $("#panels")
@@ -1022,7 +1035,7 @@ class NMSCE {
         this.displaySystem(entry)
 
         if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
-            this.changeAddr(null, entry.addr, entry)
+            this.changeAddr(null, null, entry)
 
         let link = `/preview?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
         $("[id|='permalink']").attr("href", link)
