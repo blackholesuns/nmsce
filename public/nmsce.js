@@ -305,6 +305,8 @@ class NMSCE {
         })
 
         if (fnmsce) {
+            bhs.setMenu($("#menu-Galaxy"), "Search All")
+    
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
                 labelsize: "col-md-5 col-4",
                 menusize: "col",
