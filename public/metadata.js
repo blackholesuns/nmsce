@@ -1,6 +1,13 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.2",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Clean up mobile interface. Close keyboard when entering glyphs via buttons. Resize parts map."
+        ]
+    },{
         Version: "1.2.1",
         Title: " ",
         Authors: ["spip01"],

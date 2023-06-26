@@ -159,7 +159,7 @@ const tString = `
         <input id="id-idname" class="rounded col-lg-7 col-9">&nbsp;
         <!--i class="fas fa-check text-success hidden"></i-->
     </div>`;
-const tMap = `<div id="row-idname" class="col-14" data-type="map"></div>`;
+const tMap = `<div id="row-idname" class="" data-type="map"></div>`;
 const tLongString = `
     <div id="row-idname" data-type="string" data-allowhide="ihide" data-req="ifreq" class="row">
         <div class="col-lg-6 col-4 pl-15 txt-label-def">titlettip&nbsp;</div>
@@ -409,6 +409,7 @@ class NMSCE {
         loc.val(val)
         loc.focus()
         loc[0].setSelectionRange(start + 1, start + 1)
+        loc.blur()
 
         if (val.length === 12)
             this.changeAddr(loc)
