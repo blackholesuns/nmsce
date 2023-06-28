@@ -432,8 +432,12 @@ class NMSCE {
                 }
             }
 
-            if (glyphs)
+            if (glyphs) {
+                if (addr.length < 12)
+                    return
+                    
                 addr = addr.slice(0, 12)
+            }
 
             addr = reformatAddress(addr)
             let pnl = $("#panels")
