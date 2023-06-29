@@ -474,7 +474,7 @@ function checkNewPosters(posts) {
 function checkReported(posts) {
     let p = []
     for (let post of posts) {
-        if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot") && post.body()[0] !== '!')
+        if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot") && post.body[0] !== '!')
             p.push(post.approve())  // idiots reporting automod & bot comments
 
         // if (post.name.startsWith("t1") && !post.banned_by)
@@ -586,18 +586,18 @@ async function modCommands(posts, mods) {
     return Promise.all(p)
 }
 
-
 function setFlair(post, op) {
     let p = []
-    let posts = []
 
     let m = post.body.match(/!\W?flair:(.*)/)
+
     if (m) {
-
-        if (op.link_flair_template_id === "20526a8e-9448-11e8-9fdd-0e511532ebae")
+        if (m[1].match(/answered/i)) {
             op.link_flair_template_id = "30e40f0c-948f-11eb-bc74-0e0c6b05f4ff"
-
-        op.link_flair_text = m[1].match(/answered/i) ? "Answered" : m[1]
+            op.link_flair_text = "Answered"
+        }
+        else
+            op.link_flair_text = m[1]
 
         p.push(op.selectFlair({
             flair_template_id: op.link_flair_template_id,
@@ -606,18 +606,18 @@ function setFlair(post, op) {
 
         console.log("set flair", op.link_flair_text, permaLinkHdr + op.permalink)
 
+        let posts = []
         posts.push(op)
+
         p.push(checkPostLimits(posts, true))    // approve post if limit ok
     }
+
+    return Promise.all(p)
 }
 
 function checkMotherMayI(post, op) {
     console.log("approve first post", permaLinkHdr + op.permalink)
-
-    let posts = []
-    posts.push(op)
-
-    return checkPostLimits(posts, true)    // approve post if limit ok
+    return post.approve().catch(err => error(err))
 }
 
 function setupAdvertiser(post, op) {

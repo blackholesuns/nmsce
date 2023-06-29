@@ -2143,7 +2143,7 @@ class NMSCE {
             let svgh = parseInt(svg.attr("height"))
 
             let h = $("#panels").height()
-            let w = $(l).width()
+            let w = $(l).parent().width()
             let size = calcImageSize(svgw, svgh, w, h / maps.length, true)
 
             svg.attr("preserveAspectRatio", "xMidYMid meet")
