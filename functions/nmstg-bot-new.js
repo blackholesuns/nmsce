@@ -289,19 +289,24 @@ async function checkPostLimits(posts, approve) {
             continue
 
         // check for videos not using video flair
-        if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" && !post.link_flair_text.includes("Bug")
-            && !post.link_flair_text.includes("Video") && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")
-            && typeof post.secure_media !== "undefined" && post.secure_media
-            && (typeof post.secure_media.reddit_video !== "undefined" || typeof post.secure_media.oembed !== "undefined"
-                && (post.secure_media.oembed.type === "video" || post.secure_media.type === "twitch.tv"))) {
+        if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267"
+            && !post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video")
+            && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")) {
 
-            post.link_flair_text += " Video"
-            console.log("add video flair: " + permaLinkHdr + post.permalink)
+            if (typeof post.url !== "undefined" && post.url.match(/youtube/i)
+                || typeof post.secure_media !== "undefined" && post.secure_media
+                && (typeof post.secure_media.reddit_video !== "undefined"
+                    || typeof post.secure_media.oembed !== "undefined" && (post.secure_media.oembed.type === "video"
+                        || post.secure_media.type === "twitch.tv"))) {
 
-            p.push(post.selectFlair({
-                flair_template_id: post.link_flair_template_id,
-                text: post.link_flair_text
-            }).catch(err => error(err)))
+                post.link_flair_text += " Video"
+                console.log("add video flair: " + permaLinkHdr + post.permalink)
+
+                p.push(post.selectFlair({
+                    flair_template_id: post.link_flair_template_id,
+                    text: post.link_flair_text
+                }).catch(err => error(err)))
+            }
         }
 
         let limit = flairPostLimit.find(x => post.link_flair_text.includes(x.flair))
