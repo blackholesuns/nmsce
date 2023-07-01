@@ -306,7 +306,7 @@ class NMSCE {
 
         if (fnmsce) {
             bhs.setMenu($("#menu-Galaxy"), "Search All")
-    
+
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
                 labelsize: "col-md-5 col-4",
                 menusize: "col",
@@ -405,7 +405,7 @@ class NMSCE {
         let start = loc[0].selectionStart
         let end = loc[0].selectionEnd
         let val = loc.val()
-        val = (val.slice(0, start) + a + val.slice(end)).slice(0,12)
+        val = (val.slice(0, start) + a + val.slice(end)).slice(0, 12)
         loc.val(val)
         loc.focus()
         loc[0].setSelectionRange(start + 1, start + 1)
@@ -435,7 +435,7 @@ class NMSCE {
             if (glyphs) {
                 if (addr.length < 12)
                     return
-                    
+
                 addr = addr.slice(0, 12)
             }
 
@@ -3311,6 +3311,8 @@ class NMSCE {
                 crossDomain: true,
                 success(res) {
                     nmsce.subReddits = []
+                    let def = null
+
                     for (let s of res.data.children) {
                         let data = s.data;
 
@@ -3323,13 +3325,22 @@ class NMSCE {
                             link: data.name
                         })
 
+                        if (data.display_name_prefixed === "r/NMSGlyphExchange")
+                            def = "r/NMSGlyphExchange"
                     }
+
                     bhs.buildMenu($("#redditPost"), "SubReddit", nmsce.subReddits, nmsce.setSubReddit, {
                         required: true,
                         labelsize: "col-4",
                         menusize: "col",
                         sort: true
                     })
+
+                    if (def) {
+                        let loc = $("#menu-SubReddit")
+                        bhs.setMenu(loc, def)
+                        nmsce.setSubReddit(loc, accessToken)
+                    }
                 },
                 error(err) {
                     nmsce.postStatus(err.message)
@@ -3358,7 +3369,11 @@ class NMSCE {
                 crossDomain: true,
                 success(res) {
                     nmsce.subRedditFlair = []
-                    for (let s of res)
+                    let flair = {}
+                    flair.name = nmsce.last.type + '/' + nmsce.last.galaxy
+                    let found = false
+
+                    for (let s of res) {
                         nmsce.subRedditFlair.push({
                             name: s.text,
                             text_color: s.text_color === "light" ? "white" : "black",
@@ -3366,11 +3381,36 @@ class NMSCE {
                             id: s.id,
                         })
 
+                        let name = s.text.split("/")[0]
+
+                        if (name === nmsce.last.type
+                            || name === "Starship" && nmsce.last.type === "Ship"
+                            || name === "Multi Tool" && nmsce.last.type === "Multi-Tool") {
+
+                            flair.name = name + "/" + nmsce.last.galaxy
+                            if (name === "Base")
+                                flair.name += "/" + nmsce.last["Game Mode"]
+
+                            flair.id = s.id
+                            flair.text_color = s.text_color === "light" ? "white" : "black"
+                            flair.color = s.background_color
+
+                            if (s.text === flair.name)
+                                found = true
+                        }
+                    }
+
+                    if (!found && flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
+                        nmsce.subRedditFlair.push(flair)
+
                     bhs.buildMenu($("#redditPost"), "Flair", nmsce.subRedditFlair, null, {
                         required: true,
                         labelsize: "col-4",
                         menusize: "col"
                     })
+
+                    if (flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
+                        bhs.setMenu($("#menu-Flair"), flair.name)
                 },
                 error(err) {
                     nmsce.postStatus(err.message)
@@ -5157,7 +5197,6 @@ const mapColors = {
     error: "#ff0000",
 }
 
-
 const clientIds = {
     prod: "8oDpVp9JDDN7ng",
     beta: "9Ukymj_MbqxWglSLm0kQqw",
@@ -5174,9 +5213,8 @@ if (currentLocation.includes("beta.nmsce.com"))
 if (currentLocation.includes("localhost"))
     client_id = clientIds.local;
 
-if (currentLocation.includes("web.app"))
+if (currentLocation.includes("test-nms-bhs.firebaseapp.com"))
     client_id = clientIds.alpha;
-
 
 const reddit = {
     client_id: client_id,

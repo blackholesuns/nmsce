@@ -1,13 +1,20 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.3",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Default sub & flair for posting to r/NMSGlyphExchange."
+        ]
+    }, {
         Version: "1.2.2",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Clean up mobile interface. Close keyboard when entering glyphs via buttons. Resize parts map."
         ]
-    },{
+    }, {
         Version: "1.2.1",
         Title: " ",
         Authors: ["spip01"],
@@ -31,7 +38,7 @@ export const ChangeLog = [
         Changes: [
             "Improve color & tag searching."
         ]
-    },  {
+    }, {
         Version: "1.1.8",
         Title: " ",
         Authors: ["spip01"],
@@ -45,7 +52,7 @@ export const ChangeLog = [
         Changes: [
             "Added interceptor ships. First pass. Still needs some data entry changes."
         ]
-    },   {
+    }, {
         Version: "1.1.6",
         Title: " ",
         Authors: ["CEbbinghaus"],
@@ -54,14 +61,14 @@ export const ChangeLog = [
             "Prevented overflow in the Horizontal causing needless scrollbars",
             "Added scrollbar to update notes & restricted panel height"
         ]
-    },  {
+    }, {
         Version: "1.1.5",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Added save/reload button for image settings. Fixed galaxy display on image."
         ]
-    },  {
+    }, {
         Version: "1.1.4",
         Title: " ",
         Authors: ["CEbbinghaus"],
