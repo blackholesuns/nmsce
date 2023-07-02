@@ -2072,6 +2072,8 @@ class NMSCE {
 
         if (text === "Add new tag")
             row.find("#newtag-" + id).show()
+        if (text === "verified current version")
+            nmsce.last.version = latestversion
         else {
             let h = /idname/[Symbol.replace](tTag, text.nameToId())
             h = /title/[Symbol.replace](h, text)
@@ -3465,7 +3467,7 @@ class NMSCE {
             sr = nmsce.subReddits[i].url
 
             let flair = window.localStorage.getItem('nmsce-reddit-flair')
-            i = getIndex(nmsce.subRedditFlair, "name", flair)
+            i = getIndex(nmsce.subRedditFlair, "name", flair.normalize())
             let flairId = nmsce.subRedditFlair[i].id
 
             let plink = window.localStorage.getItem('nmsce-reddit-plink')
