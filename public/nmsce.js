@@ -3376,6 +3376,8 @@ class NMSCE {
                     let found = false
 
                     for (let s of res) {
+                        s.text = s.text.replace("&amp;", "&")
+
                         nmsce.subRedditFlair.push({
                             name: s.text,
                             text_color: s.text_color === "light" ? "white" : "black",
@@ -3467,7 +3469,7 @@ class NMSCE {
             sr = nmsce.subReddits[i].url
 
             let flair = window.localStorage.getItem('nmsce-reddit-flair')
-            i = getIndex(nmsce.subRedditFlair, "name", flair.normalize())
+            i = getIndex(nmsce.subRedditFlair, "name", flair)
             let flairId = nmsce.subRedditFlair[i].id
 
             let plink = window.localStorage.getItem('nmsce-reddit-plink')
