@@ -3200,7 +3200,7 @@ class NMSCE {
         }
 
         if (!accessToken || !expires || !refreshToken)
-            nmsce.redditLogin(state) // no return
+            nmsce.redditLogin(state) // page reload no return
 
         else if (new Date().getTime() > expires) {
             $.ajax({
@@ -3455,7 +3455,7 @@ class NMSCE {
         link = `https://nmsce.com/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
         window.localStorage.setItem('nmsce-reddit-slink', link)
 
-        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(nmsce.last.Photo));
+        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(nmsce.last.Photo))
         nmsce.redditSubmit()
     }
 
@@ -3506,6 +3506,19 @@ class NMSCE {
                                 t = "t3_" + t[6]
                                 let url = reddit.api_oauth_url + reddit.comment_endpt
 
+                                let comment = "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") for more info about this item. This is a [link](" + slink + ") to everything found so far in this system.  \n\n"
+
+                                if (typeof nmsce.last !== "undefined") {
+                                    if (nmsce.last.Tags["2 glyphs"])
+                                        comment += "It only takes the first 2 glyphs you find to get to this system. The first glyph is the planet index so anything will work to get to this system. If the item is on a specific planet and you haven't unlocked the planet index glyph go to the system and then fly to the planet.  \n\n"
+
+                                    if (nmsce.last.Tags["pirate"])
+                                        comment += "This is pirate raider ship. To buy this ship go to any trading post and wait for a pirate raid. It may take more than 1 raid for it to spawn and land.  \n\n"
+
+                                    else if (nmsce.last.type === "Ship")
+                                        comment += "Ships can be found at any landing pad in the system.  \n\n"
+                                }
+
                                 $.ajax({
                                     type: "post",
                                     url: url,
@@ -3515,23 +3528,12 @@ class NMSCE {
                                     },
                                     data: {
                                         thing_id: t,
-                                        text: "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything found so far in this system."
+                                        text: comment
                                     },
                                     crossDomain: true,
                                 })
 
-                                let e = plink.split("&")
-                                let galaxy, type, id
-
-                                for (let i of e) {
-                                    let p = i.split("=")
-                                    if (p[0] === "g")
-                                        galaxy = p[1].idToName()
-                                    else if (p[0] === "t")
-                                        type = p[1]
-                                    else if (p[0].includes("?i"))
-                                        id = p[1]
-                                }
+                                let id = plink.slice(28)
 
                                 let out = {}
                                 out.redditlink = link
