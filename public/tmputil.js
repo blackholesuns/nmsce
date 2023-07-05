@@ -1,9 +1,4 @@
-import { galaxyList } from "./constants.js";
-
-const galaxyRegex = `(${galaxyList.map(v => v.name).join("|")})`;
-
 /**
- * 
  * 
  * @export
  * @param {HTMLElement} JElement
@@ -14,8 +9,8 @@ const galaxyRegex = `(${galaxyList.map(v => v.name).join("|")})`;
  * @returns {void}
  */
 export function BuildGalaxyMenu(JElement, ElementName, List, Callback, { tip, required, labelsize}){
+    const galaxyRegex = `(${List.map(v => v.name).join("|")})`;
     let id = ElementName.nameToId();
-
 
     let requiredHtml = (required && `&nbsp;<span class="h5 text-danger">*</span>`) || ""
     let titleHtml = `<div class="${labelsize} txt-label-def">${ElementName}&nbsp;${requiredHtml}</div>`;

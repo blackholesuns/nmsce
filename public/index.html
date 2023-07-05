@@ -28,7 +28,7 @@
     <script src="env.js"></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-66007591-5"></script>
+    <!--script async src="https://www.googletagmanager.com/gtag/js?id=UA-66007591-5"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
 
@@ -38,7 +38,7 @@
         gtag('js', new Date());
 
         gtag('config', 'UA-66007591-5');
-    </script>
+    </script-->
 
     <style>
         body {
@@ -63,7 +63,7 @@
     <div id="javascript">
         <div class="row">
             <div class="col-2">
-                <img itemprop="logo" src="images/nmsge-logo.png" alt="nmsge logo"
+                <img itemprop="logo" src="images/nmsge-app-logo.png" alt="nmsge logo"
                     style="top:10px; width:40px; height:40px">
             </div>
             <!--googleoff:all-->
@@ -108,18 +108,19 @@
                         <span class="txt-def hidden" data-hide=true>show</span>&nbsp;additional inputs.
                     </div>
                     <div class="row">
-                        <form id="panels" onsubmit="nmsce.search(event)" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
+                        <div id="panels" class="col-md-9 col-14" style="border-width:3px; border-color:black;">
                             <div id="row-playerInput" class="row">
                                 <div class="col-sm-4 col-6 txt-label-def" data-allowhide=true>
                                     Player Name
                                 </div>
                                 <input id="id-Player" class="rounded col-md-6 col-8 txt-input-def" data-allowhide=true
                                     type="text">
-                                <div id="id-Galaxy" class="col-md-6 col-14 pl-10"></div>
-                                <div id="id-Platform" class="col-md-8 col-14 nopadding" data-allowhide=true></div>
-                                <div id="id-Version" class="col-md-6 col-14 pl-10" data-allowhide=true></div>
-                                <div class="col-7 txt-label-def" data-allowhide=true>Created After
-                                    <input id="id-Created" type="date">
+                                <div id="id-Galaxy" class="col-lg-7 col-md-9 col-14 pl-10"></div>
+                                <!--div id="id-Platform" class="col-md-8 col-14 nopadding" data-allowhide=true></div-->
+                                <div id="id-Version" class="col-md-7 col-14 pl-10" data-allowhide=true></div>
+                                <div class="col-md-7 col-14 txt-label-def" data-allowhide=true>
+                                    Created After&nbsp;
+                                    <input id="id-Created" class="rounded txt-input-def" type="date">
                                 </div>
                             </div>
 
@@ -169,10 +170,10 @@
                                                         The first 4 characters displayed on the signal booster are not part of the coordinates.">
                                         </i>
                                     </div>
-                                    <input id="id-glyph" type="text" maxength="19"
-                                        class="rounded col-lg-7 col-md-9 col-sm-8 col-10 h4 glyph"
+                                    <input id="id-glyph" type="text" maxength="12"
+                                        class="col-lg-9 col-md-9 col-sm-8 col-9 rounded glyph"
                                         placeholder="000000000000" onchange="nmsce.changeAddr(this)">
-                                    <div class="col">
+                                    <div class="col-lg-4 col-md-5 col-sm-5 col-4">
                                         <label class=" txt-label-def">
                                             <input id="ck-glyphs" type="checkbox" onchange="nmsce.setGlyphInput(this)">
                                             Input Glyphs&nbsp;
@@ -219,35 +220,38 @@
                                 <div class="card-header txt-def h5">Search</div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <button id="search" type="submit" class="col-md-4 col-6 btn btn-sm btn-def">Search</button>&nbsp;
-                                        <button id="clear" type="button" class="col-md-4 col-6 btn btn-sm btn-def"
+                                        <button id="search" type="button" class="col-4 btn btn-sm btn-def"
+                                            onclick="nmsce.search()">Search</button>&nbsp;
+                                        <button id="clear" type="button" class="col-4 btn btn-sm btn-def"
                                             onclick="nmsce.clearPanel(true)">Reset</button>&nbsp;
                                     </div>
-                                    <div id="row-savesearch" class="row" data-allowhide=true>
-                                        <button id="searchlocal" type="button" class="col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.searchLocal()">Saved Search</button>
-                                        <div id="id-Saved" class="col-md-4 col-6"></div>&nbsp;
-                                        <label class="col-md-7 col-14 txt-label-def">
-                                            Name&nbsp;
-                                            <input id="searchname" class="col-10" type="text" placeholder="Search Name">
-                                        </label>
-                                        <label id="id=notifySearch" class="col txt-label-def hidden">
-                                            <input id="ck-notify" type="checkbox">
-                                            Notify&nbsp;
-                                            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
-                                                data-html="true" data-placement="bottom"
-                                                title="Check box and save to receive an email for future matches of this search. To disable uncheck and re-save.">
-                                            </i>
-                                        </label>
-                                        <button id="savesearch" type="button" class="col-md-4 col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.saveSearch()">Save</button>&nbsp;
-                                        <i id="searchlocaltt" class="far fa-question-circle text-danger"
-                                            data-toggle="tooltip" data-html="true" data-placement="bottom"
-                                            title="You can save multiple searches by logging in.">
-                                        </i>&nbsp;
-                                        <button id="deletesearch" type="button"
-                                            class="col-md-4 col-6 btn btn-sm btn-def"
-                                            onclick="nmsce.deleteSearch()">Delete</button>&nbsp;
+                                    <div id="row-savesearch" data-allowhide=true>
+                                        <div class="row">
+                                            <button id="searchlocal" type="button" class="col-5 btn btn-sm btn-def"
+                                                onclick="nmsce.searchLocal()">Saved Search</button>
+                                            <div id="row-Saved" class="col-lg-5 col-md-6 col-14">
+                                                <div id="id-Saved" class="txt-label-def">Name&nbsp;</div>
+                                            </div>
+                                            <input id="searchname" class="col-5" type="text" placeholder="Search Name">
+                                            <!--label id="notifySearch" class="col-5 txt-label-def hidden">
+                                                <input id="ck-notify" type="checkbox">
+                                                Notify&nbsp;
+                                                <i class="far fa-question-circle text-danger h6" data-toggle="tooltip"
+                                                    data-html="true" data-placement="bottom"
+                                                    title="Check box and save to receive an email for future matches of this search. To disable uncheck and re-save.">
+                                                </i>
+                                            </label-->
+                                        </div>
+                                        <div class="row">
+                                            <button id="savesearch" type="button" class="col-4 btn btn-sm btn-def"
+                                                onclick="nmsce.saveSearch()">Save</button>&nbsp;
+                                            <i id="searchlocaltt" class="far fa-question-circle text-danger"
+                                                data-toggle="tooltip" data-html="true" data-placement="bottom"
+                                                title="You can save multiple searches by logging in.">
+                                            </i>&nbsp;
+                                            <button id="deletesearch" type="button" class="col-4 btn btn-sm btn-def"
+                                                onclick="nmsce.deleteSearch()">Delete</button>&nbsp;
+                                        </div>
                                     </div>
                                     <br>
                                     <div class="row">
@@ -261,9 +265,9 @@
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
 
-                        <div id="pnl-map" class="col-md-5 col-14 pl-15"></div>
+                        <div id="pnl-map" class="col-md-5 col-14 pl-10"></div>
                     </div>
                 </div>
 
@@ -272,7 +276,7 @@
                     <div id="imgtable" class="row bkg-white txt-center" style="display:none">
                         <div id="imgcol" class="col-lg-10 col-md-9 col-14">
                             <a id="permalink-img" href="">
-                                <img id="dispimage" style="width: 100%;"/>
+                                <img id="dispimage" style="width: 100%;" />
                             </a>
                             <div class="row">
                                 <a id="permalink" class="col-10 h2 pl-30" href="">
@@ -302,7 +306,7 @@
                                     <i id="favorite" class="col-7 fas fa-thumbs-up pointer h2" style="color:grey"
                                         onclick="nmsce.vote(this)"></i>
                                 </div>
-                                <div id="visited" class="col-7 pointer txt-label-def h5 pl-15"
+                                <!-- <div id="visited" class="col-7 pointer txt-label-def h5 pl-15"
                                     onclick="nmsce.vote(this)">
                                     <span class="row">
                                         <i id="voted-visited" class="fas fa-square h3" style="color:grey"></i>
@@ -312,15 +316,15 @@
                                             title="If you retrieved an item or visited a location.">
                                         </i>
                                     </span>
-                                </div>
-                                <div id="patron" class="col-7 txt-label-def h5 align-bottom pointer hidden"
+                                </div> -->
+                                <!-- <div id="patron" class="col-7 txt-label-def h5 align-bottom pointer hidden"
                                     onclick="nmsce.vote(this)">
                                     <span class="row">
                                         <i id="voted-patron" class="fas fa-square h3" style="color:grey"></i>
                                         &nbsp;Patron Favorite
                                     </span>
-                                </div>
-                                <div id="report" class="col-7 pointer text-danger h5" onclick="nmsce.vote(this)">
+                                </div> -->
+                                <!--div id="report" class="col-7 pointer text-danger h5" onclick="nmsce.vote(this)">
                                     <span class="row">
                                         <i id="voted-report" class="fas fa-square h3" style="color:grey"></i>
                                         &nbsp;Report&nbsp;
@@ -329,14 +333,14 @@
                                             title="Something about this entry is offensive.">
                                         </i>
                                     </span>
-                                </div>
-                                <div id="edchoice" class="col-7 txt-label-def h5 pointer hidden"
+                                </div-->
+                                <!-- <div id="edchoice" class="col-7 txt-label-def h5 pointer hidden"
                                     onclick="nmsce.vote(this)">
                                     <span class="row">
                                         <i id="voted-edchoice" class="fas fa-square h3" style="color:grey"></i>
                                         &nbsp;Editors Choice
                                     </span>
-                                </div>
+                                </div> -->
                                 <!--div id="bhspoi" class="col-7 txt-label-def h5 align-bottom pointer hidden"
                                     onclick="nmsce.vote(this)">
                                     <span class="row">
@@ -372,13 +376,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
     </script>
-
-    <!-- <script src="/__/firebase/8.3.2/firebase-app.js"></script>
-    <script src="/__/firebase/8.3.2/firebase-auth.js"></script>
-    <script src="/__/firebase/8.3.2/firebase-firestore.js"></script>
-    <script src="/__/firebase/8.3.2/firebase-storage.js"></script>
-    <script src="/__/firebase/8.3.2/firebase-functions.js"></script>
-    <script src="/__/firebase/init.js"></script> -->
 
     <script src="commonFb.js" type="module"></script>
     <script src="commonUI.js" type="module"></script>

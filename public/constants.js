@@ -98,7 +98,7 @@ export const platformListAll = [
 
 export const versionList = [
     {
-        name: "Nothing Selected",
+        name: " Nothing Selected",
     },
     {
         name: "next",
@@ -197,7 +197,7 @@ export const versionList = [
         date: "4/13/2022",
         changed: [
             {
-                type: "Ship"
+                Type: "Shuttle"
             }
         ]
     }, {
@@ -220,6 +220,10 @@ export const versionList = [
         name: "interceptor",
         version: 4.20,
         date: "4/5/2023"
+    }, {
+        name: "singularity",
+        version: 4.30,
+        date: "6/7/2023"
     }
 ];
 
@@ -1694,54 +1698,28 @@ export const occurenceList = [{
     name: "Rare",
 },]
 
-export const mapList = [{
-    name: "Fighter",
-    map: "/images/fighter-opt.svg",
-}, {
-    name: "Hauler",
-    map: "/images/hauler-opt.svg",
-}, {
-    name: "Shuttle",
-    map: "/images/shuttle-opt.svg",
-}, {
-    name: "Explorer",
-    map: "/images/explorer-opt.svg",
-}, {
-    name: "Exotic",
-    map: "/images/exotic-opt.svg",
-}, {
-    name: "Freighter",
-    map: "/images/freighter-opt.svg",
-}, {
-    name: "Living-Ship",
-    map: "/images/living-ship-opt.svg",
-}, {
-    name: "Solar-Ship",
-    map: "/images/solar-opt.svg",
-}, {
-    name: "Interceptor",
-    map: "/images/interceptor.svg",
-}
-]
-
 export const shipList = [{
     name: "Fighter",
     slotList: tierList,
     slotTtip: `
-        T1: 15-19 slots<br>
-        T2: 20-29 slots<br>
+        T1: 24-28 slots<br>
+        T2: 24-32 slots<br>
         T3: 30-38 slots`,
     bodies: "/images/fighter-opt.svg",
     //asymmetric: true,
-    upgradeTtip: "Maximum damage value for fighter UPGRADED to S-Class"
+    upgradeTtip: "Maximum damage value for fighter UPGRADED to S-Class",
+    firstWave: true,
+    classList: true,
 }, {
     name: "Hauler",
     slotList: tierList,
     slotTtip: `
-        T1: 25-31 slots<br>
-        T2: 32-39 slots<br>
+        T1: 30-36 slots<br>
+        T2: 36-40 slots<br>
         T3: 40-48 slots`,
     bodies: "/images/hauler-opt.svg",
+    firstWave: true,
+    classList: true,
 }, {
     name: "Shuttle",
     slotList: [{
@@ -1750,36 +1728,47 @@ export const shipList = [{
         name: "T2"
     }],
     slotTtip: `
-        T1: 18-23 slots<br>
-        T2: 24-28 slots`,
+        T1: 24-32 slots<br>
+        T2: 28-36 slots`,
     bodies: "/images/shuttle-opt.svg",
     asymmetric: true,
+    firstWave: true,
+    classList: true,
 }, {
     name: "Explorer",
     bodies: "/images/explorer-opt.svg",
     slotList: tierList,
     asymmetric: true,
     slotTtip: `
-        T1: 15-19 slots<br>
-        T2: 20-29 slots<br>
+        T1: 24-29 slots<br>
+        T2: 24-32 slots<br>
         T3: 30-38 slots`,
-    upgradeTtip: "Maximum range value for explorer UPGRADED to S-Class"
+    upgradeTtip: "Maximum range value for explorer UPGRADED to S-Class",
+    firstWave: true,
+    classList: true,
 }, {
     name: "Exotic",
     bodies: "/images/exotic-opt.svg",
+    firstWave: true,
 }, {
     name: "Solar",
     bodies: "/images/solar-opt.svg",
-    includeColor: true
+    includeSail: true,
+    firstWave: true,
+    classList: true,
+}, {
+    name: "Living",
+    bodies: "/images/living-opt.svg",
+    resetMission: true,
 }, {
     name: "Interceptor",
     bodies: "/images/interceptor.svg",
-    includeColor: false
+    classList: true,
 }
 ]
 
 export const mtList = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Alien",
 }, {
@@ -2001,7 +1990,7 @@ export const frigateNegatives = [{
 },]
 
 export const sentinelList = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Low"
 }, {
@@ -2012,82 +2001,48 @@ export const sentinelList = [{
     name: "Corrupted"
 }]
 
-export const faunaList = [{
-    name: "Nothing Selected"
-}, {
-    name: "Anastomus - Striders"
-}, {
-    name: "Anomalous"
-}, {
-    name: "Bos - Spiders"
-}, {
-    name: "Bosoptera - Flying beetles"
-}, {
-    name: "Conokinis - Swarming beetles"
-}, {
-    name: "Felidae - Cat"
-}, {
-    name: "Felihex - Hexapodal cat"
-}, {
-    name: "Hexungulatis - Hexapodal cow"
-}, {
-    name: "Lok - Blobs"
-}, {
-    name: "Mechanoceris - Robot antelopes"
-}, {
-    name: "Mogara - Grunts, bipedal"
-}, {
-    name: "Osteofelidae - Bonecats"
-}, {
-    name: "Prionterrae - Ploughs"
-}, {
-    name: "Procavya - Rodents"
-}, {
-    name: "Protosphaeridae - Protorollers"
-}, {
-    name: "Prototerrae - Protodiggers"
-}, {
-    name: "Rangifae - Diplos"
-}, {
-    name: "Reococcyx - Bipedal antelopes"
-}, {
-    name: "Spiralis - Drills"
-}, {
-    name: "Talpidae - Moles"
-}, {
-    name: "Tetraceris - Antelopes"
-}, {
-    name: "Theroma - Triceratops"
-}, {
-    name: "Tyranocae - Tyrannosaurus rex-like"
-}, {
-    name: "Ungulatis - Cow"
-}, {
-    name: "Procavaquatica - Swimming rodents"
-}, {
-    name: "Bosaquatica - Underwater crabs"
-}, {
-    name: "Chrysaora - Jellyfish"
-}, {
-    name: "Ictaloris - Fish"
-}, {
-    name: "Prionace - Sharks, eels, seasnakes"
-}, {
-    name: "Prionacefda - Swimming cows"
-}, {
-    name: "Agnelis - Birds"
-}, {
-    name: "Cycromys - Flying Lizard"
-}, {
-    name: "Oxyacta - Wraiths / flying snake"
-}, {
-    name: "Protocaeli - Protoflyers"
-}, {
-    name: "Rhopalocera - Butterflies"
-}]
+export const faunaList = [
+    { name: " Nothing Selected" },
+    { name: "Striders" },
+    { name: "Anomalous" },
+    { name: "Spider" },
+    { name: "Beetle, flying" },
+    { name: "Beetle" },
+    { name: "Cat" },
+    { name: "Cat, hexapodal" },
+    { name: "Cow, hexapodal" },
+    { name: "Blob" },
+    { name: "Antelope, robot" },
+    { name: "Grunt" },
+    { name: "Bonecat" },
+    { name: "Plough" },
+    { name: "Rodent" },
+    { name: "Protoroller" },
+    { name: "Protodigger" },
+    { name: "Diplo" },
+    { name: "Antelope, bipedal" },
+    { name: "Drill" },
+    { name: "Mole" },
+    { name: "Antelope" },
+    { name: "Triceratop" },
+    { name: "Tyrannosaurus rex" },
+    { name: "Cow" },
+    { name: "Rodent, swimming" },
+    { name: "Crab, underwater" },
+    { name: "Jellyfish" },
+    { name: "Fish" },
+    { name: "Shark, eel, seasnake" },
+    { name: "Cow, swimming" },
+    { name: "Bird" },
+    { name: "Lizard, flying" },
+    { name: "Wraith / snake, flying" },
+    { name: "Protoflyer" },
+    { name: "Butterfly" },
+    { name: "Worm, imortal giant" }
+]
 
 export const faunaProductKilled = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Diplo Chunks"
 }, {
@@ -2117,7 +2072,7 @@ export const faunaProductKilled = [{
 }]
 
 export const faunaProductTamed = [{
-    name: "Nothing Selected"
+    name: " Nothing Selected"
 }, {
     name: "Crab 'Apple'"
 }, {
@@ -2194,6 +2149,12 @@ export const resourceList = [{
     name: "Solanium"
 }, {
     name: "Star Bulb"
+}, {
+    name: "Faecium"
+}, {
+    name: "Mordite"
+}, {
+    name: "Basalt"
 },]
 
 export const colorList = [{

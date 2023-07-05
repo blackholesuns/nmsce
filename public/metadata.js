@@ -1,13 +1,58 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.3",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Default sub & flair for posting to r/NMSGlyphExchange."
+        ]
+    }, {
+        Version: "1.2.2",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Clean up mobile interface. Close keyboard when entering glyphs via buttons. Resize parts map."
+        ]
+    }, {
+        Version: "1.2.1",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Add favorites voting & display to tab thumbnail list."
+        ]
+    }, {
+        Version: "1.2.0",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Got rid of required galaxy selection on searching. Use 'Select All' (default) to search across all galaxies.",
+            "Platform requirement has been removed.",
+            "Player listings now include all galaxies.",
+            "Menus are rewritten so you can type to get to any item."
+        ]
+    }, {
+        Version: "1.1.9",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Improve color & tag searching."
+        ]
+    }, {
+        Version: "1.1.8",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Moved Living Ships into normal ships tab. Fixed input for always crashed ships."
+        ]
+    }, {
         Version: "1.1.7",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Added interceptor ships. First pass. Still needs some data entry changes."
         ]
-    },   {
+    }, {
         Version: "1.1.6",
         Title: " ",
         Authors: ["CEbbinghaus"],
@@ -16,14 +61,14 @@ export const ChangeLog = [
             "Prevented overflow in the Horizontal causing needless scrollbars",
             "Added scrollbar to update notes & restricted panel height"
         ]
-    },  {
+    }, {
         Version: "1.1.5",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Added save/reload button for image settings. Fixed galaxy display on image."
         ]
-    },  {
+    }, {
         Version: "1.1.4",
         Title: " ",
         Authors: ["CEbbinghaus"],

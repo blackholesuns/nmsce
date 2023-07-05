@@ -1,23 +1,21 @@
 'use strict'
 
-import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
-import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
-import { ref } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
+import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"
+import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
-import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, platformListAll, resourceList, sentinelList, shipList, versionList } from "./constants.js";
+import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, resourceList, sentinelList, shipList, versionList } from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
 import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, GetThumbnailUrl, UploadImages } from "./storage.js";
-import { BuildGalaxyMenu } from "./tmputil.js";
-import { GetClosestParentElement } from "./util.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
-// Copyright 2019-2021 Black Hole Suns
+
+// Copyright 2019-2023 Black Hole Suns
 // Written by Stephen Piper
 
-var nmsce;
+export var nmsce;
 // Does nothing. Purely for consistency
 window.nmsce = nmsce;
 
@@ -48,7 +46,7 @@ $(document).ready(() => {
 
     // Bad hack. Should not be used
     window.nmsce = nmsce = new NMSCE()
-    nmsce.last = null
+    nmsce.last = {}
 
     if (!fpreview) {
         nmsce.buildPanels()
@@ -70,9 +68,16 @@ $(document).ready(() => {
             tmImage.load("/bin/model.json", "/bin/metadata.json").then(model => nmsce.model = model)
             nmsce.buildDisplayList()
         }
+
+        nmsce.clearPanel(true)
+
+        // set default
+        let loc = $("#hdr-Ship #menu-Type")
+        loc.val("Fighter")
+        nmsce.selectSublist(loc)
     }
 
-    //https://localhost:5000/preview?i=0547-0086-0E45-00A1-himodan-s-coup&g=Euclid&t=Ship
+    //https://localhost:5000/preview?i=0547-0086-0E45-00A1-himodan-s-coup
     let passed = {}
     let param = location.search.substring(1).split("&")
 
@@ -82,7 +87,8 @@ $(document).ready(() => {
             passed[decodeURI(obj[0])] = obj[1] ? decodeURI(obj[1]) : true
             if (obj[0] === 'g') {
                 let i = getIndex(galaxyList, "name", passed.g.idToName())
-                passed.g = galaxyList[i].name
+                if (i >= 0)
+                    passed.g = galaxyList[i].name
             }
         }
     }
@@ -94,7 +100,7 @@ $(document).ready(() => {
         nmsce.last = {}
         nmsce.last.addr = reformatAddress(passed.s)
         nmsce.last.galaxy = passed.g
-        nmsce.searchSystem(passed.k)
+        nmsce.searchSystem()
 
     } else if (passed.r && passed.g) {
         nmsce.last = {}
@@ -102,8 +108,8 @@ $(document).ready(() => {
         nmsce.last.galaxy = passed.g
         nmsce.searchRegion()
 
-    } else if (passed.i && passed.g && passed.t) {
-        getDoc(doc(bhs.fs, "nmsce/" + passed.g + "/" + passed.t + "/" + passed.i)).then(doc => {
+    } else if (passed.i) {
+        getDoc(doc(bhs.fs, "nmsceCombined/" + passed.i)).then(doc => {
             if (doc.exists) {
                 if (fnmsce || fpreview)
                     nmsce.displaySelected(doc.data())
@@ -111,6 +117,15 @@ $(document).ready(() => {
                     nmsce.displaySingle(doc.data())
             }
         })
+    } else if (passed.s && passed.t) {
+        nmsce.last.addr = reformatAddress(passed.s)
+        nmsce.last.Type = passed.t
+        nmsce.searchType()
+
+    } else if (passed.f) {
+        nmsce.last.Genus = passed.f
+        nmsce.searchFauna()
+
     }
 })
 
@@ -142,9 +157,9 @@ const tString = `
     <div id="row-idname" data-type="string" data-req="ifreq" class="row">
         <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" class="rounded col-lg-7 col-9">&nbsp;
-        <i class="fas fa-check text-success hidden"></i>
+        <!--i class="fas fa-check text-success hidden"></i-->
     </div>`;
-const tMap = `<div id="row-idname" class="col-14" data-type="map"></div>`;
+const tMap = `<div id="row-idname" class="" data-type="map"></div>`;
 const tLongString = `
     <div id="row-idname" data-type="string" data-allowhide="ihide" data-req="ifreq" class="row">
         <div class="col-lg-6 col-4 pl-15 txt-label-def">titlettip&nbsp;</div>
@@ -162,13 +177,13 @@ const tFloat = `
     </div>`;
 const tTags = `
     <div id="row-idname" class="row pl-10 pr-10" data-type="tags" data-allowhide="ihide" data-req="ifreq">
-        <div id="id-idname" class="col-lg-2 col-4"></div>
-        <div id="add-idname" class="col row hidden">
-            <input id="txt-idname" type="text" class="col-7"></input>
-            <button id="add-idname" type="text" class="col-2 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
-            <button id="cancel-idname" type="text" class="col-3 btn btn-def btn-sm" onclick="nmsce.cancelTag(this)">Cancel</button>
+        <div id="id-idname" class="col-lg-6 col-7"></div>
+        <div id="newtag-idname" class="col-7 row hidden">
+            <input id="txt-idname" type="text" class="col-5"></input>
+            <button id="add-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
+            <button id="cancel-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.cancelTag(this)">Cancel</button>
         </div>
-        <div class="col border">
+        <div class="col-7 border">
             <div id="list-idname" class="row"></div>
         </div>
     </div>`;
@@ -185,8 +200,8 @@ const tRadio = `
         </div>&nbsp;
     </div>`;
 const tRadioItem = `
-    <label class="col txt-label-def">
-        <input type="radio" class="radio h6" id="rdo-tname" data-last=false onclick="nmsce.toggleRadio(this)">
+    <label class="col h6 txt-blue">
+        <input type="radio" class="radio txt-label-def" id="rdo-tname" data-last=false onclick="nmsce.toggleRadio(this)">
         &nbsp;titlettip
     </label>`;
 const tCkItem = `
@@ -204,35 +219,48 @@ const tImg = `
     </div>`;
 
 const resultsItem = `
-    <div id="row-idname" class="col-lg-p250 col-md-p333 col-sm-7 col-14 pointer bkg-white txt-label-def border rounded h6"
-        onclick="nmsce.selectResult(this)" style="pad-bottom:3px">
-        galaxy<br>
-        byname<br>
-        date<br>
-        <div class="pl-5 pr-5" style="min-height:20px">
-            <img id="img-idname" src="imgsrc" style="width: 100%;">
+    <div id="row-idname" class="col-lg-p250 col-md-p333 col-sm-7 col-14 pointer bkg-white txt-label-def border rounded h6">
+        <div class="row">
+            <div class="col-12" onclick="nmsce.selectResult(this)" style="pad-bottom:3px">
+                galaxy
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" onclick="nmsce.selectResult(this)" style="pad-bottom:3px">
+                byname<br>
+                date<br>
+            </div>
+            <div class="col-1">
+                <i id="favorite-idname" class="fas fa-thumbs-up h3" style="color:grey" onclick="nmsce.vote(this)"></i>
+            </div>
+        </div>
+        <div class="pl-15 pr-5 row" style="min-height:20px" onclick="nmsce.selectResult(this)">
+            <img id="img-idname" src="imgsrc" style="width: 97%;">
         </div>
     </div>`;
 
 function showLatLong() {
     let loc = $("#typePanels #hdr-Ship")
-    if ($(this).prop("checked")) {
-        loc.find("#row-Latitude").show()
-        loc.find("#row-Longitude").show()
-        loc.find("#row-Planet-Index").show()
-        loc.find("#row-Planet-Name").show()
-        loc.find("#row-Class").show()
+    let type = loc.find("#menu-Type").val()
+    type = loc.find("#slist-" + type)
+    let chk = type.find("#ck-Crashed")
+
+    if (!chk.length || chk.prop("checked")) {
+        type.find("#row-Latitude").show()
+        type.find("#row-Longitude").show()
+        type.find("#row-Planet-Index").show()
+        type.find("#row-Planet-Name").show()
+        type.find("#row-Class").show()
     } else {
-        loc.find("#row-Latitude").hide()
-        loc.find("#row-Longitude").hide()
-        loc.find("#row-Planet-Index").hide()
-        loc.find("#row-Planet-Name").hide()
-        loc.find("#row-Class").hide()
+        type.find("#row-Latitude").hide()
+        type.find("#row-Longitude").hide()
+        type.find("#row-Planet-Index").hide()
+        type.find("#row-Planet-Name").hide()
+        type.find("#row-Class").hide()
     }
 }
 
 class NMSCE {
-
     buildPanels() {
         const addRadioList = function (loc, label, list, ttip) {
             let h = /ifreq/[Symbol.replace](tRadio, "")
@@ -264,25 +292,23 @@ class NMSCE {
 
         addRadioList($("#id-Economy"), "Economy", economyListTier)
         addRadioList($("#id-Lifeform"), "Lifeform", lifeformList)
-        addRadioList($("#id-Platform"), "Platform", platformListAll)
+        // addRadioList($("#id-Platform"), "Platform", platformListAll)
 
-        BuildGalaxyMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
+        if (fnmsce)
+            galaxyList.unshift({ name: "Search All" })
+
+        bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
+            tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
             required: true,
-            sort: true,
-            labelsize: "col-md-6 col-4",
+            labelsize: "col-md-5 col-4",
             menusize: "col",
         })
-        // bhs.buildMenu($("#panels"), "Galaxy", galaxyList, this.setGalaxy.bind(this), {
-        //     tip: "Empty - blue<br>Harsh - red<br>Lush - green<br>Normal - teal",
-        //     required: true,
-        //     sort: true,
-        //     labelsize: "col-md-6 col-4",
-        //     menusize: "col",
-        // })
 
         if (fnmsce) {
+            bhs.setMenu($("#menu-Galaxy"), "Search All")
+
             bhs.buildMenu($("#panels"), "Version", versionList, null, {
-                labelsize: "col-md-6 col-4",
+                labelsize: "col-md-5 col-4",
                 menusize: "col",
             })
         }
@@ -298,37 +324,37 @@ class NMSCE {
             let lastDownTarget
             let canvas = document.getElementById("id-canvas")
 
-            img.on("touchstart", e => {
+            img.on("touchstart", event => {
                 event.offsetX = event.targetTouches[0].pageX - img.offset().left
                 event.offsetY = event.targetTouches[0].pageY - img.offset().top
 
-                this.imageMouseDown(e)
+                this.imageMouseDown(event)
             })
-            img.on("touchmove", e => {
+            img.on("touchmove", event => {
                 event.offsetX = event.targetTouches[0].pageX - img.offset().left
                 event.offsetY = event.targetTouches[0].pageY - img.offset().top
 
-                this.imageMouseMove(e)
+                this.imageMouseMove(event)
             })
-            img.on("touchend", e => {
-                this.imageMouseUp(e)
+            img.on("touchend", event => {
+                this.imageMouseUp(event)
             })
-            img.mouseout(e => {
-                this.imageMouseOut(e)
+            img.mouseout(event => {
+                this.imageMouseOut(event)
             })
-            img.mousedown(e => {
+            img.mousedown(event => {
                 lastDownTarget = canvas
-                this.imageMouseDown(e)
+                this.imageMouseDown(event)
             })
-            img.mousemove(e => {
-                this.imageMouseMove(e)
+            img.mousemove(event => {
+                this.imageMouseMove(event)
             })
-            img.mouseup(e => {
-                this.imageMouseUp(e)
+            img.mouseup(event => {
+                this.imageMouseUp(event)
             })
 
-            document.addEventListener('mousedown', (e) => {
-                lastDownTarget = e.target
+            document.addEventListener('mousedown', (event) => {
+                lastDownTarget = event.target
             }, true)
 
             document.addEventListener('keydown', (e) => {
@@ -339,53 +365,78 @@ class NMSCE {
     }
 
     setGalaxy(evt) {
-        bhs.updateUser({
-            galaxy: $(evt).text().stripNumber()
-        })
-
-        this.getEntries(true)
+        let galaxy = bhs.getMenu($("#menu-Galaxy"))
+        if (galaxy)
+            bhs.updateUser({
+                galaxy: galaxy
+            })
     }
 
-    setGlyphInput(evt) {
-        if (bhs.user.uid) {
-            if (typeof bhs.inputSettings === "undefined" || bhs.inputSettings.glyph !== $(evt).prop("checked")) {
+    setGlyphInput(evt, noupdate) {
+        let checked = $(evt).prop("checked")
+
+        if (!noupdate && bhs.user.uid) {
+            if (typeof bhs.inputSettings === "undefined" || bhs.inputSettings.glyph !== checked) {
                 bhs.updateUser({
                     inputSettings: {
-                        glyph: $(evt).prop("checked")
+                        glyph: checked
                     }
                 })
             }
+        }
+
+        if (checked) {
+            $("[id='id-glyphInput']").show()
+            $("[id='id-addrInput']").hide()
+            $("[id='ck-glyphs']").prop("checked", true)
         } else {
-            if ($(evt).prop("checked")) {
-                $("[id='id-glyphInput']").show()
-                $("[id='id-addrInput']").hide()
-                $("[id='ck-glyphs']").prop("checked", true)
-            } else {
-                $("[id='id-glyphInput']").hide()
-                $("[id='id-addrInput']").show()
-                $("[id='ck-glyphs']").prop("checked", false)
-            }
+            $("[id='id-glyphInput']").hide()
+            $("[id='id-addrInput']").show()
+            $("[id='ck-glyphs']").prop("checked", false)
         }
     }
 
-    addGlyph(evt, val) {
+    addGlyph(evt) {
+        let a = $(evt).text().trim().slice(0, 1)
         let loc = $("#id-glyphInput").find("#id-glyph")
-        let a = loc.val() + (val ? val : $(evt).text().trim().slice(0, 1))
-        loc.val(a)
 
-        if (a.length === 12)
+        // loc.trigger($.Event("keydown", {keyCode: a}))
+
+        let start = loc[0].selectionStart
+        let end = loc[0].selectionEnd
+        let val = loc.val()
+        val = (val.slice(0, start) + a + val.slice(end)).slice(0, 12)
+        loc.val(val)
+        loc.focus()
+        loc[0].setSelectionRange(start + 1, start + 1)
+        loc.blur()
+
+        if (val.length === 12)
             this.changeAddr(loc)
     }
 
-    changeAddr(evt, a) {
-        let addr = a ? a : $(evt).val()
-        let p = 0
+    changeAddr(evt, a, entry) {
+        let glyphs = evt && ($(evt).prop("id") === "id-glyph")
+        let addr = a ? a : entry ? entry.addr : $(evt).val()
         let idx = $("[role='tabpanel'] [id='id-Planet-Index']")
+        let planet = idx.val()
 
         if (addr !== "") {
-            if (addr.length === 12) {
-                p = addr.slice(0, 1)
-                idx.val(p)
+            if (addr.length === 12 && !entry) {
+                planet = addr.slice(0, 1)
+                if (planet !== "0") {
+                    idx.val(planet)
+
+                    if (fcedata)
+                        getPlanet(idx)
+                }
+            }
+
+            if (glyphs) {
+                if (addr.length < 12)
+                    return
+
+                addr = addr.slice(0, 12)
             }
 
             addr = reformatAddress(addr)
@@ -394,27 +445,82 @@ class NMSCE {
             this.dispAddr(pnl, addr)
             this.restoreImageText(null, true)
 
-            if (!fnmsce) {
-                $("#foundreg").hide()
-                $("#foundsys").hide()
-                $("[data-type='string'] .fa-check").hide()
-                getPlanet(idx.first())
+            if (fcedata) {
+                pnl.find("#foundreg").hide()
+                pnl.find("#foundsys").hide()
 
-                bhs.getEntry(addr, this.displaySystem.bind(this), null, null, true).then(entry => {
-                    if (!entry) {
-                        if (this.lastsys && this.lastsys.sys === $("#id-sys").val()) {
-                            $("#id-sys").val("")
-                            $("#id-reg").val("")
-                            $("#id-Economy [type='radio']").prop("checked", false)
-                            $("#id-Lifeform [type|='radio']").prop("checked", false)
+                if (entry)
+                    this.last = mergeObjects({}, entry)
+
+                if (typeof this.last === "undefined")
+                    this.last = {}
+
+                let ref = query(collection(bhs.fs, "nmsceCombined"),
+                    where("galaxy", "==", bhs.user.galaxy),
+                    where("addr", "==", addr),
+                    limit(1))
+
+                if (!entry || !entry.sys) {
+                    getDocs(ref, query(where("sys", "!=", ""))).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.last.sys = e.sys
+                            this.displaySys(this.last)
+
+                            if (entry)
+                                setDoc(snapshot.docs[0].ref, { sys: e.sys }, { merge: true })
                         }
-                    }
+                    })
+                }
 
-                    if (!entry || !entry.reg)
-                        bhs.getEntryByRegionAddr(addr, this.displayRegion)
+                if (!entry || !entry.Lifeform) {
+                    getDocs(ref, query(where("Lifeform", "!=", ""))).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.last.Lifeform = e.Lifeform
+                            setRadio($("#id-Lifeform"), e.Lifeform)
 
-                    this.lastsys = entry
-                })
+                            if (entry)
+                                setDoc(snapshot.docs[0].ref, { Lifeform: e.Lifeform }, { merge: true })
+                        }
+                    })
+                }
+
+                if (!entry || !entry.Economy) {
+                    getDocs(ref, query(where("Economy", "!=", ""))).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.last.Economy = e.Economy
+                            setRadio($("#id-Economy"), e.Economy)
+
+                            if (entry)
+                                setDoc(snapshot.docs[0].ref, { Economy: e.Economy }, { merge: true })
+                        }
+                    })
+                }
+
+                if (!entry || !entry.reg) {
+                    let xyz = addressToXYZ(addr)
+
+                    let ref = query(collection(bhs.fs, "nmsceCombined"),
+                        where("galaxy", "==", bhs.user.galaxy),
+                        where("xyzs.x", "==", xyz.x),
+                        where("xyzs.y", "==", xyz.y),
+                        where("xyzs.z", "==", xyz.z),
+                        where("reg", "!=", ""),
+                        limit(1))
+
+                    getDocs(ref).then(snapshot => {
+                        if (!snapshot.empty) {
+                            let e = snapshot.docs[0].data()
+                            this.last.reg = e.reg
+                            this.displayReg(this.last)
+
+                            if (entry)
+                                setDoc(doc(bhs.fs, "nmsceCombined/" + entry.id), { reg: e.reg }, { merge: true })
+                        }
+                    })
+                }
             }
         }
     }
@@ -432,77 +538,92 @@ class NMSCE {
         loc.find("#id-hex").text(glyph)
     }
 
-    displayRegion(entry) {
+    displayReg(entry) {
         if (entry.reg) {
             let loc = $("#panels")
             loc.find("#id-reg").val(entry.reg)
+            let l = loc.find("#foundreg")
             loc.find("#foundreg").show()
+        }
+    }
+
+    displaySys(entry) {
+        if (entry.sys) {
+            let loc = $("#panels")
+            loc.find("#id-sys").val(entry.sys)
+            let l = loc.find("#foundsys")
+            loc.find("#foundsys").show()
         }
     }
 
     displaySystem(entry) {
         let loc = $("#panels")
 
-        if (entry.sys)
-            loc.find("#foundsys").show()
-        else
-            loc.find("#foundsys").hide()
-
-        if (entry.reg)
-            loc.find("#foundreg").show()
-        else
-            loc.find("#foundreg").hide()
-
-        $("#btn-Galaxy").val(entry.galaxy)
+        let menu = $("#menu-Galaxy")
+        bhs.setMenu(menu, entry.galaxy)
 
         this.dispAddr(loc, entry.addr)
 
         loc.find("#id-sys").val(entry.sys)
         loc.find("#id-reg").val(entry.reg)
 
-        loc.find("#id-by").html("<h6>" + entry.sys ? entry._name : "" + "</h6>")
+        // if (entry.sys)
+        //     loc.find("#foundsys").show()
 
-        if (!entry.Economy && entry.econ) {
-            let i = getIndex(economyList, "name", entry.econ)
-            if (i > 0) {
-                let econ = economyList[i].number
-                entry.Economy = "T" + econ
-            }
-        }
+        // if (entry.reg)
+        //     loc.find("#foundreg").show()
 
-        if (!entry.Platform && (entry.platform || bhs.user.Platform)) {
-            if (bhs.user.Platform)
-                entry.Platform = bhs.user.Platform
-            else if (entry.platform === "PC-XBox")
-                entry.Platform = "PC"
-            else
-                entry.Platform = "PS4"
-        }
-
-        if (typeof entry.Economy === "number")
-            entry.Economy = "T" + entry.Economy
+        // loc.find("#id-by").html("<h6>" + entry.sys ? entry._name : "" + "</h6>")
 
         setRadio($("#id-Economy"), entry.Economy)
-        if (!entry.Lifeform && entry.life)
-            entry.Lifeform = entry.life
         setRadio($("#id-Lifeform"), entry.Lifeform)
-        setRadio($("#id-Platform"), entry.Platform)
+        // setRadio($("#id-Platform"), entry.Platform)
     }
 
     showSearchPanel(evt) {
         if ($(evt).prop("checked")) {
             $("#searchPanel").css("display", "inherit")
 
-            let loc = $("#typePanels .active")
-            loc = loc.find("#menu-Type")
-            if (loc.length > 0) {
-                let btn = loc.find("[id|='btn']")
-                if (btn.text().stripMarginWS() === "")
-                    loc.find("[id|='item']").first().click()
-            }
+            // let loc = $("#typePanels .active")
+            // loc = loc.find("#menu-Type")
+            // if (loc.length > 0) {
+            //     let btn = loc.find("[id|='btn']")
+            //     if (btn.text().stripMarginWS() === "")
+            //         loc.find("[id|='item']").first().click()
+            // }
         } else
             $("#searchPanel").hide()
     }
+
+    // hideSelf(evt) {
+    //     let hide = $(evt).prop("checked")
+
+    //     if (bhs.user.uid) {
+    //         if (hide !== bhs.user.nmscesettings.hideSelf) {
+    //             let settings = {}
+    //             settings.hideSelf = hide
+
+    //             let ref = doc(bhs.fs, "users/" + bhs.user.uid)
+    //             setDoc(ref, { nmscesettings: settings }, { merge: true })
+    //         }
+
+    //         let loc = $("#list-Latest")
+    //         let latest = nmsce.entries["Latest"]
+    //         let last
+
+    //         for (let item of latest) {
+    //             last = loc.find("#row-" + item.id)
+
+    //             if (bhs.user.uid === item.uid && hide)
+    //                 last.hide()
+    //             else
+    //                 last.show()
+    //         }
+
+    //         if (hide) 
+    //             nmsce.getWithObserver({target:last[0]})
+    //     }
+    // }
 
     expandPanels(show) {
         if (show) {
@@ -521,57 +642,71 @@ class NMSCE {
             if (typeof this.entries === "undefined")
                 this.getEntries()
 
-            let loc = $("#id-table")
-            let t = 0
-            for (let k of Object.keys(bhs.user.nmsceTotals)) {
-                t += bhs.user.nmsceTotals[k]
-                let tloc = loc.find("#tot-" + k)
-
-                if (tloc.length > 0)
-                    tloc.text(bhs.user.nmsceTotals[k])
-            }
-
-            let tloc = loc.find("#tot-All")
-            tloc.text(t)
-
+            this.updateTotals()
         } else if (fnmsce) {
-            if (!bhs.user.uid && typeof (Storage) !== "undefined" && !bhs.user.galaxy)
-                bhs.user.galaxy = window.localStorage.getItem('nmsce-galaxy')
-
             if (!bhs.user.galaxy)
-                bhs.user.galaxy = "Euclid"
+                bhs.user.galaxy = "Search All"
 
-            if (bhs.user.uid && typeof this.entries["My Favorites"] === "undefined")
-                this.getResultsLists("My Favorites")
+            if (bhs.user.uid) {
+                // if (typeof bhs.user.nmscesettings.hideSelf === "undefined")
+                //     bhs.user.nmscesettings.hideSelf = false
+
+                // $("#ck-hideself").prop("checked", bhs.user.nmscesettings.hideSelf)
+                // this.hideSelf($("#ck-hideself"))
+
+                let tabs = Object.keys(this.entries)
+                for (let t of tabs) {
+                    if (t !== "My Favorites") {
+                        for (let l of this.entries[t])
+                            this.getVotes(l)
+                    }
+                }
+
+                if (typeof this.entries["My Favorites"] === "undefined")
+                    this.getResultsLists("My Favorites")
+            }
         }
 
         this.expandPanels(fcedata || (bhs.user.nmscesettings && bhs.user.nmscesettings.expandPanels))
 
-        let loc = $("#row-playerInput")
+        if (bhs.user.inputSettings) {
+            let loc = $("#id-addrInput #ck-glyphs")
+            loc.prop("checked", bhs.user.inputSettings.glyph)
+            this.setGlyphInput(loc, true)
+        }
+
+        let menu = $("#menu-Galaxy")
+        bhs.setMenu(menu, bhs.user.galaxy)
+
         if (fcedata)
-            loc.find("#id-Player").val(bhs.user._name)
-
-        loc.find("#btn-Galaxy").val(bhs.user.galaxy)
-
-        loc = loc.find("#id-Platform")
-        loc.find("input").prop("checked", false)
-        if (bhs.user.Platform)
-            loc.find("#rdo-" + bhs.user.Platform).prop("checked", true)
-
-        loc = $("#row-playerDisplay")
-        loc.find("#id-Player").text(bhs.user._name)
-        loc.find("#id-Galaxy").text(bhs.user.galaxy)
-        loc.find("#id-Platform").text(bhs.user.Platform)
+            $("#id-Player").val(bhs.user._name)
 
         $("#searchlocaltt").hide()
+        $("#searchlocal").hide()
+        $("#row-savesearch").show()
+
+        if (bhs.isPatreon(2))
+            $("#id-notifySearch").show()
 
         this.getSearches()
+    }
+
+    updateTotals() {
+        let loc = $("#id-table")
+        let t = 0
+        for (let k of Object.keys(bhs.user.nmsceTotals)) {
+            t += bhs.user.nmsceTotals[k]
+            let tloc = loc.find("#tot-" + k)
+
+            if (tloc.length > 0)
+                tloc.text(bhs.user.nmsceTotals[k])
+        }
     }
 
     clearPanel(all) {
         const clr = (pnl) => {
             pnl.find("input").each(function () {
-                let id = $(this).prop("id").stripID()
+                let id = $(this).attr("id").stripID()
                 if (id === "glyphs" || id === "PC" || id === "XBox" || id === "PS4" || fcedata && id === "Player")
                     return
 
@@ -583,15 +718,16 @@ class NMSCE {
                     $(this).data("last", false)
                 } else if (id != "Galaxy")
                     $(this).val("")
+
+                if (type === "string")
+                    $(this).next().hide()
             })
 
             pnl.find("[id|='menu']").each(function () {
-                let id = $(this).prop("id").stripID()
+                let id = $(this).attr("id").stripID()
                 if ((!fcedata || all || id !== "Type") && id != "Galaxy")
-                    $(this).find("[id|='btn']").text("")
+                    $(this).val("")
             })
-
-            pnl.find(".fa-check").hide()
         }
 
         clr($("#typePanels"))
@@ -600,7 +736,7 @@ class NMSCE {
             let loc = $("#panels")
             loc.find("#foundreg").hide()
             loc.find("#foundsys").hide()
-            loc.find("#id-by").empty()
+            // loc.find("#id-by").empty()
 
             loc.find("#id-glyphInput #id-addr").empty()
             loc.find("#id-glyphInput #id-hex").empty()
@@ -614,7 +750,7 @@ class NMSCE {
 
             if (fnmsce) {
                 $("#id-Player").val("")
-                $("#btn-Version").text("Nothing Selected")
+                $("#menu-Version").val("-Nothing-Selected")
             }
         }
 
@@ -649,31 +785,35 @@ class NMSCE {
         let tags = $("[data-type='tags']")
 
         for (let loc of tags) {
-            let id = $(loc).prop("id").stripID()
+            let id = $(loc).attr("id").stripID()
 
-            $(loc).find("#add-" + id).hide()
-            $(loc).find("#btn-" + id).text(id.idToName())
+            $(loc).find("#newtag-" + id).hide()
+            $(loc).find("#menu-" + id).val("")
             $(loc).find("#list-" + id).empty()
         }
 
-        this.last = null
-
-        let tab = $("#typeTabs .active").prop("id").stripID()
+        let tab = $("#typeTabs .active").attr("id").stripID()
         if (tab === "Freighter")
             $("#pnl-map #pnl-Freighter").show()
 
-        if (tab === "Living-Ship")
-            $("#pnl-map #pnl-Living-Ship").show()
+        // if (tab === "Living-Ship")
+        //     $("#pnl-map #pnl-Living-Ship").show()
+
+        this.last.id = null
+        this.last.created = null
+        this.last.Photo = null
+        this.last.reddit = null
+        this.last.redditlink = null
 
         if (fcedata) {
             let canvas = document.getElementById("id-canvas")
             let ctx = canvas.getContext("2d")
             ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-            $("#save-system").text("Save System")
+            // $("#save-system").text("Save System")
             $("#save").text("Save All")
-            $("#delete-system").addClass("disabled")
-            $("#delete-system").prop("disabled", true)
+            // $("#delete-system").addClass("disabled")
+            // $("#delete-system").prop("disabled", true)
             $("#delete-item").addClass("disabled")
             $("#delete-item").prop("disabled", true)
 
@@ -689,24 +829,16 @@ class NMSCE {
 
         let loc = $("#panels")
 
-        let last = this.lastsys ? this.lastsys : this.last
+        entry._name = this.last._name ? this.last._name : bhs.user._name
+        entry.uid = this.last.uid ? this.last.uid : bhs.user.uid
+        entry.galaxy = this.last.galaxy ? this.last.galaxy : bhs.user.galaxy
+        entry.version = this.last.version ? this.last.version : latestversion
 
-        if (last) {
-            entry._name = last._name
-            entry.uid = last.uid
-            entry.created = last.created
-            entry.Platform = last.Platform
-            entry.platform = last.Platform === "PS4" ? "PS4" : last.Platform === "PC" || last.Platform === "XBox" ? "PC-XBox" : ""
-            entry.galaxy = last.galaxy
-            entry.version = last.version ? last.version : latestversion
-        } else {
-            entry._name = bhs.user._name
-            entry.uid = bhs.user.uid
-            entry.Platform = bhs.user.Platform
-            entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
-            entry.galaxy = bhs.user.galaxy
-            entry.version = latestversion
-        }
+        entry.id = this.last.id ? this.last.id : null
+        entry.created = this.last.created ? new Timestamp(this.last.created.seconds, this.last.created.nanoseconds) : null
+        entry.Photo = this.last.Photo ? this.last.Photo : null
+        entry.reddit = this.last.reddit ? this.last.reddit : null
+        entry.redditlink = this.last.redditlink ? this.last.redditlink : null
 
         entry.page = "nmsce"
 
@@ -717,13 +849,13 @@ class NMSCE {
 
         loc = loc.find("#row-Lifeform :checked")
         if (loc.length > 0) {
-            entry.Lifeform = loc.prop("id").stripID()
+            entry.Lifeform = loc.attr("id").stripID()
             entry.life = entry.Lifeform
         }
 
         loc = $("#panels").find("#row-Economy :checked")
         if (loc.length > 0)
-            entry.Economy = loc.prop("id").stripID()
+            entry.Economy = loc.attr("id").stripID()
 
         entry.xyzs = addressToXYZ(entry.addr)
         let err = validateAddress(entry.addr)
@@ -731,14 +863,6 @@ class NMSCE {
             bhs.status(err)
             ok = false
         }
-
-        if (ok) {
-            if (!last || last.uid === bhs.user.uid || bhs.isRole("admin") ||
-                !last.sys || !last.reg || !last.life || !last.Economy)
-
-                bhs.updateEntry(entry)
-        } else
-            bhs.status("WARNING: System info not updated. " + bhs.user._name + " is not creator of " + entry.addr + " " + entry.sys)
 
         return ok ? entry : null
     }
@@ -748,25 +872,9 @@ class NMSCE {
         let ok = entry !== null
 
         if (ok) {
-            delete entry.created
-
-            if (this.last) {
-                entry.created = this.last.created
-                entry.id = this.last.id
-                entry.Photo = this.last.Photo
-                entry._name = this.last._name
-                entry.uid = this.last.uid
-            } else {
-                entry._name = bhs.user._name
-                entry.uid = bhs.user.uid
-                entry.Platform = bhs.user.Platform
-                entry.platform = entry.Platform === "PS4" ? "PS4" : entry.Platform === "PC" || entry.Platform === "XBox" ? "PC-XBox" : ""
-                entry.galaxy = bhs.user.galaxy
-            }
-
             entry.private = $("#id-private").is(":visible") && $("#ck-private").prop("checked") && bhs.isPatreon(3)
 
-            let tab = $("#typeTabs .active").prop("id").stripID()
+            let tab = $("#typeTabs .active").attr("id").stripID()
             let pnl = $("#typePanels #pnl-" + tab)
             entry.type = tab
 
@@ -776,7 +884,7 @@ class NMSCE {
                 if (!loc.is(":visible"))
                     continue
 
-                let id = loc.prop("id").stripID()
+                let id = loc.attr("id").stripID()
                 let data = loc.data()
 
                 if (typeof data === "undefined")
@@ -790,23 +898,19 @@ class NMSCE {
                         break
                     case "tags":
                         let tloc = loc.find("[id|='tag']")
-                        entry[id] = []
+                        entry[id] = {}
 
                         for (let loc of tloc) {
-                            let t = $(loc).prop("id").stripID().idToName()
-                            if (t && !entry[id].includes(t))
-                                entry[id].push(t)
+                            let t = $(loc).attr("id").stripID().idToName()
+                            if (t)
+                                entry[id][t] = true
                         }
-
-                        if (entry[id].length > 0)
-                            entry[id].sort((a, b) =>
-                                a.toLowerCase() > b.toLowerCase() ? 1 :
-                                    a.toLowerCase() < b.toLowerCase() ? -1 : 0)
                         break
                     case "menu":
-                        entry[id] = loc.find("[id|='btn']").text().stripMarginWS()
-                        if (entry[id] === "Nothing Selected")
-                            entry[id] = ""
+                        if (loc.attr("id").search("menu") < 0)
+                            loc = loc.find("[id|='menu']")
+
+                        entry[id] = bhs.getMenu(loc)
                         break
                     case "checkbox":
                         entry[id] = loc.find("input").prop("checked")
@@ -814,15 +918,15 @@ class NMSCE {
                     case "radio":
                         loc = loc.find(":checked")
                         if (loc.length > 0)
-                            entry[id] = loc.prop("id").stripID().nameToId()
+                            entry[id] = loc.attr("id").stripID().nameToId()
                         break
-                    case "img":
-                        if (!fnmsce) {
-                            let canvas = $("#id-canvas")[0]
-                            if (typeof canvas !== "undefined" && typeof entry[id] === "undefined")
-                                entry[id] = uuidv4() + ".jpg"
-                        }
-                        break
+                    // case "img":
+                    //     if (!fnmsce) {
+                    //         let canvas = $("#id-canvas")[0]
+                    //         if (typeof canvas !== "undefined" && typeof entry[id] === "undefined")
+                    //             entry[id] = uuidv4() + ".jpg"
+                    //     }
+                    //     break
                 }
 
                 if (ok && data.req && !fnmsce) {
@@ -834,7 +938,7 @@ class NMSCE {
                             case "menu":
                             case "checkbox":
                             case "radio":
-                            case "img":
+                                // case "img":
                                 ok = entry[id] !== ""
                                 break
                             case "number":
@@ -842,7 +946,7 @@ class NMSCE {
                                 ok = entry[id] !== -1 && entry[id] !== ""
                                 break
                             case "tags":
-                                ok = entry[id].length > 0
+                                ok = Object.keys(entry[id]).length > 0
                                 break
                         }
 
@@ -869,27 +973,18 @@ class NMSCE {
 
             entry.redditlink = $("#redditlink").val()
             entry.imageText = bhs.user.imageText
+            this.initVotes(entry)
 
-            if (!this.last || this.last.uid === bhs.user.uid || bhs.isRole("admin")) {
+            if (typeof this.last.uid === "undefined" || this.last.uid === bhs.user.uid || bhs.isRole("admin")) {
                 if (typeof this.entries === "undefined")
                     this.entries = []
 
-                this.initVotes(entry)
+                ok = $("#id-canvas").is(":visible") || entry.Photo // do we have an image to upload?
 
-                if (typeof entry.id === "undefined")
-                    entry.id = uuidv4()
-
-                this.entries[entry.type]?.push(entry)
-                this.displayListEntry(entry, true)
-
-                if (!(ok = await this.updateScreenshot(entry)))
-                    bhs.status("Error: Photo required.")
-                else {
+                if (ok)
                     this.updateEntry(entry)
-
-                    bhs.status(entry.type + " " + entry.Name + " validated, saving...")
-                    $("#imgtable").hide()
-                }
+                else
+                    bhs.status("ERROR: screenshot required")
             } else {
                 bhs.status("ERROR: Entry not saved. " + bhs.user._name + " is not creator of " + entry.type + " " + entry.Name)
                 ok = false
@@ -904,19 +999,16 @@ class NMSCE {
             return
 
         this.clearPanel(true)
-        this.last = entry
 
         if (!noscroll)
             $('html, body').animate({
-                scrollTop: $('#panels').offset().top
+                scrollTop: $('#sysinfo').offset().top
             }, 500)
 
         let tloc = $("#tab-" + entry.type.nameToId())
         tloc.click()
 
-        $("#panels #foundreg").hide()
-        $("#panels #foundsys").hide()
-
+        // old bhs db //
         if (!entry.Lifeform && entry.life)
             entry.Lifeform = entry.life
 
@@ -926,11 +1018,33 @@ class NMSCE {
                 entry.Economy = "T" + economyList[i].number
         } else if (typeof entry.Economy === "number")
             entry.Economy = "T" + entry.Economy
+        // **** //
+
+        if (this.last) {
+            if (this.last.addr === entry.addr) {
+                if (!entry.sys && this.last.sys) entry.sys = this.last.sys
+                if (!entry.Economy && this.last.Economy) entry.Economy = this.last.Economy
+                if (!entry.Lifeform && this.last.Lifeform) entry.Lifeform = this.last.Lifeform
+            }
+
+            if (!entry.reg && this.last.reg) {
+                if (entry.xyzs.x === this.last.xyzs.x &&
+                    entry.xyzs.y === this.last.xyzs.y &&
+                    entry.xyzs.z === this.last.xyzs.z)
+                    entry.reg = this.last.reg
+                else
+                    entry.reg = ""
+            }
+        }
+
+        this.last = mergeObjects({}, entry)
 
         this.displaySystem(entry)
-        this.changeAddr(null, entry.addr)
 
-        let link = `/preview?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
+        if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
+            this.changeAddr(null, null, entry)
+
+        let link = `/preview?i=${entry.id}`
         $("[id|='permalink']").attr("href", link)
 
         let disp = function (flds, pnltype, slist) {
@@ -957,14 +1071,16 @@ class NMSCE {
                         break
                     case "tags":
                         row.find("#list-" + id).empty()
-                        for (let t of entry[id]) {
+                        let keys = Object.keys(entry[id])
+                        for (let t of keys) {
                             let h = /idname/[Symbol.replace](tTag, t.nameToId())
                             h = /title/[Symbol.replace](h, t)
                             row.find("#list-" + id).append(h)
                         }
                         break
                     case "menu":
-                        row.find("#item-" + entry[id].nameToId()).click()
+                        let menu = row.find("#menu-" + id.nameToId())
+                        bhs.setMenu(menu, entry[id])
 
                         if (fld.sublist)
                             disp(fld.sublist, pnltype, "#slist-" + entry[id].nameToId())
@@ -990,8 +1106,13 @@ class NMSCE {
 
         if (entry.parts) {
             let map = $("#pnl-map #pnl-" + entry.type)
-            if (entry.Type)
+            map.show()
+
+            let loc = $("#pnl-" + entry.type + " #menu-Type")
+            if (loc.length > 0) {
+                nmsce.selectSublist(loc)
                 map = map.find("#slist-" + entry.Type)
+            }
 
             let list = Object.keys(entry.parts)
             for (let i of list) {
@@ -1028,15 +1149,28 @@ class NMSCE {
     displaySearch(search) {
         this.clearPanel(true)
 
-        $("#btn-Galaxy").val(search.galaxy)
-        $("#ck-notify").prop("checked", search.notify)
-        $("#id-Player").text(search.name)
+        $("#searchname").val(search.name)
 
-        let tloc = $("#pnl-" + search.type.nameToId())
-        tloc.click()
+        let menu = $("#menu-Galaxy")
+        bhs.setMenu(menu, search.galaxy)
+
+        $("#ck-notify").prop("checked", search.notify)
+        if (search.page !== "/upload" && search._name !== bhs.user.name)
+            $("#id-Player").text(search._name)
+
+        let loc = $("#tab-" + search.type.nameToId())
+        loc.click()
+
+        loc = $("#typePanels #pnl-" + search.type.nameToId())
+
+        let i = getIndex(search.search, "name", "Type")
+        if (i >= 0) {
+            let menu = loc.find("#menu-Type")
+            bhs.setMenu(menu, search.search[i].val)
+            nmsce.selectSublist(menu)
+        }
 
         for (let itm of search.search) {
-            let loc = itm.id ? $("#panels " + itm.id) : tloc.find("#row-" + itm.name.nameToId())
             switch (itm.type) {
                 case "number":
                 case "float":
@@ -1047,10 +1181,10 @@ class NMSCE {
                     loc.find("#id-" + itm.name.nameToId()).val(itm.date)
                     break
                 case "menu":
-                    if (itm.name === "Type")
-                        loc.find("#item-" + itm.val.nameToId()).click()
-                    else
-                        loc.find("#btn-" + (itm.id ? itm.id.stripID() : itm.name.nameToId())).text(itm.val)
+                    if (itm.name !== "Type") {
+                        let menu = loc.find("#menu-" + itm.name.nameToId())
+                        bhs.setMenu(menu, itm.val)
+                    }
                     break
                 case "checkbox":
                     loc.find("#ck-" + itm.val).prop("checked", true)
@@ -1059,17 +1193,24 @@ class NMSCE {
                     loc.find("#rdo-" + itm.val).prop("checked", true)
                     break
                 case "tags":
-                    for (let i of itm.list)
-                        loc.find("#item-" + i.nameToId()).click()
+                    loc = loc.find("#menu-" + itm.name.nameToId())
+
+                    for (let t of itm.list) {
+                        bhs.setMenu(loc, t)
+                        nmsce.addTag(loc)
+                    }
                     break
                 case "map":
-                    let map = $("#pnl-map #pnl-" + itm.page)
+                    let map = $("#pnl-map #pnl-" + itm.tab)
+                    map.show()
+
                     if (itm.Type)
                         map = map.find("#slist-" + itm.Type)
-                    map = map.find("#row-" + itm.name)
 
-                    for (let i of list)
-                        this.selectMap(map.find("#map-" + i), true)
+                    for (let i of itm.list) {
+                        let loc = map.find("#map-" + i)
+                        this.selectMap(loc, true)
+                    }
                     break
             }
         }
@@ -1081,20 +1222,18 @@ class NMSCE {
 
         $("#status").empty()
 
-        let ref = collection(bhs.fs, "nmsce/" + search.galaxy + "/" + search.type)
+        let ref = collection(bhs.fs, "nmsceCombined")
 
-        let firstarray = 0;
-        let arraylist = [];
         let statements = [];
+
+        if (search.galaxy !== "Search All")
+            statements.push(where("galaxy", "==", search.galaxy))
+
+        statements.push(where("type", "==", search.type))
 
         for (let q of search.search) {
             switch (q.type) {
                 case "tags":
-                    arraylist.push(q)
-
-                    if (firstarray++ === 0)
-                        statements.push(where(q.name, "array-contains-any", q.list))
-                    break
                 case "map":
                     for (let i of q.list)
                         statements.push(where(q.name + "." + i, "==", true))
@@ -1105,48 +1244,14 @@ class NMSCE {
             }
         }
 
-        let qury = query(ref, ...statements, limit(50))
+        // statements.push(orderBy("created", "desc")) would require index for every possible combination
+        let qury = query(ref, ...statements, limit(25))
 
-        const filterResults = (entries, panel) => {
-            let list = []
-            if (entries)
-                for (let e of entries) {
-                    let found = true
-                    for (let l of arraylist) {
-                        for (let t of l.list) {
-                            if (!e[l.name] || !e[l.name].includes(t)) {
-                                found = false
-                                break
-                            }
-                        }
-
-                        if (!found)
-                            break
-                    }
-
-                    if (found) {
-                        list.push(e)
-                    }
-                }
-
-            if (list.length === 0)
-                bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
-            else
-                dispFcn(list, panel)
-        }
-
-        this.getWithObserver(null, qury, panel, true, filterResults)
+        this.getWithObserver(null, qury, panel, true, dispFcn)
     }
 
     search(search) {
-        if(!NMSCE.EnsureValidForm(search))
-            return false;
-        else
-            search = null;
-            
-
-
-        if (!search) {
+        if (typeof search === "undefined") {
             search = this.extractSearch()
 
             if (!search) {
@@ -1177,19 +1282,16 @@ class NMSCE {
         if (!search)
             return
 
+        if (search.list.length === 1) {
+            bhs.status("Saved search requires more than 1 element.")
+            return
+        }
+
         search.saved = true
         search.page = window.location.pathname
 
         if (!bhs.user.uid || !bhs.isPatreon(2)) {
             if (typeof (Storage) !== "undefined") {
-                window.localStorage.setItem('nmsce-galaxy', $("#btn-Galaxy").val().stripNumber())
-
-                search.uid = window.localStorage.getItem('nmsce-tempuid')
-                if (!search.uid) {
-                    search.uid = uuidv4()
-                    window.localStorage.setItem('nmsce-tempuid', search.uid)
-                }
-
                 window.localStorage.setItem('nmsce-search', JSON.stringify(search))
                 bhs.status("Search saved.")
             }
@@ -1222,22 +1324,14 @@ class NMSCE {
                 this.searchlist.push(search)
 
                 let loc = $("#menu-Saved")
-                if (loc.find("#list").length > 0) {
-                    let item
-                    if (loc.first("[id|='item]").is("li"))
-                        item = `<li id="item-idname" class="dropdown-item" type="button" style="rgbcolor cursor: pointer">iname</li>`
-                    else
-                        item = `<button id="item-idname" class="dropdown-item border-bottom" type="button" style="rgbcolor cursor: pointer">iname</button>`
-
+                if (loc.length > 0) {
+                    const item = `<option value="idname" style=" cursor: pointer">iname</option>`;
                     let h = /idname/[Symbol.replace](item, search.name.nameToId())
                     h = /iname/[Symbol.replace](h, search.name)
 
-                    let lloc = loc.find("#list")
-                    lloc.append(h)
-                    loc = loc.find("#item-" + search.name.nameToId())
-                    bhs.bindMenuChange(loc, this.executeSaved)
+                    loc.append(h)
                 } else
-                    bhs.buildMenu($("#entrybuttons"), "Saved", this.searchlist, this.executeSaved, {
+                    bhs.buildMenu($("#row-Saved"), "Saved", this.searchlist, this.executeSaved, {
                         sort: true,
                         labelsize: "col-2",
                         menusize: "col"
@@ -1258,12 +1352,11 @@ class NMSCE {
             let i = getIndex(this.searchlist, "name", name)
 
             if (i !== -1) {
-
                 deleteDoc(doc(bhs.fs, "users/" + bhs.user.uid + "/nmsce-saved-searches/" + name.nameToId())).then(() => {
                     bhs.status(name + " search deleted.")
 
                     this.searchlist.splice(i, 1)
-                    let loc = $("#menu-Saved #item-" + name.nameToId())
+                    let loc = $("#menu-Saved option:contains('" + name + ')')
                     loc.remove()
                 })
             } else {
@@ -1277,7 +1370,6 @@ class NMSCE {
             return
 
         let ref = collection(bhs.fs, "users/" + bhs.user.uid + "/nmsce-saved-searches")
-        ref = query(ref, where("uid", "==", bhs.user.uid))
 
         getDocs(ref).then(snapshot => {
             this.searchlist = []
@@ -1287,20 +1379,22 @@ class NMSCE {
             }
 
             if (this.searchlist.length > 0)
-                bhs.buildMenu($("#entrybuttons"), "Saved", this.searchlist, this.executeSaved, {
+                bhs.buildMenu($("#row-Saved"), "Saved", this.searchlist, this.executeSaved, {
                     sort: true
                 })
         }).catch(err => console.log(err.message))
     }
 
-    executeSaved(evt) {
-        let name = $(evt).text().stripMarginWS()
-        let i = getIndex(this.searchlist, "name", name)
+    executeSaved(menu) {
+        let name = bhs.getMenu(menu)
+        let i = getIndex(nmsce.searchlist, "name", name)
 
         if (i !== -1) {
-            this.displaySearch(this.searchlist[i])
-            this.search(this.searchlist[i])
+            nmsce.displaySearch(nmsce.searchlist[i])
+            nmsce.search(nmsce.searchlist[i])
         }
+
+        menu.val("")
     }
 
     searchLocal(evt) {
@@ -1310,27 +1404,22 @@ class NMSCE {
             if (s) {
                 s = JSON.parse(s)
 
-                this.displaySearch(s)
-                this.search(s)
+                nmsce.displaySearch(s)
+                nmsce.search(s)
             }
         }
     }
 
     extractSearch() {
-        let galaxy = $("#btn-Galaxy").val().stripNumber()
+        let galaxy = bhs.getMenu($("#menu-Galaxy"))
         let s = {}
         s.search = []
         let search = s.search
 
-        if (galaxy === "") {
-            bhs.status("No Galaxy Selected.")
-            return null
-        }
-
-        let tab = $("#typeTabs .active").prop("id").stripID()
+        let tab = $("#typeTabs .active").attr("id").stripID()
         let pnl = $("#typePanels #pnl-" + tab)
 
-        s.galaxy = galaxy
+        s.galaxy = galaxy === "" ? "Search All" : galaxy
         s.type = tab
 
         let name = $("#id-Player").val()
@@ -1342,12 +1431,12 @@ class NMSCE {
                 val: name
             })
 
-        let val = $("#btn-Version").text().stripMarginWS()
-        if (val.length > 0 && val !== "Nothing Selected") {
+        let ver = bhs.getMenu($("#menu-Version"))
+        if (ver) {
             search.push({
                 name: "version",
                 type: "menu",
-                id: "btn-Version",
+                id: "menu-Version",
                 val: val
             })
         }
@@ -1378,7 +1467,10 @@ class NMSCE {
 
             switch (fld.type) {
                 case "menu":
-                    val = loc.find("#btn-" + fld.id.stripID()).text().stripNumber()
+                    if (!loc.attr("id").startsWith("menu"))
+                        loc = loc.find("#menu-" + itm.name)
+
+                    val = bhs.getMenu(loc)
                     break
                 case "radio":
                     loc = loc.find(":checked")
@@ -1415,7 +1507,7 @@ class NMSCE {
             let val
 
             let itm = {}
-            itm.name = loc.prop("id").stripID()
+            itm.name = loc.attr("id").stripID()
             itm.type = rdata.type
             if (rdata.search)
                 itm.query = rdata.search
@@ -1440,7 +1532,7 @@ class NMSCE {
                     let tlist = []
 
                     for (let tloc of loc.find("[id|='tag']")) {
-                        let t = $(tloc).prop("id").stripID().idToName()
+                        let t = $(tloc).attr("id").stripID().idToName()
                         if (t && !tlist.includes(t))
                             tlist.push(t)
                     }
@@ -1451,14 +1543,13 @@ class NMSCE {
                     }
                     break
                 case "menu":
-                    val = loc.find("#btn-" + itm.name).text().stripMarginWS()
-                    if (val) {
-                        val = val.stripNumber()
-                        if (val !== "Nothing Selected") {
-                            itm.val = val
-                            search.push(itm)
-                        }
-                    }
+                    if (!loc.attr("id").startsWith("menu"))
+                        loc = loc.find("#menu-" + itm.name)
+
+                    itm.val = bhs.getMenu(loc)
+
+                    if (itm.val)
+                        search.push(itm)
                     break
                 case "checkbox":
                     if (fcedata) {
@@ -1470,7 +1561,7 @@ class NMSCE {
                     } else {
                         loc = loc.find(":checked")
                         if (loc.length > 0) {
-                            itm.val = loc.prop("id").stripID() === "True"
+                            itm.val = loc.attr("id").stripID() === "True"
                             search.push(itm)
                         }
                     }
@@ -1478,7 +1569,7 @@ class NMSCE {
                 case "radio":
                     loc = loc.find(":checked")
                     if (loc.length > 0) {
-                        itm.val = loc.prop("id").stripID()
+                        itm.val = loc.attr("id").stripID()
                         search.push(itm)
                     }
                     break
@@ -1497,6 +1588,8 @@ class NMSCE {
             if (list.length > 0) {
                 search.push({
                     name: "parts",
+                    tab: s.type,
+                    Type: i >= 0 ? search[i].val : "",
                     type: "map",
                     list: list
                 })
@@ -1515,13 +1608,13 @@ class NMSCE {
         window.open("/?s=" + this.last.addr.nameToId() + "&g=" + this.last.galaxy.nameToId(), '_self')
     }
 
-    searchSystem(k) {
+    searchSystem() {
         if (!this.last)
             return
 
         this.entries["Search-Results"] = []
 
-        let ref = query(collectionGroup(bhs.fs, "nmsceCommon"),
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
             where("galaxy", "==", this.last.galaxy),
             where("addr", "==", this.last.addr))
 
@@ -1532,7 +1625,7 @@ class NMSCE {
 
             $("#dltab-Search-Results").click()
             $("#displayPanels #list-Search-Results").empty()
-            this.displayResultList(list, "Search-Results", k)
+            this.displayResultList(list, "Search-Results")
         })
     }
 
@@ -1541,11 +1634,54 @@ class NMSCE {
             return
 
         this.entries["Search-Results"] = []
+        let xyz = addressToXYZ(this.last.addr)
 
-        let ref = query(collectionGroup(bhs.fs, "nmsceCommon"),
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
             where("galaxy", "==", this.last.galaxy),
-            where("addr", ">=", this.last.addr.slice(0, 15) + "0000"),
-            where("addr", "<=", this.last.addr.slice(0, 15) + "02FF"));
+            where("x", "==", xyz.x),
+            where("y", "==", xyz.y),
+            where("z", "==", xyz.z))
+
+        getDocs(ref).then(snapshot => {
+            let list = []
+            for (let doc of snapshot.docs)
+                list.push(doc.data())
+
+            $("#dltab-Search-Results").click()
+            $("#displayPanels #list-Search-Results").empty()
+            this.displayResultList(list, "Search-Results")
+        })
+    }
+
+    searchType() {
+        if (!this.last)
+            return
+
+        this.entries["Search-Results"] = []
+
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
+            where("addr", "==", this.last.addr),
+            where("Type", "==", this.last.Type))
+
+        getDocs(ref).then(snapshot => {
+            let list = []
+            for (let doc of snapshot.docs)
+                list.push(doc.data())
+
+            $("#dltab-Search-Results").click()
+            $("#displayPanels #list-Search-Results").empty()
+            this.displayResultList(list, "Search-Results")
+        })
+    }
+
+    searchFauna() {
+        if (!this.last)
+            return
+
+        this.entries["Search-Results"] = []
+
+        let ref = query(collection(bhs.fs, "nmsceCombined"),
+            where("Genus", "==", nmsce.last.Genus))
 
         getDocs(ref).then(snapshot => {
             let list = []
@@ -1559,42 +1695,6 @@ class NMSCE {
     }
 
     /**
-     * Ensures form is valid before returning true or false.
-     * @static
-     * @param {Event} evt 
-     * @returns {boolean}
-     * 
-     * @memberOf NMSCE
-     */
-    static EnsureValidForm(evt) {
-
-        /** @type {HTMLFormElement} */
-        const parentForm = GetClosestParentElement(evt.target, "form");
-
-        evt.preventDefault();
-
-        if (!parentForm)
-            console.error("No HTML form could be found to validate.");
-        else {
-            if (!parentForm.reportValidity()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Prevents the submission of any form. Will instead 
-     * @param {Event} evt 
-     * 
-     * @memberOf NMSCE
-     */
-    static preventSubmit(evt) {
-        evt.preventDefault();
-        return false;
-    }
-
-    /**
      * 
      * 
      * @param {Event} evt 
@@ -1602,12 +1702,9 @@ class NMSCE {
      * @memberOf NMSCE
      */
     saveEntry(evt) {
-        if (!NMSCE.EnsureValidForm(evt))
-            return false;
-
         let ok = bhs.user.uid
 
-        if (!this.last || this.last.uid === bhs.user.uid) {
+        if (typeof this.last.uid === "undefined" || this.last.uid === bhs.user.uid) {
             let user = this.extractUser()
             ok = bhs.validateUser(user)
 
@@ -1618,62 +1715,7 @@ class NMSCE {
                 bhs.user = mergeObjects(bhs.user, user)
                 // bhs.user.imageText = this.extractImageText()
 
-                let ref = bhs.getUsersColRef(bhs.user.uid)
-                setDoc(ref, bhs.user, {
-                    merge: true
-                }).then().catch(err => {
-                    bhs.status("ERROR: " + err)
-                })
-            }
-        }
-
-        if (ok) {
-            this.extractEntry().then(() => {
-                this.clearPanel();
-            });
-        }
-    }
-
-    saveUserImageText() {
-        if (!this.last || this.last.uid === bhs.user.uid) {
-            let user = this.extractUser()
-
-            if (bhs.validateUser(user)) {
-                bhs.user = mergeObjects(bhs.user, user)
-                bhs.user.imageText = this.extractImageText()
-
-                let ref = bhs.getUsersColRef(bhs.user.uid)
-                setDoc(ref, bhs.user, {
-                    merge: true
-                }).then().catch(err => {
-                    bhs.status("ERROR: " + err)
-                })
-            }
-        }
-    }
-
-    loadUserImageText() {
-        let ref = bhs.getUsersColRef(bhs.user.uid)
-        getDoc(ref).then(doc => {
-            this.restoreImageText(doc.data().imageText, true)
-        }).catch(err => {
-            bhs.status("ERROR: " + err)
-        })
-    }
-
-    saveSystem(evt) {
-        if (!NMSCE.EnsureValidForm(evt))
-            return false;
-
-        let ok = bhs.user.uid
-
-        if (!this.last || this.last.uid === bhs.user.uid) {
-            let user = this.extractUser()
-            ok = bhs.validateUser(user)
-
-            if (ok) {
-                bhs.user = mergeObjects(bhs.user, user)
-                let ref = bhs.getUsersColRef(bhs.user.uid)
+                let ref = doc(bhs.fs, "users", bhs.user.uid)
                 setDoc(ref, bhs.user, {
                     merge: true
                 }).then().catch(err => {
@@ -1683,7 +1725,31 @@ class NMSCE {
         }
 
         if (ok)
-            this.lastsys = this.extractSystem()
+            this.extractEntry()
+    }
+
+    saveUserImageText() {
+        bhs.user.imageText = this.extractImageText()
+
+        let ref = doc(bhs.fs, "users", bhs.user.uid)
+        setDoc(ref, bhs.user, {
+            merge: true
+        }).then().catch(err => {
+            bhs.status("ERROR: " + err)
+        })
+    }
+
+    loadUserImageText() {
+        if (typeof bhs.user.imageText !== "undefined")
+            this.restoreImageText(bhs.user.imageText, true)
+        else {
+            let ref = doc(bhs.fs, "users", bhs.user.uid)
+            getDoc(ref).then(doc => {
+                this.restoreImageText(doc.data().imageText, true)
+            }).catch(err => {
+                bhs.status("ERROR: " + err)
+            })
+        }
     }
 
     changeName(uid, newname) { }
@@ -1694,20 +1760,13 @@ class NMSCE {
 
         u.version = latestversion
         u._name = loc.find("#id-Player").val()
-        u.galaxy = loc.find("#btn-Galaxy").val().stripNumber()
-
-        loc = loc.find("#id-Platform :checked")
-        if (loc.length > 0)
-            u.Platform = loc.prop("id").stripID()
-
-        u.platform = u.Platform === "PS4" ? "PS4" : u.Platform === "PC" || u.Platform === "XBox" ? "PC-XBox" : ""
+        u.galaxy = bhs.getMenu(loc.find("#menu-Galaxy"))
 
         u.nmscesettings = {}
         u.nmscesettings.expandPanels = $("#hidden").is(":visible")
 
         return u
     }
-
 
     buildTypePanels() {
         let tabs = $("#typeTabs")
@@ -1745,16 +1804,16 @@ class NMSCE {
 
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (evt) {
             let loc = $("#typePanels .active")
-            let id = loc.prop("id").stripID()
+            let id = loc.attr("id").stripID()
 
             let mloc = $("#pnl-map")
             mloc.find("[id|='pnl']").hide()
             mloc = mloc.find("#pnl-" + id)
             mloc.show()
 
-            loc = loc.find("#btn-Type")
+            loc = loc.find("#manu-Type")
             if (loc.length > 0) {
-                let type = loc.text().stripMarginWS()
+                let type = loc.val().stripMarginWS().replaceAll("-", " ")
                 mloc = mloc.find("#slist-" + type)
                 mloc.show()
             }
@@ -1800,14 +1859,14 @@ class NMSCE {
                     appenditem(itm, f.link, f.name, id, null, null, null, f.inputHide)
                     break
                 case "number":
-                    if (!f.sub || slist[f.ttip]) {
+                    if (!f.sub || slist[f.sub]) {
                         l = /range/[Symbol.replace](tNumber, f.range)
                         l = /stype/[Symbol.replace](l, f.query ? f.query : "")
                         appenditem(itm, l, f.name, id, !f.sub ? f.ttip : slist[f.ttip], f.required, null, f.inputHide)
                     }
                     break
                 case "float":
-                    if (!f.sub || slist[f.ttip]) {
+                    if (!f.sub || slist[f.sub]) {
                         l = /range/[Symbol.replace](tFloat, f.range)
                         l = /stype/[Symbol.replace](l, f.query ? f.query : "")
                         appenditem(itm, l, f.name, id, !f.sub ? f.ttip : slist[f.ttip], f.required, null, f.inputHide)
@@ -1841,16 +1900,18 @@ class NMSCE {
                     }
                     break
                 case "string":
-                    appenditem(itm, tString, f.name, id, f.ttip, f.required, null, f.inputHide)
+                    if (!f.sub || slist[f.sub])
+                        appenditem(itm, tString, f.name, id, f.ttip, f.required, null, f.inputHide)
                     break
                 case "long string":
-                    appenditem(itm, tLongString, f.name, id, f.ttip, f.required, inpLongHdr, f.inputHide)
+                    if (!f.sub || slist[f.sub])
+                        appenditem(itm, tLongString, f.name, id, f.ttip, f.required, inpLongHdr, f.inputHide)
                     break
                 case "blank":
                     itm.append(inpHdr + inpEnd)
                     break
-                case "menu":
-                    appenditem(itm, tMenu, "", id, null, null, null, f.inputHide)
+                case "menu": {
+                    appenditem(itm, tMenu, f.name, id, null, null, null, f.inputHide)
                     let lst = itm.find("#row-" + id)
 
                     if (f.ttip)
@@ -1858,15 +1919,20 @@ class NMSCE {
 
                     f.labelsize = "col-5"
                     f.menusize = "col"
+                    f.sort = true
 
-                    bhs.buildMenu(lst, f.name, f.sub ? slist[f.sub] : f.list, f.sublist ? this.selectSublist.bind(this) : null, f)
+                    let l = f.sub ? slist[f.sub] : f.list
+                    if (l[0].name !== " Nothing Selected")
+                        l.unshift({ name: " Nothing Selected" })
+
+                    bhs.buildMenu(lst, f.name, f.sub ? slist[f.sub] : f.list, f.sublist ? this.selectSublist.bind(this) : null, f, f.onchange)
 
                     if (f.sublist) {
                         for (let s of f.list) {
                             let iid = s.name.nameToId()
                             appenditem(itm, tSubList, s.name, iid, null, null, inpLongHdr, f.inputHide)
 
-                            let loc = $("#pnl-map #" + itm.prop("id"))
+                            let loc = $("#pnl-map #" + itm.attr("id"))
                             let l = /idname/[Symbol.replace](tSubList, s.name.nameToId())
                             loc.append(l)
 
@@ -1874,8 +1940,9 @@ class NMSCE {
                         }
                     }
                     break
+                }
                 case "tags":
-                    if (typeof f.ckIncludeColor === "undefined" || !f.ckIncludeColor || slist.includeColor) {
+                    if (!f.sub || slist[f.sub]) {
                         appenditem(itm, tTags, "", id, f.ttip, f.required, inpLongHdr, f.inputHide)
                         loc = itm.find("#row-" + id)
                         if (f.max)
@@ -1883,13 +1950,13 @@ class NMSCE {
 
                         if (f.list) {
                             bhs.buildMenu(loc, f.name, f.list, nmsce.addTag, {
-                                nolabel: true,
+                                // nolabel: true,
                                 ttip: f.ttip,
                                 sort: true,
-                                required: f.required
+                                required: f.required,
+                                labelsize: "col-lg-4 col-md-5 col-sm-6 col-7",
+                                menusize: "col-7"
                             })
-
-                            itm.find("#btn-" + id).text(f.name)
                         } else {
                             let ref = doc(bhs.fs, "tags/" + itmid)
                             getDoc(ref).then(doc => {
@@ -1914,39 +1981,41 @@ class NMSCE {
                                     })
 
                                 bhs.buildMenu(loc, f.name, tags, nmsce.addTag, {
-                                    nolabel: true,
-                                    ttip: f.ttip
+                                    // nolabel: true,
+                                    ttip: f.ttip,
+                                    labelsize: "col-lg-4 col-md-5 col-sm-6 col-7",
+                                    menusize: "col-7"
                                 })
-
-                                loc.find("#btn-" + id).text(f.name)
                             })
                         }
                     }
                     break
                 case "radio":
-                    let list = []
-                    if (f.list) {
-                        appenditem(itm, tRadio, f.name, id, f.ttip, f.required, null, f.inputHide)
-                        list = f.list
+                    if (!f.sub || slist[f.sub]) {
+                        let list = []
+                        if (f.list) {
+                            appenditem(itm, tRadio, f.name, id, f.ttip, f.required, null, f.inputHide)
+                            list = f.list
 
-                    } else if (slist[f.sub]) {
-                        appenditem(itm, tRadio, f.name, id, typeof slist[f.ttip] === "string" ? slist[f.ttip] : null, f.required, null, f.inputHide)
-                        list = slist[f.sub]
-                    }
+                        } else if (slist[f.sub]) {
+                            appenditem(itm, tRadio, f.name, id, typeof slist[f.ttip] === "string" ? slist[f.ttip] : null, f.required, null, f.inputHide)
+                            list = slist[f.sub]
+                        }
 
-                    loc = itm.find("#row-" + id + " #list")
+                        loc = itm.find("#row-" + id + " #list")
 
-                    for (let i of list) {
-                        let l = /title/g[Symbol.replace](tRadioItem, i.name)
-                        l = /ttip/[Symbol.replace](l, i.ttip ? "&nbsp;" + i.ttiip : "")
-                        l = /idname/g[Symbol.replace](l, id)
-                        l = /tname/g[Symbol.replace](l, i.name.nameToId())
-                        loc.append(l)
+                        for (let i of list) {
+                            let l = /title/g[Symbol.replace](tRadioItem, i.name)
+                            l = /ttip/[Symbol.replace](l, i.ttip ? "&nbsp;" + i.ttiip : "")
+                            l = /idname/g[Symbol.replace](l, id)
+                            l = /tname/g[Symbol.replace](l, i.name.nameToId())
+                            loc.append(l)
 
-                        let rdo = loc.find("#rdo-" + i.name)
-                        if (fcedata) {
-                            if (i.default)
-                                rdo.prop("checked", true)
+                            let rdo = loc.find("#rdo-" + i.name)
+                            if (fcedata) {
+                                if (i.default)
+                                    rdo.prop("checked", true)
+                            }
                         }
                     }
                     break
@@ -1968,7 +2037,7 @@ class NMSCE {
 
             if (f.onchange) {
                 rloc.find("input").change(f.onchange)
-                rloc.find("button").click(f.onchange)
+                rloc.find("menu").change(f.onchange)
             }
 
             if (f.imgText) {
@@ -1987,24 +2056,24 @@ class NMSCE {
     addTag(evt) {
         let row = $(evt).closest("[id|='row']")
         let data = row.data()
-        let text = $(evt).text().stripMarginWS()
-        let id = row.prop("id").stripID()
+        let text = $(evt).val().stripMarginWS().replaceAll("-", " ")
+        let id = row.attr("id").stripID()
         let tags = row.find("[id|='tag']")
 
-        if (data.max && tags.length >= data.max) {
-            row.find("#btn-" + id).text(id.idToName())
+        if (data.max && tags.length >= data.max)
             return
-        }
 
         if (tags.length > 0)
             for (let t of tags)
-                if ($(t).prop("id").stripID() === text) {
+                if ($(t).attr("id").stripID() === text) {
                     row.find("#btn-" + id).text(id.idToName())
                     return
                 }
 
         if (text === "Add new tag")
-            row.find("#add-" + id).show()
+            row.find("#newtag-" + id).show()
+        if (text === "verified current version")
+            nmsce.last.version = latestversion
         else {
             let h = /idname/[Symbol.replace](tTag, text.nameToId())
             h = /title/[Symbol.replace](h, text)
@@ -2016,11 +2085,11 @@ class NMSCE {
 
     newTag(evt) {
         let row = $(evt).closest("[id|='row']")
-        let id = row.prop("id").stripID()
+        let id = row.attr("id").stripID()
         let text = row.find("[id|='txt']").val().toLowerCase()
 
-        if (text !== "" && row.find("#item-" + text.nameToId()).length === 0) {
-            let pnl = $(evt).closest("[id|='pnl']").prop("id").stripID()
+        if (text !== "" && row.find("[value='" + text.nameToId() + "']").length === 0) {
+            let pnl = $(evt).closest("[id|='pnl']").attr("id").stripID()
 
             setDoc(doc(bhs.fs, "tags/" + pnl), {
                 tags: arrayUnion(text)
@@ -2028,29 +2097,27 @@ class NMSCE {
                 merge: true
             })
 
-            $(evt).val("")
-            let h = row.find("#item-Add-new-tag")[0].outerHTML
+            let loc = row.find("[value='Add-new-tag']")
+            let h = loc[0].outerHTML
             let id = text.nameToId()
             h = /Add-new-tag/[Symbol.replace](h, id)
             h = /Add new tag/[Symbol.replace](h, text)
-            row.find("#list").append(h)
-            bhs.bindMenuChange(row.find("#item-" + id), this.addTag)
+            loc = loc.parent().append(h)
 
             h = /idname/[Symbol.replace](tTag, id)
             h = /title/[Symbol.replace](h, text)
-            row.find("#list-" + row.prop("id").stripID()).append(h)
+            row.find("#list-" + row.attr("id").stripID()).append(h)
         }
 
-        row.find("#add-" + id).hide()
+        row.find("#newtag-" + id).hide()
         row.find("#txt-" + id).val("")
-        row.find("#btn-" + id).text(row.prop("id").stripID())
     }
 
     cancelTag(evt) {
         let row = $(evt).closest("[id|='row']")
-        row.find("[id|='add']").hide()
+        row.find("[id|='newtag']").hide()
         row.find("[id|='txt']").first().val("")
-        row.find("[id|='btn']").first().text(row.prop("id").stripID())
+        row.find("[id|='btn']").first().text(row.attr("id").stripID())
     }
 
     toggleRadio(evt) {
@@ -2078,7 +2145,7 @@ class NMSCE {
             let svgh = parseInt(svg.attr("height"))
 
             let h = $("#panels").height()
-            let w = $(l).width()
+            let w = $(l).parent().width()
             let size = calcImageSize(svgw, svgh, w, h / maps.length, true)
 
             svg.attr("preserveAspectRatio", "xMidYMid meet")
@@ -2104,7 +2171,7 @@ class NMSCE {
                 nmsce[name] = {}
 
             for (let l of bdr) {
-                let id = $(l).prop("id").stripID()
+                let id = $(l).attr("id").stripID()
                 let d = $(l).find("desc").text()
                 nmsce[name][id] = {}
 
@@ -2119,7 +2186,7 @@ class NMSCE {
             }
 
             for (let l of map) {
-                let id = $(l).prop("id").stripID()
+                let id = $(l).attr("id").stripID()
                 if (nmsce[name][id].type !== "map") {
                     nmsce[name].type = "map"
                     let d = $(l).find("desc").text()
@@ -2147,20 +2214,20 @@ class NMSCE {
     }
 
     selectMap(evt, set) {
-        let evtid = $(evt).prop("id").stripID()
+        let evtid = $(evt).attr("id").stripID()
         let type = $(evt).closest("[id|='slist']")
         let pnl = $(evt).closest("[id|='pnl']")
-        let asym = $("#typePanels #" + pnl.prop("id"))
+        let asym = $("#typePanels #" + pnl.attr("id"))
 
         if (type.length !== 0) {
-            asym = asym.find("#" + type.prop("id"))
+            asym = asym.find("#" + type.attr("id"))
             pnl = type
         }
 
         asym = fnmsce ? asym.find("#row-Asymmetric #rdo-True") : asym.find("#ck-Asymmetric")
         asym = asym.length > 0 ? asym.prop("checked") : false
 
-        let pnlid = pnl.prop("id").stripID().toLowerCase()
+        let pnlid = pnl.attr("id").stripID().toLowerCase()
         let parts = nmsce[pnlid]
 
         let part = parts[evtid]
@@ -2257,7 +2324,7 @@ class NMSCE {
             let sloc = $("#typePanels [id|='row-Slots']")
             sloc.find("input").prop("checked", false)
 
-            if (type.prop("id") === "slist-Hauler")
+            if (type.attr("id") === "slist-Hauler")
                 sloc = sloc.find("[id|='rdo-" + (end > 0 ? endval : "T1") + "']")
             else
                 sloc = sloc.find("[id|='rdo-" + (max ? max : "T1") + "']")
@@ -2272,38 +2339,47 @@ class NMSCE {
     }
 
     mapEnter(evt) {
-        let id = $(evt).prop("id").stripID()
+        let id = $(evt).attr("id").stripID()
         let loc = $(evt).closest("[id|='row']").find("#map-" + id)
         loc.find("*").css("stroke", mapColors.hover)
     }
 
     mapLeave(evt) {
-        let id = $(evt).prop("id").stripID()
+        let id = $(evt).attr("id").stripID()
         let pnl = $(evt).closest("[id|='slist']")
         let pnlid
 
         if (pnl.length > 0)
-            pnlid = pnl.prop("id").stripID().toLowerCase()
+            pnlid = pnl.attr("id").stripID().toLowerCase()
         else
-            pnlid = $(evt).closest("[id|='pnl']").prop("id").stripID().toLowerCase()
+            pnlid = $(evt).closest("[id|='pnl']").attr("id").stripID().toLowerCase()
 
         colorMapPart(nmsce[pnlid][id])
     }
 
-    selectSublist(btn) {
-        $("[id|='slist']").hide()
+    selectSublist(menu) {
+        let id = menu.val().stripMarginWS().nameToId()
+        let type = menu.closest("[id|='pnl']").attr("id").stripID()
 
-        let id = btn.text().stripMarginWS().nameToId()
-        $("[id='slist-" + id + "']").show()
+        let mloc = $("#pnl-map")
+        mloc.find("[id|='slist']").hide()
 
-        let type = btn.closest("[id|='pnl']").prop("id").stripID()
-        let mloc = $("#pnl-map #pnl-" + type)
+        mloc = mloc.find("#pnl-" + type)
         mloc.show()
-
         mloc = mloc.find("#slist-" + id)
         mloc.show()
 
         this.setMapSize(mloc)
+
+        mloc = $("#typePanels")
+        mloc.find("[id|='slist']").hide()
+
+        mloc = mloc.find("#pnl-" + type)
+        mloc.show()
+        mloc = mloc.find("#slist-" + id)
+        mloc.show()
+
+        showLatLong()
     }
 
     buildImageText() {
@@ -2313,7 +2389,7 @@ class NMSCE {
             &nbsp;title
         </label>`
         const fieldinputs = `
-        <label class="col-md-2 col-7 txt-label-def ">
+        <label class="col-md-2 col-sm-7 txt-label-def ">
             <input id="ck-Text" type="checkbox" data-loc="#id-Text"
                 onchange="nmsce.getImageText(this, true)">
             Text&nbsp;
@@ -2324,7 +2400,7 @@ class NMSCE {
         <input id="id-Text" class="rounded col-md-5 col-7" type="text"
             onchange="nmsce.getImageText(this, true)">
 
-        <label class="col-md-2 col-7 txt-label-def ">
+        <label class="col-md-2 col-sm-7 txt-label-def ">
             <input id="ck-myLogo" type="checkbox" data-loc="#id-myLogo" data-type="img"
                 onchange="nmsce.getImageText(this, true)">
             Load Overlay&nbsp;
@@ -2332,7 +2408,7 @@ class NMSCE {
                 data-placement="bottom"
                 title="Load a 2nd image as an overlay. You can resize and move the 2nd image."></i>&nbsp;
         </label>
-        <input id="id-myLogo" type="file" class="col-md-5 col-7 border rounded" accept="image/*"
+        <input id="id-myLogo" type="file" class="col-md-5 col-sm-7 border rounded" accept="image/*"
             name="files[]" onchange="nmsce.loadMyLogo(this)">
         `
 
@@ -2380,7 +2456,7 @@ class NMSCE {
         let img = new Image()
         img.crossOrigin = "anonymous"
         img.onload = this.onLoadLogo.bind(this);
-        img.src = "/images/nmsge-app-logo-abrev.png"
+        img.src = "/images/nmsge-app-logo.png"
 
         this.initImageText("Text")
         this.initImageText("myLogo")
@@ -2412,7 +2488,7 @@ class NMSCE {
         let list = []
         for (let l of next) {
             list.push({
-                id: $(l).find("input").prop("id"),
+                id: $(l).find("input").attr("id"),
                 html: l.outerHTML
             })
             $(l).remove()
@@ -2469,7 +2545,7 @@ class NMSCE {
             }]
         }).on('change', evt => {
             $(evt.target).css("background-color", evt.color.toRgbString())
-            this.setColor($(evt.target).prop("id").stripID(), evt.color.toRgbString())
+            this.setColor($(evt.target).attr("id").stripID(), evt.color.toRgbString())
         })
     }
 
@@ -2514,33 +2590,41 @@ class NMSCE {
     }
 
     getImageText(evt, draw) {
-        let id = $(evt).prop("id").stripID()
+        let id = $(evt).attr("id").stripID()
         let ck = $(evt).prop("checked")
 
         if (ck) {
             let text = ""
             let data = $(evt).data()
             let loc = $(data.loc)
+            let dloc = loc
 
             if (data.row)
                 loc = loc.find(data.row)
 
             if (data.sub) {
-                let btn = loc.find("[id|='btn']").text().stripMarginWS()
+                let btn = loc.find("[id|='menu']").text().stripMarginWS()
                 loc = $(data.loc).find("#slist-" + btn)
                 loc = loc.find(data.sub)
             }
 
+            if (loc.length === 0 && data.sub)    // planet name could be on sub because of crashed ships
+                loc = dloc.find(data.sub)
+
+            if (loc.length === 0)
+                return
+
             switch (data.type) {
                 case "menu":
-                    loc = loc.find("[id|='btn']")
-                    text = (loc.prop("nodeName") === "INPUT" ? loc.val() : loc.text()).stripNumber()
+                    if (loc.attr("id").search("menu") < 0)
+                        loc = loc.find("[id|='menu']")
+                    text = bhs.getMenu(loc)
                     break
                 case "tags":
                     loc = loc.find("[id|='tag']")
                     if (loc.length > 0) {
                         for (let l of loc)
-                            text += $(l).prop("id").stripID().idToName() + ", "
+                            text += $(l).attr("id").stripID().idToName() + ", "
 
                         text = text.slice(0, text.length - 2)
                     }
@@ -2549,13 +2633,13 @@ class NMSCE {
                     text = loc.find("input").val()
                     text = !text || text === -1 ? "" : text.toString()
                     if (text.length > 0)
-                        text = loc.closest("[id|='row']").prop("id").stripID().idToName() + " " + text
+                        text = loc.closest("[id|='row']").attr("id").stripID().idToName() + " " + text
                     break
                 case "float":
                     text = loc.find("input").val()
                     text = !text || text === -1 ? "" : text.toString()
                     if (text.length > 0)
-                        text = loc.closest("[id|='row']").prop("id").stripID().idToName() + " " + text
+                        text = loc.closest("[id|='row']").attr("id").stripID().idToName() + " " + text
                     break
                 case "glyph":
                     text = loc.val()
@@ -2566,13 +2650,13 @@ class NMSCE {
                 case "checkbox":
                     loc = loc.find("[id|='ck']")
                     if (loc.prop("checked"))
-                        text = loc.prop("id").stripID()
+                        text = loc.attr("id").stripID()
                     break
                 case "radio":
                     loc = loc.find(":checked")
                     if (loc.length > 0) {
-                        let id = loc.closest("[id|='row']").prop("id").stripID()
-                        text = (id !== "Lifeform" ? id + " " : "") + loc.prop("id").stripID()
+                        let id = loc.closest("[id|='row']").attr("id").stripID()
+                        text = (id !== "Lifeform" ? id + " " : "") + loc.attr("id").stripID()
                     }
                     break
                 default:
@@ -2735,7 +2819,7 @@ class NMSCE {
             $("#imageTextBlock").show()
             $("#editingScreenshot").show()
 
-            if (this.last) {
+            if (typeof this.last.Photo !== "undefined") {
                 $("#updateScreenshot").show()
                 $("#ck-updateScreenshot").prop("checked", true)
             }
@@ -2807,7 +2891,7 @@ class NMSCE {
     }
 
     editScreenshot() {
-        if (this.last)
+        if (typeof this.last.Photo !== "undefined")
             this.loadScreenshot(null, this.last.Photo, true)
     }
 
@@ -2889,20 +2973,20 @@ class NMSCE {
     setFont(evt) {
         let font = $(evt).text()
 
-        let keys = Object.keys(this.imageText)
+        let keys = Object.keys(nmsce.imageText)
         for (let id of keys) {
             if (id === "textsize")
                 continue
 
-            let text = this.imageText[id]
+            let text = nmsce.imageText[id]
 
             if (text.sel && text.type !== "img") {
                 text.font = id === "Glyphs" ? "NMS Glyphs" : font
-                text = this.measureText(text)
+                text = nmsce.measureText(text)
             }
         }
 
-        this.drawText()
+        nmsce.drawText()
     }
 
     drawText(alt, altw) {
@@ -2946,6 +3030,16 @@ class NMSCE {
 
             let loc = $("#img-text")
             let keys = Object.keys(this.imageText)
+
+            let logo = this.imageText.myLogo
+
+            if (logo) {
+                let tloc = loc.find("#ck-" + logo.id)
+
+                if (logo.ck && tloc.is(":visible"))
+                    ctx.drawImage(logo.img, logo.x + logo.left, logo.y, logo.right - logo.left, logo.ascent + logo.decent)
+            }
+
             for (let id of keys) {
                 if (id === "textsize")
                     continue
@@ -2993,8 +3087,7 @@ class NMSCE {
                             }
                         } else
                             ctx.fillText(text.text, text.x, text.y)
-                    } else if (text.id === "myLogo")
-                        ctx.drawImage(text.img, text.x + text.left, text.y, text.right - text.left, text.ascent + text.decent)
+                    }
 
                     if (text.sel && !altw) {
                         ctx.strokeStyle = "white"
@@ -3039,8 +3132,8 @@ class NMSCE {
     editSelected(evt) {
         let e = this.last
 
-        if (e && bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin"))) {
-            let link = "/upload?i=" + e.id + "&g=" + e.galaxy.nameToId() + "&t=" + e.type.nameToId()
+        if (bhs.user.uid && (bhs.user.uid === e.uid || bhs.hasRole("admin") || bhs.hasRole("nmsceEditor"))) {
+            let link = "/upload?i=" + e.id + "&g=" + e.galaxy.nameToId()
             window.open(link, "_self")
         }
     }
@@ -3058,7 +3151,7 @@ class NMSCE {
     redditLoggedIn(state, code) {
         let accessToken = window.localStorage.getItem('nmsce-reddit-access-token')
         if (accessToken)
-            this.redditCreate(state)
+            nmsce.redditCreate(state)
 
         else
             $.ajax({
@@ -3085,12 +3178,12 @@ class NMSCE {
                         window.localStorage.setItem('nmsce-reddit-refresh-token', res.refresh_token)
 
                         if (state.includes("post_"))
-                            this.redditCreate(state, res.access_token)
+                            nmsce.redditCreate(state, res.access_token)
                     }
                 },
                 error: (err) => {
                     console.error(err);
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
     }
@@ -3107,7 +3200,7 @@ class NMSCE {
         }
 
         if (!accessToken || !expires || !refreshToken)
-            this.redditLogin(state) // no return
+            nmsce.redditLogin(state) // page reload no return
 
         else if (new Date().getTime() > expires) {
             $.ajax({
@@ -3133,15 +3226,15 @@ class NMSCE {
                         window.localStorage.setItem('nmsce-reddit-expires', new Date().getTime() + (res.expires_in - 300) * 1000)
 
                         if (state.includes("post_"))
-                            this.redditCreate(state, res.access_token)
+                            nmsce.redditCreate(state, res.access_token)
                         else if (state.includes("getFlair_"))
-                            this.redditGetSubscribed(state, res.access_token)
+                            nmsce.redditGetSubscribed(state, res.access_token)
                         else if (state.includes("getSubscribed"))
-                            this.setSubReddit(res.access_token)
+                            nmsce.setSubReddit(res.access_token)
                     }
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         } else
@@ -3150,25 +3243,23 @@ class NMSCE {
 
     redditCreate(state, accessToken) {
         if (!accessToken) {
-            if (this.last) {
-                let e = this.last
-                state = "post_" + e.galaxy.nameToId() + "_" + e.type + "_" + e.id
-            }
+            if (nmsce.last)
+                state = "post_" + nmsce.last.id
 
-            accessToken = this.getRedditToken(state)
+            accessToken = nmsce.getRedditToken(state)
         }
 
         if (accessToken) {
-            this.getRedditUser(accessToken)
-            this.redditGetSubscribed(accessToken)
+            nmsce.getRedditUser(accessToken)
+            nmsce.redditGetSubscribed(accessToken)
 
             if (state) {
                 let path = state.split("_")
 
-                if (!this.last || this.last.galaxy !== path[1].idToName() || this.last.type !== path[2] || this.last.id !== path[3]) {
-                    getDoc(doc(bhs.fs, "nmsce/" + path[1].idToName() + "/" + path[2] + "/" + path[3])).then(doc => {
+                if (!nmsce.last || nmsce.last.id !== path[1]) {
+                    getDoc(doc(bhs.fs, "nmsceCombined/" + path[1])).then(doc => {
                         if (doc.exists())
-                            this.displaySingle(doc.data(), true)
+                            nmsce.displaySingle(doc.data(), true)
                         $("#redditPost").show()
                     })
                 }
@@ -3180,7 +3271,7 @@ class NMSCE {
 
     getRedditUser(accessToken) {
         if (!accessToken)
-            accessToken = this.getRedditToken("getUser")
+            accessToken = nmsce.getRedditToken("getUser")
 
         if (accessToken) {
             let url = reddit.api_oauth_url + reddit.user_endpt
@@ -3196,7 +3287,7 @@ class NMSCE {
                     window.localStorage.setItem('nmsce-reddit-name', res.name)
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
@@ -3204,7 +3295,7 @@ class NMSCE {
 
     redditGetSubscribed(accessToken) {
         if (!accessToken)
-            accessToken = this.getRedditToken("getSubscribed")
+            accessToken = nmsce.getRedditToken("getSubscribed")
 
         if (accessToken) {
             let url = reddit.api_oauth_url + reddit.subscriber_endpt
@@ -3219,43 +3310,54 @@ class NMSCE {
                 },
                 crossDomain: true,
                 success(res) {
-                    this.subReddits = []
+                    nmsce.subReddits = []
+                    let def = null
+
                     for (let s of res.data.children) {
                         let data = s.data;
 
-                        if (data.over18 || data.subreddit_type == 'user')
-                            continue;
+                        // if (data.over18 || data.subreddit_type == 'user')
+                        //     continue;
 
-                        this.subReddits.push({
+                        nmsce.subReddits.push({
                             name: data.display_name_prefixed,
                             url: data.url,
                             link: data.name
                         })
 
+                        if (data.display_name_prefixed === "r/NMSGlyphExchange")
+                            def = "r/NMSGlyphExchange"
                     }
-                    bhs.buildMenu($("#redditPost"), "SubReddit", this.subReddits, this.setSubReddit, {
+
+                    bhs.buildMenu($("#redditPost"), "SubReddit", nmsce.subReddits, nmsce.setSubReddit, {
                         required: true,
                         labelsize: "col-4",
                         menusize: "col",
                         sort: true
                     })
+
+                    if (def) {
+                        let loc = $("#menu-SubReddit")
+                        bhs.setMenu(loc, def)
+                        nmsce.setSubReddit(loc, accessToken)
+                    }
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
     }
 
     setSubReddit(evt, accessToken) {
-        let name = typeof evt === "string" ? evt.split("_")[1] : $(evt).text().stripMarginWS()
-        let i = getIndex(this.subReddits, "name", name)
+        let name = bhs.getMenu(evt)
+        let i = getIndex(nmsce.subReddits, "name", name)
 
         if (!accessToken)
-            accessToken = this.getRedditToken("getFlair_" + this.subReddits[i].name)
+            accessToken = nmsce.getRedditToken("getFlair_" + nmsce.subReddits[i].name)
 
         if (accessToken) {
-            let url = reddit.api_oauth_url + this.subReddits[i].url + reddit.getflair_endpt
+            let url = reddit.api_oauth_url + nmsce.subReddits[i].url + reddit.getflair_endpt
 
             $.ajax({
                 type: "get",
@@ -3266,23 +3368,54 @@ class NMSCE {
                 },
                 crossDomain: true,
                 success(res) {
-                    this.subRedditFlair = []
-                    for (let s of res)
-                        this.subRedditFlair.push({
+                    nmsce.subRedditFlair = []
+                    let flair = {}
+                    flair.name = nmsce.last.type + '/' + nmsce.last.galaxy
+                    let found = false
+
+                    for (let s of res) {
+                        s.text = s.text.replace("&amp;", "&")
+
+                        nmsce.subRedditFlair.push({
                             name: s.text,
                             text_color: s.text_color === "light" ? "white" : "black",
                             color: s.background_color,
                             id: s.id,
                         })
 
-                    bhs.buildMenu($("#redditPost"), "Flair", this.subRedditFlair, null, {
+                        let name = s.text.split("/")[0]
+
+                        if (name === nmsce.last.type
+                            || name === "Starship" && nmsce.last.type === "Ship"
+                            || name === "Multi Tool" && nmsce.last.type === "Multi-Tool") {
+
+                            flair.name = name + "/" + nmsce.last.galaxy
+                            if (name === "Base")
+                                flair.name += "/" + nmsce.last["Game Mode"]
+
+                            flair.id = s.id
+                            flair.text_color = s.text_color === "light" ? "white" : "black"
+                            flair.color = s.background_color
+
+                            if (s.text === flair.name)
+                                found = true
+                        }
+                    }
+
+                    if (!found && flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
+                        nmsce.subRedditFlair.push(flair)
+
+                    bhs.buildMenu($("#redditPost"), "Flair", nmsce.subRedditFlair, null, {
                         required: true,
                         labelsize: "col-4",
                         menusize: "col"
                     })
+
+                    if (flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
+                        bhs.setMenu($("#menu-Flair"), flair.name)
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
@@ -3290,22 +3423,22 @@ class NMSCE {
 
     redditPost() {
         let loc = $("#redditPost")
-        let sr = loc.find("#btn-SubReddit").text().stripMarginWS()
-        let flair = loc.find("#btn-Flair").text().stripMarginWS()
+        let sr = bhs.getMenu(loc.find("#menu-SubReddit"))
+        let flair = bhs.getMenu(loc.find("#menu-Flair"))
         let title = loc.find("#id-Title").val()
 
         if (!sr) {
-            this.postStatus("Please select SubReddit")
+            nmsce.postStatus("Please select SubReddit")
             return
         }
 
         if (!flair) {
-            this.postStatus("Please select Flair")
+            nmsce.postStatus("Please select Flair")
             return
         }
 
         if (!title) {
-            this.postStatus("Please select Title")
+            nmsce.postStatus("Please select Title")
             return
         }
 
@@ -3313,33 +3446,33 @@ class NMSCE {
         window.localStorage.setItem('nmsce-reddit-flair', flair)
         window.localStorage.setItem('nmsce-reddit-title', title)
 
-        let e = this.last
-        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let e = nmsce.last
+        let link = `https://nmsce.com/preview?i=${e.id}`
         window.localStorage.setItem('nmsce-reddit-plink', link)
 
-        link = `/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
+        link = `https://nmsce.com/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
         window.localStorage.setItem('nmsce-reddit-slink', link)
 
-        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(this.last.Photo));
-        this.redditSubmit()
+        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(nmsce.last.Photo))
+        nmsce.redditSubmit()
     }
 
     redditSubmit(accessToken) {
         if (!accessToken)
-            accessToken = this.getRedditToken("submit")
+            accessToken = nmsce.getRedditToken("submit")
 
         if (accessToken) {
             let sr = window.localStorage.getItem('nmsce-reddit-sr')
-            let i = getIndex(this.subReddits, "name", sr)
-            sr = this.subReddits[i].url
+            let i = getIndex(nmsce.subReddits, "name", sr)
+            sr = nmsce.subReddits[i].url
 
             let flair = window.localStorage.getItem('nmsce-reddit-flair')
-            i = getIndex(this.subRedditFlair, "name", flair)
-            let flairId = this.subRedditFlair[i].id
+            i = getIndex(nmsce.subRedditFlair, "name", flair)
+            let flairId = nmsce.subRedditFlair[i].id
 
             let plink = window.localStorage.getItem('nmsce-reddit-plink')
             let slink = window.localStorage.getItem('nmsce-reddit-slink')
-            let title = window.localStorage.getItem('nmsce-reddit-title') // + " <a href="+plink+">NMSCE app link</a>"
+            let title = window.localStorage.getItem('nmsce-reddit-title')
             let link = window.localStorage.getItem('nmsce-reddit-link')
 
             let url = reddit.api_oauth_url + reddit.submitLink_endpt
@@ -3371,6 +3504,19 @@ class NMSCE {
                                 t = "t3_" + t[6]
                                 let url = reddit.api_oauth_url + reddit.comment_endpt
 
+                                let comment = "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") for more info about this item. This is a [link](" + slink + ") to everything found so far in this system.  \n\n"
+
+                                if (typeof nmsce.last !== "undefined") {
+                                    if (nmsce.last.Tags["2 glyphs"])
+                                        comment += "It only takes the first 2 glyphs you find to get to this system. The first glyph is the planet index so anything will work to get to this system. If the item is on a specific planet and you haven't unlocked the planet index glyph go to the system and then fly to the planet.  \n\n"
+
+                                    if (nmsce.last.Tags["pirate"])
+                                        comment += "This is pirate raider ship. To buy this ship go to any trading post and wait for a pirate raid. It may take more than 1 raid for it to spawn and land.  \n\n"
+
+                                    else if (nmsce.last.type === "Ship")
+                                        comment += "Ships can be found at any landing pad in the system.  \n\n"
+                                }
+
                                 $.ajax({
                                     type: "post",
                                     url: url,
@@ -3380,43 +3526,33 @@ class NMSCE {
                                     },
                                     data: {
                                         thing_id: t,
-                                        text: "This was posted from the [NMSCE web app](https://nmsce.com). Here is the direct [link](" + plink + ") to this item. This is a [link](" + slink + ") to everything in this system."
+                                        text: comment
                                     },
                                     crossDomain: true,
                                 })
 
-                                let e = plink.split("&")
-                                for (let i of e) {
-                                    let p = i.split("=")
-                                    if (p[0] === "g")
-                                        var galaxy = p[1].idToName()
-                                    else if (p[0] === "t")
-                                        var type = p[1]
-                                    else if (p[0].includes("?i"))
-                                        var id = p[1]
-                                }
+                                let id = plink.slice(28)
 
-                                getDoc(doc(bhs.fs, "nmsce/" + galaxy + "/" + type + "/" + id)).then(doc => {
-                                    let e = doc.data()
-                                    let out = {}
-                                    out.redditlink = link
-                                    if (!e.reddit)
-                                        out.reddit = Timestamp.now()
+                                let out = {}
+                                out.redditlink = link
+                                out.reddit = Timestamp.now()
 
-                                    setDoc(ref, out, {
-                                        merge: true
-                                    }).then(() => {
-                                        this.postStatus("Posted")
-                                        $("#redditlink").val(link)
-                                    })
+                                nmsce.last.reddit = out.reddit
+                                nmsce.last.redditlink = out.redditlink
+
+                                setDoc(doc(bhs.fs, "nmsceCombined/" + id), out, {
+                                    merge: true
+                                }).then(() => {
+                                    nmsce.postStatus("Posted")
+                                    $("#redditlink").val(link)
                                 })
                             }
                         }
                     else
-                        this.postStatus("failed")
+                        nmsce.postStatus("failed")
                 },
                 error(err) {
-                    this.postStatus(err.message)
+                    nmsce.postStatus(err.message)
                 },
             })
         }
@@ -3543,7 +3679,10 @@ class NMSCE {
 
             if (hit && text.type === "text") {
                 let loc = $("#imgtable")
-                loc.find("#btn-Font").text(text.font)
+
+                let font = loc.find("#menu-Font")
+                bhs.setMenu(font, text.font)
+
                 loc.find("#sel-size").val(text.fSize)
 
                 loc.find("#color-font").colorpicker("disable")
@@ -3804,10 +3943,20 @@ class NMSCE {
     }
 
     deleteEntry() {
-        if (this.last) {
-            let entry = this.last
-            this.last = null
-            let docRef = doc(bhs.fs, "nmsce/" + entry.galaxy + "/" + entry.type + "/" + entry.id)
+        let entry = this.last
+        let docRef = doc(bhs.fs, "nmsceCombined/" + entry.id)
+
+        let vref = collection(docRef, "votes")
+        getDocs(vref).then(snapshot => {
+            for (let doc of snapshot.docs)
+                deleteDoc(doc.ref);
+        })
+
+        deleteDoc(docRef).then(async () => {
+            bhs.status(entry.type + " deleted.")
+            $("#save").text("Save All")
+            $("#delete-item").addClass("disabled")
+            $("#delete-item").prop("disabled", true)
 
             let vref = collection(docRef, "votes")
             getDocs(vref).then(snapshot => {
@@ -3815,61 +3964,26 @@ class NMSCE {
                     deleteDoc(doc.ref);
             })
 
-            vref = collection(docRef, "nmsceCommon")
-            getDocs(vref).then(snapshot => {
-                for (let doc of snapshot.docs)
-                    deleteDoc(doc.ref);
-            })
+            // Little trick to get array of all different paths
+            let ImagePaths = [
+                GetDisplayPath,
+                GetOriginalPath,
+                GetThumbnailPath
+            ].map(func => func(entry.Photo));
 
-            deleteDoc(docRef).then(async () => {
-                bhs.status(entry.id + " deleted.")
-                $("#save").text("Save All")
-                $("#delete-item").addClass("disabled")
-                $("#delete-item").prop("disabled", true)
-
-                let vref = collection(docRef, "votes")
-                getDocs(vref).then(snapshot => {
-                    for (let doc of snapshot.docs)
-                        deleteDoc(doc.ref);
-                })
-
-                vref = collection(docRef, "nmsceCommon")
-                getDocs(vref).then(snapshot => {
-                    for (let doc of snapshot.docs)
-                        delete (doc.ref);
-                })
-
-                // Little trick to get array of all different paths
-                let ImagePaths = [
-                    GetDisplayPath,
-                    GetOriginalPath,
-                    GetThumbnailPath
-                ].map(func => func(entry.Photo));
-
-                await DeleteImages(ImagePaths);
-            }).catch(err => {
-                bhs.status("ERROR: " + err.code)
-                console.log(err)
-            })
-        }
-    }
-
-    deleteSystem() {
-        if (this.lastsys && bhs.deleteEntry(this.lastsys)) {
-            this.lastsys = null
-            $("#save-system").text("Save System")
-            $("#delete-system").addClass("disabled")
-            $("#delete-system").prop("disabled", true)
-        }
+            await DeleteImages(ImagePaths);
+        }).catch(err => {
+            bhs.status("ERROR: " + err.code)
+            console.log(err)
+        })
     }
 
     async updateScreenshot(entry) {
-        if (!$("#imgtable").is(":visible"))
-            return null
+        if ($("#id-canvas").is(":visible") &&
+            (!entry.Photo || !$("#ck-updateScreenshot").is(":visible") || $("#ck-updateScreenshot").prop("checked"))) {
 
-        if ($("#id-canvas").is(":visible") || $("#ck-updateScreenshot").is(":visible") && $("#ck-updateScreenshot").prop("checked")) {
-            if (typeof entry.Photo === "undefined")
-                entry.Photo = entry.type + "-" + entry.id + ".jpg"
+            if (typeof entry.Photo === "undefined" || !entry.Photo)
+                entry.Photo = entry.id + ".jpg"
 
             /** @type {{path: string, blob: Blob}[]} */
             const images = []
@@ -3902,6 +4016,7 @@ class NMSCE {
             });
 
             UploadImages(images);
+            $("#imgtable").hide()
 
             $("#dltab-" + entry.type).click()
 
@@ -3910,44 +4025,66 @@ class NMSCE {
             if (loc.length > 0) {
                 let url = thumb.toDataURL()
                 loc.attr("src", url)
-            }
 
-            $('html, body').animate({
-                scrollTop: loc.offset().top
-            }, 500)
+                $('html, body').animate({
+                    scrollTop: $("#id-table").offset().top
+                }, 500)
+            }
         }
 
-        return true
+        this.clearPanel()
     }
 
-    updateEntry(entry) {
+    async updateEntry(entry) {
         entry.modded = Timestamp.now()
         this.initVotes(entry)
         let created = false
 
-        if (typeof entry.created === "undefined") {
+        if (typeof entry.created === "undefined" || !entry.created) {
             entry.created = Timestamp.now()
             created = true
         }
 
-        if (typeof entry.id === "undefined")
-            entry.id = uuidv4()
+        let ref
 
-        if (typeof entry.Photo === "undefined")
-            entry.Photo = entry.type + "-" + entry.id + ".jpg"
+        if (typeof entry.id === "undefined" || !entry.id || created) {
+            let d
 
-        let ref = collection(bhs.fs, "nmsce/" + entry.galaxy + "/" + entry.type)
-        ref = doc(ref, entry.id)
+            do {
+                entry.id = uuidv4() + "2" // add char to make sure we don't generate over old image uuids
+                ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
+                d = await getDoc(ref)
+            } while (d.exists())
+        }
+
+        if (!entry.Photo)
+            entry.Photo = entry.id + ".jpg"
+
+        if (!ref)
+            ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
         setDoc(ref, entry).then(() => {
-            bhs.status(entry.type + " " + entry.Name + " saved.")
+            if (entry.uid === bhs.user.uid) {
+                this.last = mergeObjects({}, entry)
 
-            if (created)
-                this.incrementTotals(entry, 1)
+                if (created) {
+                    this.entries[entry.type].push(entry)
+                    this.incrementTotals(entry, 1)
+                    entry.Photo = null  // force screenshot write
+                } else {
+                    let e = this.entries[entry.type].findIndex(x => x.id === entry.id)
+                    this.entries[entry.type][e] = entry
+                }
 
-            this.updateCommon(entry, ref)
+                this.displayListEntry(entry)    // before update screenshot because it creates the display space
+                this.updateScreenshot(entry)
+
+                bhs.status(entry.type + " " + entry.Name + " saved.")
+            }
+            else
+                this.last = {}
         }).catch(err => {
-            bhs.status("ERROR: " + err.code)
+            bhs.status("ERROR: " + err)
         })
     }
 
@@ -3969,77 +4106,36 @@ class NMSCE {
         let t = {}
         t[e.type] = increment(val)
 
-        let ref = bhs.getUsersColRef(bhs.user.uid)
+        let ref = doc(bhs.fs, "users", bhs.user.uid)
         setDoc(ref, {
             nmsceTotals: t
         }, {
             merge: true
-        }).then().catch(err => {
+        }).then(() => {
+            bhs.user.nmsceTotals[e.type]++
+            this.updateTotals()
+        }).catch(err => {
             bhs.status("ERROR: " + err.message)
         })
     }
 
-    updateCommon(entry, ref) {
-        let e = {}
-        e.created = entry.created
-        e.votes = entry.votes
-        e.private = entry.private ? true : false
-        e._name = entry._name
-        e.uid = entry.uid
-        e.id = entry.id
-        e.type = entry.type
-        e.galaxy = entry.galaxy
-        e.addr = entry.addr
-        e.Photo = entry.Photo
-        e.Name = entry.Name ? entry.Name : ""
-
-        if (entry.Type)
-            e.Type = entry.Type
-        if (entry["Planet-Index"])
-            e["Planet-Index"] = entry["Planet-Index"]
-        if (entry["Planet-Name"])
-            e["Planet-Name"] = entry["Planet-Name"]
-
-        ref = doc(collection(ref, "nmsceCommon"), entry.id)
-        setDoc(ref, e, {
-            merge: true
-        }).then().catch(err => {
-            bhs.status("ERROR: " + err.message)
-        })
-    }
-
-    getEntries(skipAll) {
+    getEntries() {
         if (typeof this.entries === "undefined")
             this.entries = {}
 
-        if (!!bhs.user.galaxy) {
+        for (let obj of objectList) {
+            this.entries[obj.name] = []
+            this.clearDisplayList(obj.name)
 
-            for (let obj of objectList) {
-                this.entries[obj.name] = []
-                this.clearDisplayList(obj.name)
-
-                let qury = query(collection(bhs.fs, "nmsce/" + bhs.user.galaxy + "/" + obj.name),
-                    where("uid", "==", bhs.user.uid),
-                    orderBy("created", "desc"),
-                    limit(50));
-                this.getWithObserver(null, qury, obj.name, true, this.displayList.bind(this))
-            }
-        }
-
-        if (!skipAll) {
-
-            this.entries.All = []
-
-            let qury = query(collectionGroup(bhs.fs, "nmsceCommon"),
+            let qury = query(collection(bhs.fs, "nmsceCombined"),
                 where("uid", "==", bhs.user.uid),
+                where("type", "==", obj.name),
                 orderBy("created", "desc"),
-                limit(50));
-
-            this.getWithObserver(null, qury, "All", true, this.displayList.bind(this), {
-                source: "server"
-            })
+                limit(25));
+            this.getWithObserver(null, qury, obj.name, true, this.displayList.bind(this))
         }
     }
+
     buildResultsList() {
         let nav = `
         <a id="dltab-idname" class="nav-item nav-link txt-def h5 rounded-top" style="border-color:black;" 
@@ -4050,6 +4146,11 @@ class NMSCE {
         <div id="dl-idname" class="tab-pane hidden pl-15 pr-15" role="tabpanel" aria-labelledby="dltab-idname">
             <div id="list-idname" class="scroll row" style="height:500px"></div>
         </div>`
+        // let ck = `
+        // <label class="txt-label-def pl-10">
+        //     <input id="ck-hideself" type="checkbox" onchange="nmsce.hideSelf(this)">
+        //     Hide my entries&nbsp;
+        // </label>`
 
         this.entries = {}
 
@@ -4067,21 +4168,22 @@ class NMSCE {
             $("#displayPanels").append(l)
         }
 
+        // $("#displayTabs").append(ck)
+
         let height = $("html")[0].clientHeight - 100
         $("#displayPanels .scroll").height(height + "px")
     }
 
     getTotals() {
-
         getDoc(doc(bhs.fs, "bhs/nmsceTotals")).then(doc => {
             if (doc.exists())
                 this.displayTotals(doc.data(), "bhs/nmsceTotals")
         })
 
-        getDoc(doc(bhs.fs, "bhs/nmsceMonthly")).then(doc => {
-            if (doc.exists())
-                this.displayTotals(doc.data(), "bhs/nmsceMonthly")
-        })
+        // getDoc(doc(bhs.fs, "bhs/nmsceMonthly")).then(doc => {
+        //     if (doc.exists())
+        //         this.displayTotals(doc.data(), "bhs/nmsceMonthly")
+        // })
 
         getDoc(doc(bhs.fs, "bhs/patreon")).then(doc => {
             if (doc.exists())
@@ -4098,16 +4200,16 @@ class NMSCE {
                     <div class="col-3">
                         <a href="https://www.patreon.com/bePatron?u=28538540" style="background-color:red; color:white; border-radius:12px">&nbsp;&nbsp;Become a Patron!&nbsp;&nbsp;</a>
                     </div>
-                    <div class="col-5">You can also get patron benefits by entering data.&nbsp;
+                    <!--div class="col-5">You can also get patron benefits by entering data.&nbsp;
                         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                             data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
                         </i>
-                    </div>
+                    </div-->
                 </div>
                 <br>
                 <div class="row h6 border-top">
                     <div class="col-4">Name</div>
-                    <div class="col-2 pl-15">Date Joined</div>
+                    <div class="col-sm-2 pl-15">Date Joined</div>
                 </div>
             </div>
             <div id="patronList" class="card-body scroll txt-black" style="height:600px"></div>
@@ -4123,7 +4225,7 @@ class NMSCE {
         <div id="row-uid" class="border-bottom h6">
             <div class="row">
                 <div id="id-name" class="col-3">dname</div>
-                <div id="id-date" class="col-2 txt-right">ddate</div>
+                <div id="id-date" class="col-sm-2 txt-right">ddate</div>
             </div>
         </div>`
 
@@ -4157,16 +4259,16 @@ class NMSCE {
                                     &nbsp;Show All
                                 </label>
                             </div>
-                            <div class="col-5">You can get patron benefits by entering data.&nbsp;
+                            <!--div class="col-5">You can get patron benefits by entering data.&nbsp;
                                 <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                                     data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
                                 </i>
-                            </div>
+                            </div-->
                         </div>
                         <div class="row">
-                            <div id="id-name" class="col-9 pointer" onclick="nmsce.sortTotals(this)">Player&nbsp;&nbsp;<i class="fas fa-sort-alpha-down"></i></div>
-                            <div id="id-total" class="col-2 pointer" onclick="nmsce.sortTotals(this)">Overall&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div>
-                            <div id="id-monthly" class="col-2 pointer" onclick="nmsce.sortTotals(this)">Monthly&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div>
+                            <div id="id-name" class="col-sm-9 pointer" onclick="nmsce.sortTotals(this)">Player&nbsp;&nbsp;<i class="fas fa-sort-alpha-down"></i></div>
+                            <div id="id-total" class="col-sm-2 pointer" onclick="nmsce.sortTotals(this)">Overall&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div>
+                            <!--div id="id-monthly" class="col-sm-2 pointer" onclick="nmsce.sortTotals(this)">Monthly&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div-->
                         </div>
                     </div>
                     <div id="userTotals" class="card-body scroll txt-black" style="height:600px"></div>
@@ -4190,8 +4292,8 @@ class NMSCE {
         <div id="row-uid" name="ismod" class="border-bottom h6">
             <div class="row pointer" onclick="nmsce.expandTotals(this)">
                 <div id="id-name" class="col-8"><i class="far fa-caret-square-down txt-input"></i> nameS</div>
-                <div id="id-total" class="col-2 txt-right">totalT</div>
-                <div id="id-monthly" class="col-2 txt-right">monthlyT</div>
+                <div id="id-total" class="col-sm-2 txt-right">totalT</div>
+                <!--div id="id-monthly" class="col-sm-2 txt-right">monthlyT</div-->
             </div>
             <div id="id-exp" class="row hidden" onclick="nmsce.expandTotals(this)">
                 <div id="id-details">detailT</div>
@@ -4203,7 +4305,6 @@ class NMSCE {
             <div id="id-name" class="col-3">qty</div>
         </div>`
 
-        let total = 0
         let loc = $("#totalsCard")
 
         for (let k of Object.keys(list)) {
@@ -4213,9 +4314,9 @@ class NMSCE {
                 let s = ""
 
                 for (let k of Object.keys(e))
-                    if (typeof e[k] === "number") {
+                    if (k !== "Living-Ship" && typeof e[k] === "number") {
                         t += e[k]
-                        s += (s !== "" ? ",&nbsp;" : "") + k + ": " + e[k]
+                        s += k + ": " + e[k] + " "
                     }
 
                 let l = loc.find("#row-" + k)
@@ -4224,18 +4325,19 @@ class NMSCE {
                     let h = /uid/[Symbol.replace](rows, k)
                     h = /nameS/[Symbol.replace](h, e.name)
                     h = /detailT/[Symbol.replace](h, s)
-                    if (e.mod) {
+                    if (e.name === "Bad Wolf") {    //was e.mod
                         h = /ismod/[Symbol.replace](h, "modT")
                         h = /border-bottom/[Symbol.replace](h, "border-bottom hidden")
                     }
 
                     if (path === "bhs/nmsceTotals") {
                         h = /totalT/[Symbol.replace](h, t)
-                        h = /monthlyT/[Symbol.replace](h, "")
-                    } else if (path === "bhs/nmsceMonthly") {
-                        h = /totalT/[Symbol.replace](h, "")
-                        h = /monthlyT/[Symbol.replace](h, t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
+                        // h = /monthlyT/[Symbol.replace](h, "")
                     }
+                    // else if (path === "bhs/nmsceMonthly") {
+                    //     h = /totalT/[Symbol.replace](h, "")
+                    //     // h = /monthlyT/[Symbol.replace](h, t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
+                    // }
 
                     l = loc.find("#userTotals")
                     l.append(h)
@@ -4243,10 +4345,10 @@ class NMSCE {
                     $(l).find("#id-details").text(s)
                     if (path === "bhs/nmsceTotals")
                         $(l).find("#id-total").text(t)
-                    else if (path === "bhs/nmsceMonthly")
-                        $(l).find("#id-monthly").text(t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
+                    // else if (path === "bhs/nmsceMonthly")
+                    //     $(l).find("#id-monthly").text(t + " " + (t > 150 ? "T3" : t > 75 ? "T2" : t > 30 ? "T1" : ""))
                 }
-            } else if (typeof e === "number" && path === "bhs/nmsceTotals") {
+            } else if (typeof e === "number" && path === "bhs/nmsceTotals" && k !== "Total") {
                 let l = loc.find("#id-" + k)
                 if (l.length === 0) {
                     let h = /name/g[Symbol.replace](totals, k)
@@ -4256,8 +4358,6 @@ class NMSCE {
                     l.append(h)
                 } else
                     l.text(e)
-
-                total += e
             }
         }
 
@@ -4266,11 +4366,10 @@ class NMSCE {
             if (l.length === 0) {
                 let l = loc.find("#totalsTable")
                 let h = /name/g[Symbol.replace](totals, "Total")
-                h = /qty/[Symbol.replace](h, total)
+                h = /qty/[Symbol.replace](h, list.Total)
                 h = /row/[Symbol.replace](h, "row border-top")
                 l.append(h)
-            } else
-                l.text(total)
+            }
         }
 
         this.sortTotals(null, "id-name")
@@ -4283,9 +4382,8 @@ class NMSCE {
             $("#totalsCard [name='modT']").hide()
     }
 
-
     sortTotals(evt, id, parent) {
-        let sort = typeof id !== "undefined" ? id : $(evt).prop("id")
+        let sort = typeof id !== "undefined" ? id : $(evt).attr("id")
         let loc = $(typeof parent === "undefined" ? "#userTotals" : "#" + parent)
         let list = loc.children()
 
@@ -4349,7 +4447,7 @@ class NMSCE {
         return io
     }
 
-    getWithObserver(evt, ref, type, cont, dispFcn, options) {
+    getWithObserver(evt, ref, type, cont, dispFcn) {
         const getSnapshot = (obs) => {
             if (typeof obs.entryObserver === "undefined")
                 obs.entryObserver = this.fcnObserver($("#displayPanels"), this.getWithObserver.bind(this))
@@ -4364,16 +4462,19 @@ class NMSCE {
 
             if (obs.run) {
                 obs.run = false
-                // if (Atomics.compareExchange(obs.arr, 0, 0, 1) === 0)
-                // what the hell are obs.options supposed to do?
+
                 getDocs(ref).then(snapshot => {
                     if (snapshot.empty) {
+                        if (obs.type === "Search-Results")
+                            bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
+
                         obs.cont = false
-                        obs.dispFcn([], obs.type)
+                        // obs.dispFcn([], obs.type) leave search tab open
                         return
                     }
 
                     let entries = []
+
                     for (let doc of snapshot.docs) {
                         let e = doc.data()
                         entries.push(e)
@@ -4390,7 +4491,6 @@ class NMSCE {
                         }
 
                     obs.last = snapshot.docs[snapshot.size - 1]
-                    // Atomics.compareExchange(obs.arr, 0, 1, 0)
                 })
             }
         }
@@ -4398,7 +4498,7 @@ class NMSCE {
         if (evt) {
             let type = $(evt.target).parent()
             let rows = type.find("img")
-            type = type.prop("id").stripID()
+            type = type.attr("id").stripID()
 
             for (let loc of rows) {
                 let data = $(loc).data()
@@ -4424,10 +4524,6 @@ class NMSCE {
             obs.last = null
             obs.run = true
             obs.cont = cont
-
-            // const sab = new SharedArrayBuffer(4)
-            // obs.arr = new Int32Array(sab)
-            // obs.arr[0] = 0
 
             getSnapshot(obs)
         }
@@ -4456,10 +4552,7 @@ class NMSCE {
             for (let r of resultTables) {
                 if (r.field) {
                     this.entries[r.name.nameToId()] = []
-
-
-
-                    let qury = query(collectionGroup(bhs.fs, "nmsceCommon"), orderBy(r.field, "desc"), limit(r.limit))
+                    let qury = query(collection(bhs.fs, "nmsceCombined"), orderBy(r.field, "desc"), limit(r.limit))
 
                     this.getWithObserver(null, qury, r.name, r.cont, this.displayResultList, {
                         source: "server"
@@ -4468,22 +4561,32 @@ class NMSCE {
             }
     }
 
-    displayResultList(entries, type, k) {
+    displayResultList(entries, type) {
         if (!entries || entries.length === 0)
             return
+
+        // let hideSelf = $("#ck-hideself").prop("checked")
 
         let h = ""
         let loc = $("#displayPanels #list-" + type.nameToId())
 
         for (let e of entries) {
-            if (!k && e.private && e.uid !== bhs.user.uid && !bhs.hasRole("nmsceEditor"))
+            if (e.private && e.uid !== bhs.user.uid && !bhs.hasRole("admin") && !bhs.hasRole("nmsceEditor"))
+                continue
+
+            if (type === "My-Favorites")
+                e.favorite = 1
+            else if (bhs.user.uid)
+                nmsce.getVotes(e)
+
+            if (type === "Top-Favorites" && e.votes.favorite < 1)
                 continue
 
             // if (type === "Hall-of-Fame" && e.votes.hof < 1)
             //     continue
 
-            if (type === "Patron-Favorites" && e.votes.patron < 1)
-                continue
+            // if (type === "Patron-Favorites" && e.votes.patron < 1)
+            //     continue
 
             nmsce.entries[type].push(e)
 
@@ -4491,10 +4594,14 @@ class NMSCE {
             l = /galaxy/[Symbol.replace](l, e.galaxy)
             l = /imgsrc/[Symbol.replace](l, GetThumbnailUrl(e.Photo))
             l = /byname/[Symbol.replace](l, e._name)
-            l = /date/[Symbol.replace](l, e.created ? e.created.toDate().toDateLocalTimeString() : "")
+            l = /date/[Symbol.replace](l, e.created ? new Timestamp(e.created.seconds, e.created.nanoseconds).toDate().toDateLocalTimeString() : "")
+            l = /grey/[Symbol.replace](l, e.favorite ? "#00c000" : "grey")
 
             if (e.private)
                 l = /bkg-white/[Symbol.replace](l, "bkg-yellow")
+
+            // if (type === "Latest" && bhs.user.uid === e.uid && hideSelf)
+            //     l = /rounded/[Symbol.replace](l, "rounded hidden")
 
             h += l
         }
@@ -4503,98 +4610,90 @@ class NMSCE {
     }
 
     async vote(evt) {
-        if (this.last && bhs.user.uid) {
-            let v = 1
-            let e = this.last
-            let id = $(evt).prop("id")
+        if (bhs.user.uid) {
+            let type = $(evt).closest("[id|='dl']").attr("id").stripID()
+            let voting = $(evt).attr("id").split("-")[0]
 
-            let ref = doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)
-
-            let res = await getDoc(doc(collection(ref, "votes"), bhs.user.uid));
-
-            e = {}
-
-            if (res.exists()) {
-                e = res.data()
-                v = typeof e[id] === "undefined" ? 1 : e[id] ? 0 : 1
+            if (type !== "Selected") {
+                let id = $(evt).attr("id").stripID()
+                id = getIndex(this.entries[type], "id", id)
+                this.last = this.entries[type][id]
             }
 
-            e[id] = v
+            let ref = doc(bhs.fs, "nmsceCombined/" + this.last.id)
+            getDoc(doc(collection(ref, "votes"), bhs.user.uid)).then(res => {
+                let e = {}
+                let v = 1
 
-            e.uid = bhs.user.uid
-            e.id = this.last.id
-            e.galaxy = this.last.galaxy
-            e.Photo = this.last.Photo
-            e._name = this.last._name
-            e.created = this.last.created
-            e.type = this.last.type
-            if (this.last.Type)
-                e.Type = this.last.Type
+                if (res.exists()) {
+                    e = res.data()
+                    v = e[voting] ? 0 : 1
+                }
 
-            await setDoc(res.ref, e, {
-                merge: true
-            })
+                e[voting] = v
+                this.last[voting] = v
 
-            this.showVotes(e)
+                e.uid = bhs.user.uid
+                e.id = this.last.id
+                e.galaxy = this.last.galaxy
+                e.Photo = this.last.Photo
+                e._name = this.last._name
+                e.created = new Timestamp(this.last.created.seconds, this.last.created.nanoseconds)
+                e.type = this.last.type
+                if (typeof this.last.Type !== "undefined")
+                    e.Type = this.last.Type
 
-            e = {}
-            e[id] = increment(v ? 1 : -1)
+                setDoc(res.ref, e, {
+                    merge: true
+                })
 
-            await setDoc(ref, {
-                votes: e
-            }, {
-                merge: true
-            })
+                e = {}
+                e[voting] = increment(v ? 1 : -1)
 
-            ref = doc(collection(ref, "nmsceCommon"), this.last.id)
-            await setDoc(ref, {
-                votes: e
-            }, {
-                merge: true
+                setDoc(ref, {
+                    votes: e
+                }, {
+                    merge: true
+                })
+
+                if (type === "Selected")
+                    this.showVotes(this.last)
+                else
+                    this.showResultsVotes(this.last)
             })
         }
     }
 
     selectResult(evt) {
-        let type = $(evt).closest("[id|='list']").prop("id").stripID()
-        let id = $(evt).prop("id").stripID()
+        let type = $(evt).closest("[id|='list']").attr("id").stripID()
+        let id = $(evt).closest("[id|='row']").attr("id").stripID()
 
         let i = getIndex(this.entries[type], "id", id)
         let e = this.entries[type][i]
 
-        getDoc(doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)).then(doc => {
-            let e = doc.data()
-            this.last = e
-            this.displaySelected(e)
+        this.displaySelected(e)
 
-            if (bhs.user.uid && (e.uid === bhs.user.uid || bhs.hasRole("admin")))
-                $("#btn-ceedit").show()
-            else
-                $("#btn-ceedit").hide()
+        if (bhs.user.uid && (e.uid === bhs.user.uid || bhs.hasRole("admin") || bhs.hasRole("nmsceEditor")))
+            $("#btn-ceedit").show()
+        else
+            $("#btn-ceedit").hide()
 
-            $("#dltab-Selected").show()
-            $("#dltab-Selected").click()
-        })
+        $("#dltab-Selected").show()
+        $("#dltab-Selected").click()
     }
 
     displaySelected(e) {
         let row = `
-    <div id="id-idname" class="row border-bottom txt-label-def">
-        <div class="col-5">title</div>
-        <div id="val-idname" class="col font clr-def">value</div>
-    </div>`
+            <div id="id-idname" class="row border-bottom txt-label-def">
+                <div class="col-5">title</div>
+                <div id="val-idname" class="col font clr-def">value</div>
+            </div>`
 
         $("#imgtable").show()
 
         this.last = e
 
-        if (bhs.user.uid) {
-            getDoc(doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id + "/votes/" + bhs.user.uid)).then(doc => {
-                this.showVotes(doc.data())
-            })
-        }
-
-        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let link = `/preview?i=${e.id}`
         $("[id|='permalink']").attr("href", link)
 
         let idx = getIndex(objectList, "name", e.type)
@@ -4627,12 +4726,10 @@ class NMSCE {
 
                 if (fld.type === "tags") {
                     let t = ""
-                    if (e[id]) {
-                        for (let c of e[id])
-                            t += c + ", "
+                    let k = Object.keys(e[id])
 
-                        t = t.slice(0, t.length - 2)
-                    }
+                    for (let i of k)
+                        t += i + " "
 
                     h = /value/[Symbol.replace](h, t)
                 } else
@@ -4658,7 +4755,7 @@ class NMSCE {
 
         h = /idname/g[Symbol.replace](row, "Created")
         h = /title/[Symbol.replace](h, "Date")
-        h = /value/[Symbol.replace](h, e.created ? e.created.toDate().toDateLocalTimeString() : "")
+        h = /value/[Symbol.replace](h, e.created ? new Timestamp(e.created.seconds, e.created.nanoseconds).toDate().toDateLocalTimeString() : "")
         h = /font/[Symbol.replace](h, "")
         loc.append(h)
 
@@ -4675,6 +4772,36 @@ class NMSCE {
             h = /font/[Symbol.replace](h, "")
             loc.append(h)
         }
+
+        nmsce.showVotes(e)
+    }
+
+    getVotes(entry) {
+        if (!entry.favorite)
+            getDoc(doc(bhs.fs, "nmsceCombined/" + entry.id + "/votes/" + bhs.user.uid)).then(doc => {
+                if (doc.exists()) {
+                    let e = doc.data()
+
+                    entry.favorite = e.favorite
+                    // entry.edchoice = e.edchoice
+                    // entry.bhspoi = e.bhspoi
+                    // entry.visited = e.visited
+                    // entry.report = e.report
+                    // entry.hof = e.hof
+                    // entry.patron = e.patron
+
+                    this.showResultsVotes(entry)
+                }
+            })
+    }
+
+    showResultsVotes(entry) {
+        let loc = $("[id|='favorite-" + entry.id + "']")
+        for (let l of loc)
+            if (typeof entry !== "undefined")
+                $(l).css("color", entry.favorite ? "#00c000" : "grey")
+            else
+                $(l).css("color", "grey")
     }
 
     showVotes(entry) {
@@ -4690,22 +4817,30 @@ class NMSCE {
             }
         }
 
-        if (typeof entry !== "undefined") {
-            $("#favorite").css("color", entry.favorite ? "#00c000" : "grey")
-            shvote($("#voted-edchoice"), entry.edchoice)
-            shvote($("#voted-bhspoi"), entry.bhspoi)
-            shvote($("#voted-visited"), entry.visited)
-            shvote($("#voted-report"), entry.report)
-            // shvote($("#voted-hof"), entry.hof)
-            shvote($("#voted-patron"), entry.patron)
+        if (bhs.user.uid) {
+            $("#favorite").show()
+            // $("#voted-report").show()
+
+            if (typeof entry !== "undefined") {
+                $("#favorite").css("color", entry.favorite ? "#00c000" : "grey")
+                // shvote($("#voted-edchoice"), entry.edchoice)
+                // shvote($("#voted-bhspoi"), entry.bhspoi)
+                // shvote($("#voted-visited"), entry.visited)
+                // shvote($("#voted-report"), entry.report)
+                // shvote($("#voted-hof"), entry.hof)
+                // shvote($("#voted-patron"), entry.patron)
+            } else {
+                $("#favorite").css("color", "grey")
+                // shvote($("#voted-edchoice"), false)
+                // shvote($("#voted-bhspoi"), false)
+                // shvote($("#voted-visited"), false)
+                // shvote($("#voted-report"), false)
+                // shvote($("#voted-hof"), false)
+                // shvote($("#voted-patron"), false)
+            }
         } else {
-            $("#favorite").css("color", "grey")
-            shvote($("#voted-edchoice"), false)
-            shvote($("#voted-bhspoi"), false)
-            shvote($("#voted-visited"), false)
-            shvote($("#voted-report"), false)
-            // shvote($("#voted-hof"), false)
-            shvote($("#voted-patron"), false)
+            $("#favorite").hide()
+            // $("#voted-report").hide()
         }
     }
 
@@ -4725,14 +4860,7 @@ class NMSCE {
             <div id="list-idname" class="scroll row" style="height:600px"></div>
         </div>`
 
-        let l = /idname/g[Symbol.replace](nav, "All")
-        l = /title/[Symbol.replace](l, "All")
-        $("#displayTabs").append(l)
-
-        l = /idname/g[Symbol.replace](header, "All")
-        $("#displayPanels").append(l)
-
-        l = /idname/g[Symbol.replace](nav, "Search-Results")
+        let l = /idname/g[Symbol.replace](nav, "Search-Results")
         l = /title/[Symbol.replace](l, "Search Results")
         l = l.replace(/(.*?)\(.*\)/, "$1")
         $("#displayTabs").append(l)
@@ -4776,20 +4904,20 @@ class NMSCE {
     displayListEntry(entry) {
         let loc = $("#displayPanels #list-" + entry.type)
         let eloc = loc.find("#row-" + entry.id)
-        let all = $("#displayPanels #list-All")
-        let aloc = all.find("#row-" + entry.id)
+        // let all = $("#displayPanels #list-All")
+        // let aloc = all.find("#row-" + entry.id)
 
         if (eloc.length === 0) {
             this.addDisplayListEntry(entry, loc, true)
-            this.addDisplayListEntry(entry, all, true)
+            // this.addDisplayListEntry(entry, all, true)
         } else {
             this.updateDisplayListEntry(entry, eloc)
-            this.updateDisplayListEntry(entry, aloc)
+            // this.updateDisplayListEntry(entry, aloc)
         }
     }
 
     sortLoc(evt) {
-        let id = $(evt).prop("id")
+        let id = $(evt).attr("id")
         let name = id.stripID()
         let loc = $(evt).closest("[id|='list']")
         let row = loc.find("#row-key")
@@ -4860,17 +4988,18 @@ class NMSCE {
 
     addDisplayListEntry(e, loc, prepend, type) {
         const key = `
-        <div id="row-key" class="col-md-p250 col-sm-p333 col-7 border border-black txt-def" >
+        <div id="row-key" class="col-md-p250 col-sm-p333 col-sm-7 border border-black txt-def" >
             <div class="row">`
 
         const row = `     
-        <div id="row-idname" class="col-md-p250 col-sm-p333 col-7 border border-black h6" >
+        <div id="row-idname" class="col-md-p250 col-sm-p333 col-sm-7 border border-black h6" >
             <div id="id-Photo" class="row pointer pl-10 pr-10" data-type="etype" data-id="eid" onclick="nmsce.selectList(this)" style="min-height:20px">
                 <img id="img-idname" src="imgsrc" style="width: 100%">
             </div>
             <div class="row pl-10">`
-        const item = `<div id="id-idname" class="col-md-7 col-14 border pointer">title</div>`
-        const sortItem = `<div id="id-idname" class="col-md-7 col-14 border pointer" onclick="nmsce.sortLoc(this)">title</div>`
+        const item = `<div id="id-idname" class="col-md-7 col-sm-14 border pointer">title</div>`
+        const glyphs = `<div id="id-idname" class="col-md-7 col-sm-14 border pointer txt-glyph-disp" style="font-size:.75rem">title</div>`
+        const sortItem = `<div id="id-idname" class="col-md-7 col-sm-14 border pointer" onclick="nmsce.sortLoc(this)">title</div>`
         const end = `</div></div>`
 
         let h = ""
@@ -4889,75 +5018,78 @@ class NMSCE {
             h = /imgsrc/[Symbol.replace](h, GetThumbnailUrl(e.Photo))
         }
 
-        if (type === "All" || type === "Search Results") {
-            let l = /idname/g[Symbol.replace](itm, "type")
-            l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.type)
-            if (e.Type) {
-                l = /idname/g[Symbol.replace](itm, "Type")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.Type)
-            }
-            l = /idname/g[Symbol.replace](itm, "Name")
-            l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.Name)
-            l = /idname/g[Symbol.replace](itm, "Addr")
-            l = /pointer/[Symbol.replace](l, "")
-            h += /title/[Symbol.replace](l, e.addr)
-        } else {
-            let i = getIndex(objectList, "name", fstring ? e : e.type)
-            for (let f of objectList[i].fields) {
-                let id = f.name.nameToId()
-                let title = fstring ? f.name : typeof e[f.name] === "undefined" ? "" : e[f.name]
+        let l = /idname/g[Symbol.replace](itm, "galaxy")
+        l = /pointer/[Symbol.replace](l, "")
+        h += /title/[Symbol.replace](l, e.galaxy)
 
-                if (f.type !== "img" && f.type !== "map") {
-                    let l = /idname/g[Symbol.replace](itm, id)
-                    if (!fstring)
-                        l = /pointer/[Symbol.replace](l, "")
+        let i = getIndex(objectList, "name", fstring ? e : e.type)
+        for (let f of objectList[i].fields) {
+            let id = f.name.nameToId()
+            let title = ""
 
-                    h += /title/[Symbol.replace](l, title)
+            if (fstring)
+                title = f.name
+            else if (typeof e[f.name] === "undefined")
+                title = ""
+            else if (f.type === "tags") {
+                let keys = Object.keys(e[f.name])
+                title = ""
+                for (let k of keys)
+                    title += k + " "
+            } else
+                title = e[f.name]
 
-                    if (typeof f.sublist !== "undefined")
-                        for (let s of f.sublist) {
-                            let id = s.name.nameToId()
-                            let title = fstring ? s.name : typeof e[s.name] === "undefined" ? "" : e[s.name]
+            if (f.type !== "img" && f.type !== "map") {
+                let l = /idname/g[Symbol.replace](itm, id)
+                if (!fstring)
+                    l = /pointer/[Symbol.replace](l, "")
 
-                            if (s.type !== "img" && s.type !== "map") {
-                                let l = /idname/g[Symbol.replace](itm, id)
-                                h += /title/[Symbol.replace](l, title)
-                            }
+                h += /title/[Symbol.replace](l, title)
+
+                if (typeof f.sublist !== "undefined")
+                    for (let s of f.sublist) {
+                        let id = s.name.nameToId()
+                        let title = ""
+
+                        if (fstring)
+                            title = s.name
+                        else if (typeof e[s.name] === "undefined")
+                            title = ""
+                        else if (s.type === "tags") {
+                            let keys = Object.keys(e[s.name])
+                            title = ""
+                            for (let k of keys)
+                                title += k + " "
+                        } else
+                            title = e[s.name]
+
+                        if (s.type !== "img" && s.type !== "map") {
+                            let l = /idname/g[Symbol.replace](itm, id)
+                            h += /title/[Symbol.replace](l, title)
                         }
-                }
+                    }
             }
+        }
 
-            if (fstring) {
-                let l = /idname/g[Symbol.replace](itm, "Favorite")
-                h += /title/[Symbol.replace](l, "Favorite")
-                l = /idname/g[Symbol.replace](itm, "Visited")
-                h += /title/[Symbol.replace](l, "Visited")
-                l = /idname/g[Symbol.replace](itm, "Patron")
-                h += /title/[Symbol.replace](l, "Patron")
-                l = /idname/g[Symbol.replace](itm, "Editors-Choice")
-                h += /title/[Symbol.replace](l, "Editors Choice")
-                // l = /idname/g [Symbol.replace](itm, "Hall-of-Fame")
-                // h += /title/ [Symbol.replace](l, "Hall of Fame")
-                l = /idname/g[Symbol.replace](itm, "Created")
-                h += /title/[Symbol.replace](l, "Created")
-                l = /idname/g[Symbol.replace](itm, "Modified")
-                h += /title/[Symbol.replace](l, "Modified")
-                l = /idname/g[Symbol.replace](itm, "Posted")
-                h += /title/[Symbol.replace](l, "Posted")
-            } else {
-                let l = /idname/g[Symbol.replace](itm, "Created")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.created ? "Created " + e.created.toDate().toDateLocalTimeString() : "")
-                l = /idname/g[Symbol.replace](itm, "Modified")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.modded ? "Modified " + e.modded.toDate().toDateLocalTimeString() : "")
-                l = /idname/g[Symbol.replace](itm, "Posted")
-                l = /pointer/[Symbol.replace](l, "")
-                h += /title/[Symbol.replace](l, e.reddit ? "Posted " + e.reddit.toDate().toDateLocalTimeString() : "")
-            }
+        if (fstring) {
+            let l = /idname/g[Symbol.replace](itm, "Favorited")
+            h += /title/[Symbol.replace](l, "Favorited")
+            l = /idname/g[Symbol.replace](itm, "Created")
+            h += /title/[Symbol.replace](l, "Created")
+            l = /idname/g[Symbol.replace](itm, "Modified")
+            h += /title/[Symbol.replace](l, "Modified")
+            l = /idname/g[Symbol.replace](itm, "Posted")
+            h += /title/[Symbol.replace](l, "Posted")
+        } else {
+            let l = /idname/g[Symbol.replace](itm, "Created")
+            l = /pointer/[Symbol.replace](l, "")
+            h += /title/[Symbol.replace](l, e.created ? "Created " + new Timestamp(e.created.seconds, e.created.nanoseconds).toDate().toDateLocalTimeString() : "")
+            l = /idname/g[Symbol.replace](itm, "Modified")
+            l = /pointer/[Symbol.replace](l, "")
+            h += /title/[Symbol.replace](l, e.modded ? "Modified " + e.modded.toDate().toDateLocalTimeString() : "")
+            l = /idname/g[Symbol.replace](itm, "Posted")
+            l = /pointer/[Symbol.replace](l, "")
+            h += /title/[Symbol.replace](l, e.reddit && typeof e.reddit.toDate !== "undefined" ? "Posted " + e.reddit.toDate().toDateLocalTimeString() : e.redditlink ? "Posted" : "")
         }
 
         h += end
@@ -4980,7 +5112,16 @@ class NMSCE {
         let i = getIndex(objectList, "name", e.type)
         for (let f of objectList[i].fields) {
             let id = f.name.nameToId()
-            let title = typeof e[f.name] === "undefined" ? "" : e[f.name]
+            let title = ""
+
+            if (typeof e[f.name] === "undefined")
+                title = ""
+            else if (f.type === "tags") {
+                let keys = Object.keys(e[f.name])
+                for (let k of keys)
+                    title += k + " "
+            } else
+                title = e[f.name]
 
             if (f.type !== "img" && f.type !== "map") {
                 let floc = loc.find("#id-" + id)
@@ -4990,7 +5131,16 @@ class NMSCE {
                 if (typeof f.sublist !== "undefined")
                     for (let s of f.sublist) {
                         let id = s.name.nameToId()
-                        let title = typeof e[s.name] === "undefined" ? "" : e[s.name]
+                        let title = ""
+
+                        if (typeof e[s.name] === "undefined")
+                            title = ""
+                        else if (s.type === "tags") {
+                            let keys = Object.keys(e[s.name])
+                            for (let k of keys)
+                                title += k + " "
+                        } else
+                            title = e[s.name]
 
                         if (s.type !== "img" && s.type !== "map") {
                             let floc = loc.find("#id-" + id)
@@ -5015,16 +5165,11 @@ class NMSCE {
     }
 
     selectList(evt) {
-        let id = $(evt).closest("[id|='row']").prop("id").stripID()
-        let type = $(evt).closest("[id|='list']").prop("id").stripID()
+        let id = $(evt).closest("[id|='row']").attr("id").stripID()
+        let type = $(evt).closest("[id|='list']").attr("id").stripID()
         let i = getIndex(this.entries[type], "id", id)
         let e = this.entries[type][i]
         this.displaySingle(e)
-
-        getDoc(doc(bhs.fs, "nmsce/" + e.galaxy + "/" + e.type + "/" + e.id)).then(doc => {
-            if (doc.exists())
-                this.displaySingle(doc.data())
-        })
     }
 }
 
@@ -5056,7 +5201,6 @@ const mapColors = {
     error: "#ff0000",
 }
 
-
 const clientIds = {
     prod: "8oDpVp9JDDN7ng",
     beta: "9Ukymj_MbqxWglSLm0kQqw",
@@ -5073,9 +5217,8 @@ if (currentLocation.includes("beta.nmsce.com"))
 if (currentLocation.includes("localhost"))
     client_id = clientIds.local;
 
-if (currentLocation.includes("web.app"))
+if (currentLocation.includes("test-nms-bhs.firebaseapp.com"))
     client_id = clientIds.alpha;
-
 
 const reddit = {
     client_id: client_id,
@@ -5102,10 +5245,10 @@ function setCursor(cursor) {
 }
 
 function setAsym(evt) {
-    let id = $(evt.target).closest("[id|='slist']").prop("id")
+    let id = $(evt.target).closest("[id|='slist']").attr("id")
     let row = $("#pnl-map #" + id)
 
-    if (evt.target.checked && (fcedata || $(evt.target).prop("id") === "rdo-True"))
+    if (evt.target.checked && (fcedata || $(evt.target).attr("id") === "rdo-True"))
         row.find("#asym-checkmark").show()
     else
         row.find("#asym-checkmark").hide()
@@ -5115,7 +5258,7 @@ function setAsym(evt) {
 window.toggleAsym = toggleAsym;
 function toggleAsym(evt) {
     let ck = $(evt).closest("[id|='row']").find("#asym-checkmark")
-    let id = $(evt).closest("[id|='slist']").prop("id")
+    let id = $(evt).closest("[id|='slist']").attr("id")
     let row = $("#panels #" + id + " #row-Asymmetric")
 
     if (ck.is(":visible")) {
@@ -5145,7 +5288,7 @@ function getPlanet(evt) {
     if (!fcedata)
         return
 
-    let gal = $("#btn-Galaxy").val().stripNumber()
+    let gal = bhs.getMenu($("#menu-Galaxy"))
     let addr = $("#panels #id-addr").val()
     let planet = $(evt.target ? evt.target : evt).val()
 
@@ -5154,8 +5297,7 @@ function getPlanet(evt) {
         return
     }
 
-
-    let q = query(collectionGroup(bhs.fs, "nmsceCommon"),
+    let q = query(collection(bhs.fs, "nmsceCombined"),
         where("galaxy", "==", gal),
         where("addr", "==", addr),
         where("Planet-Index", "==", planet),
@@ -5168,7 +5310,7 @@ function getPlanet(evt) {
             if (e["Planet-Name"] && e["Planet-Name"] !== "") {
                 $("[id='id-Planet-Name']").val(e["Planet-Name"])
                 $("[id='row-Planet-Name'] .fa-check").show()
-                this.restoreImageText(null, true)
+                nmsce.restoreImageText(null, true)
             }
         } else
             $("[id='row-Planet-Name'] .fa-check").hide()
@@ -5178,52 +5320,56 @@ function getPlanet(evt) {
 function getEntry() {
     let addr = $("#panels #id-addr").val()
     let name = $(this).val()
-    let type = $("#typePanels .active").prop("id").stripID()
-    let gal = $("#btn-Galaxy").val().stripNumber()
+    let type = $("#typePanels .active").attr("id").stripID()
+    let gal = bhs.getMenu($("#menu-Galaxy"))
 
     if (gal && type && addr && name) {
-        let q = query(collection(bhs.fs, "nmsce/" + gal + "/" + type), where("Name", "==", name), where("addr", "==", addr))
+        let q = query(collection(bhs.fs, "nmsceCombined"),
+            where("galaxy", "==", gal),
+            where("type", "==", type),
+            where("Name", "==", name),
+            where("addr", "==", addr))
+
         getDocs(q).then(snapshot => {
             if (!snapshot.empty) {
-                nmsce.displaySingle(snapshot.docs[0].data())
+                nmsce.displaySingle(snapshot.docs[0].data(), true)
                 $("#typePanels .active #row-Name .fa-check").show()
             }
         })
     }
 }
 
-
 const resultTables = [{
     name: "Search Results",
-    limit: 50,
+    limit: 25,
     hidden: true,
     cont: true,
 }, {
     name: "My Favorites",
-    limit: 50,
+    limit: 25,
     hidden: true,
     cont: true,
 }, {
     name: "Latest",
     field: "created",
-    limit: 50,
+    limit: 25,
     cont: true,
 }, {
     name: "Top Favorites",
     field: "votes.favorite",
-    limit: 20,
-}, {
-    name: "Patron Favorites",
-    field: "votes.patron",
-    limit: 20,
-}, {
-    name: "Top Visited",
-    field: "votes.visited",
-    limit: 20,
-}, {
-    name: "Moderators Choice",
-    field: "votes.edchoice",
-    limit: 20,
+    limit: 25,
+    // }, {
+    //     name: "Patron Favorites",
+    //     field: "votes.patron",
+    //     limit: 20,
+    // }, {
+    //     name: "Top Visited",
+    //     field: "votes.visited",
+    //     limit: 20,
+    // }, {
+    //     name: "Moderators Choice",
+    //     field: "votes.edchoice",
+    //     limit: 20,
     // }, {
     //     name: "Hall of Fame",
     //     field: "votes.hof",
@@ -5280,7 +5426,17 @@ const objectList = [{
         ttip: "Select ship type to select ship size and parts.",
         required: true,
         search: true,
-        sublist: [ {
+        sublist: [{
+            name: "Parts",
+            type: "map",
+            sub: "bodies",
+            search: true,
+        }, {
+            name: "Parts-2",
+            type: "map",
+            sub: "wings",
+            search: true,
+        }, {
             name: "Slots",
             type: "radio",
             ttip: "slotTtip",
@@ -5291,7 +5447,7 @@ const objectList = [{
             name: "Max Upgrade",
             type: "float",
             ttip: "upgradeTtip",
-            sub: true,
+            sub: "upgradeTtip",
             // search: true,
             // query: ">=",
             imgText: true,
@@ -5304,82 +5460,64 @@ const objectList = [{
             search: true,
             inputHide: true,
         }, {
-            name: "Parts",
-            type: "map",
-            sub: "bodies",
+            name: "First Wave",
+            ttip: "This is <span class='h5' style='font-weight:bold'>ONLY</span> valid on space stations. First wave for reloading a save and restarting the game are different.",
+            type: "radio",
+            list: [{
+                name: "Reload"
+            }, {
+                name: "Restart"
+            }],
+            imgText: true,
             search: true,
+            inputHide: true,
+            sub: "firstWave"
         }, {
-            name: "Parts-2",
-            type: "map",
-            sub: "wings",
+            name: "Crashed",
+            type: "checkbox",
+            onchange: showLatLong,
+            imgText: true,
             search: true,
-        },{
+            sub: "firstWave"
+        }, {
+            name: "Latitude",
+            type: "float",
+            imgText: true,
+        }, {
+            name: "Longitude",
+            type: "float",
+            imgText: true,
+        }, {
+            name: "Planet Name",
+            type: "string",
+            imgText: true,
+        }, {
+            name: "Planet Index",
+            type: "number",
+            range: 15,
+            onchange: getPlanet,
+        }, {
+            name: "Class",
+            type: "radio",
+            list: classList,
+            imgText: true,
+            sub: "classList"
+        }, {
+            name: "Reset Mission",
+            type: "checkbox",
+            search: true,
+            imgText: true,
+            ttip: "Find specific living ship by resetting mission log location while next to portal.",
+            sub: "resetMission"
+        }, {
             name: "Sail",
             ttip: "Translucent sail color.",
             type: "tags",
             search: true,
             list: colorList,
             max: 1,
-            ckIncludeColor: true
+            sub: "includeSail"
         }]
-    }, {
-        //     name: "Frequency",
-        //     ttip: "Arrival frequency.",
-        //     type: "menu",
-        //     list: occurenceList,
-        //     search: true,
-        //     inputHide: true,
-        // }, {
-        name: "Crashed",
-        type: "checkbox",
-        onchange: showLatLong,
-        imgText: true,
-        search: true,
-    }, {
-        name: "Latitude",
-        type: "float",
-        startState: "hidden",
-        imgText: true,
-    }, {
-        name: "Longitude",
-        type: "float",
-        imgText: true,
-        startState: "hidden",
-    }, {
-        name: "Planet Name",
-        type: "string",
-        imgText: true,
-        startState: "hidden",
-    }, {
-        name: "Planet Index",
-        type: "number",
-        range: 15,
-        startState: "hidden",
-        onchange: getPlanet,
-    }, {
-        name: "Class",
-        type: "radio",
-        startState: "hidden",
-        list: classList,
-        imgText: true,
-    }, {
-        name: "First Wave",
-        ttip: "This is <span class='h5' style='font-weight:bold'>ONLY</span> valid on space stations. First wave for reloading a save and restarting the game are different.",
-        type: "radio",
-        list: [{
-            name: "Reload"
-        }, {
-            name: "Restart"
-        }],
-        imgText: true,
-        search: true,
-        inputHide: true,
-    }, {
-        name: "Seed",
-        type: "string",
-        searchText: true,
-        ttip: "Found in save file. Can be used to reskin ship.",
-        inputHide: true,
     }, {
         name: "Color",
         ttip: "Main body & wing colors. For colored chrome use the color + chrome.",
@@ -5402,10 +5540,16 @@ const objectList = [{
         search: true,
         inputHide: true,
     }, {
+        name: "Seed",
+        type: "string",
+        searchText: true,
+        ttip: "Found in save file. Can be used to reskin ship.",
+        inputHide: true,
+    }, {
         name: "Photo",
         type: "img",
         ttip: "Use this to upload a screenshot for glyph translation and/or the image for this entry.",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Freighter",
@@ -5475,7 +5619,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }, {
         name: "Parts",
         type: "map",
@@ -5538,7 +5682,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     },]
 }, {
     name: "Multi-Tool",
@@ -5554,12 +5698,6 @@ const objectList = [{
         name: "Galaxy",
         type: "menu",
         required: true,
-        // }, {
-        //     id: "#id-Platform",
-        //     field: "Platform",
-        //     name: "Platform",
-        //     type: "radio",
-        //     required: true,
     }, {
         id: "#id-addrInput #id-addr",
         field: "addr",
@@ -5666,7 +5804,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Fauna",
@@ -5741,7 +5879,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Planet",
@@ -5835,7 +5973,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
 }, {
     name: "Base",
@@ -5851,12 +5989,6 @@ const objectList = [{
         name: "Galaxy",
         type: "menu",
         required: true,
-        // }, {
-        //     id: "#id-Platform",
-        //     field: "Platform",
-        //     name: "Platform",
-        //     type: "radio",
-        //     required: true,
     }, {
         id: "#id-addrInput #id-addr",
         field: "addr",
@@ -5923,113 +6055,7 @@ const objectList = [{
     }, {
         name: "Photo",
         type: "img",
-        required: true,
+        // required: true,
     }]
-}, {
-    name: "Living-Ship",
-    imgText: [{
-        id: "#id-Player",
-        field: "_name",
-        name: "Player",
-        type: "string",
-        required: true,
-    }, {
-        id: "#id-Galaxy",
-        field: "galaxy",
-        name: "Galaxy",
-        type: "menu",
-        required: true,
-        // }, {
-        //     id: "#id-Platform",
-        //     field: "Platform",
-        //     name: "Platform",
-        //     type: "radio",
-        //     required: true,
-    }, {
-        id: "#id-addrInput #id-addr",
-        field: "addr",
-        name: "Coords",
-        type: "string",
-        required: true,
-    }, {
-        id: "#id-addrInput #id-addr",
-        field: "addr",
-        name: "Glyphs",
-        font: "NMS Glyphs",
-        type: "glyph",
-    },],
-    fields: [{
-        name: "Name",
-        type: "string",
-        search: true,
-        imgText: true,
-        onchange: getEntry,
-        inputHide: true,
-    }, {
-        name: "blank",
-        type: "blank",
-    }, {
-        name: "Damage",
-        type: "float",
-        inputHide: true,
-    }, {
-        name: "Hyperdrive",
-        type: "float",
-        inputHide: true,
-    }, {
-        name: "Planet Name",
-        type: "string",
-        imgText: true,
-        searchText: true,
-        inputHide: true,
-    }, {
-        name: "Planet Index",
-        type: "number",
-        range: 15,
-        ttip: planetNumTip,
-        onchange: getPlanet,
-        searchText: true,
-    }, {
-        name: "Latitude",
-        imgText: true,
-        type: "float",
-    }, {
-        name: "Longitude",
-        imgText: true,
-        type: "float",
-    }, {
-        name: "Reset Mission",
-        type: "checkbox",
-        search: true,
-        imgText: true,
-        ttip: "Find specific living ship by resetting mission log location while on this planet."
-    }, {
-        name: "Seed",
-        type: "string",
-        searchText: true,
-        ttip: "Found in save file. Can be used to reskin.",
-        inputHide: true,
-    }, {
-        name: "Color",
-        type: "tags",
-        max: 4,
-        list: colorList,
-        search: true,
-    }, {
-        name: "Tags",
-        type: "tags",
-        max: 4,
-        imgText: true,
-        search: true,
-        inputHide: true,
-    }, {
-        name: "Photo",
-        type: "img",
-        required: true,
-    }, {
-        name: "Parts",
-        type: "map",
-        map: "/images/living-ship-opt.svg",
-        search: true,
-    }]
+
 }]

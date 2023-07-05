@@ -31,10 +31,10 @@ async function main() {
         console.log (snapshot.docs.length, "Exotics")
         //dlThumb("exotic", snapshot.docs)
     }))
-    p.push(groupref.where("type", "==", "Living-Ship").get().then(snapshot => {
-        console.log (snapshot.docs.length, "Living Ships")
-        //dlThumb("livingship", snapshot.docs)
-    }))
+    // p.push(groupref.where("type", "==", "Living-Ship").get().then(snapshot => {
+    //     console.log (snapshot.docs.length, "Living Ships")
+    //     //dlThumb("livingship", snapshot.docs)
+    // }))
 
     await Promise.all(p)
 }

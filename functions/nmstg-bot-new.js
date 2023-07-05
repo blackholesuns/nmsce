@@ -289,19 +289,24 @@ async function checkPostLimits(posts, approve) {
             continue
 
         // check for videos not using video flair
-        if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" && !post.link_flair_text.includes("Bug")
-            && !post.link_flair_text.includes("Video") && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")
-            && typeof post.secure_media !== "undefined" && post.secure_media
-            && (typeof post.secure_media.reddit_video !== "undefined" || typeof post.secure_media.oembed !== "undefined"
-                && (post.secure_media.oembed.type === "video" || post.secure_media.type === "twitch.tv"))) {
+        if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267"
+            && !post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video")
+            && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")) {
 
-            post.link_flair_text += " Video"
-            console.log("add video flair: " + permaLinkHdr + post.permalink)
+            if (typeof post.url !== "undefined" && post.url.match(/youtube/i)
+                || typeof post.secure_media !== "undefined" && post.secure_media
+                && (typeof post.secure_media.reddit_video !== "undefined"
+                    || typeof post.secure_media.oembed !== "undefined" && (post.secure_media.oembed.type === "video"
+                        || post.secure_media.type === "twitch.tv"))) {
 
-            p.push(post.selectFlair({
-                flair_template_id: post.link_flair_template_id,
-                text: post.link_flair_text
-            }).catch(err => error(err)))
+                post.link_flair_text += " Video"
+                console.log("add video flair: " + permaLinkHdr + post.permalink)
+
+                p.push(post.selectFlair({
+                    flair_template_id: post.link_flair_template_id,
+                    text: post.link_flair_text
+                }).catch(err => error(err)))
+            }
         }
 
         let limit = flairPostLimit.find(x => post.link_flair_text.includes(x.flair))
@@ -411,8 +416,10 @@ async function checkPostLimits(posts, approve) {
             p.push(post.remove().catch(err => error(err)))
         }
         else {
-            if (approve)
+            if (approve) {
+                console.log("approve", permaLinkHdr + post.permalink)
                 p.push(post.approve().catch(err => error(err)))
+            }
 
             if (typeof limit.start_utc !== "undefined" && post.created_utc > limit.start_utc
                 || typeof limit.time !== "undefined" && now - post.created_utc < limit.time) {
@@ -453,7 +460,7 @@ function checkNewPosters(posts) {
                 if (!post.banned_by && (typeof post.preview !== "undefined" || typeof post.media_metadata !== "undefined")) {
                     console.log("new poster", post.author.name, permaLinkHdr + post.permalink)
                     let p = []
-                    p.push(post.reply(firstPost+botSig+firstPostCmd).catch(err => error(err)))
+                    p.push(post.reply(firstPost + botSig + firstPostCmd).catch(err => error(err)))
 
                     // if (!commentedList.includes(post.name)) {
                     //     commentedList.push(post.name)
@@ -472,13 +479,13 @@ function checkNewPosters(posts) {
 function checkReported(posts) {
     let p = []
     for (let post of posts) {
-        if (post.author.name === "AutoModerator" || post.author.name === "nmsceBot")
+        if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot") && post.body[0] !== '!')
             p.push(post.approve())  // idiots reporting automod & bot comments
 
-        if (post.name.startsWith("t1") && !post.banned_by)
-            for (let r of post.user_reports)
-                if (r[0].includes("poiler"))
-                    p.push(post.reply("!Filter-Spoiler").catch(err => error(err)))
+        // if (post.name.startsWith("t1") && !post.banned_by)
+        //     for (let r of post.user_reports)
+        //         if (r[0].includes("poiler"))
+        //             p.push(post.reply("!filter-spoiler").catch(err => error(err)))
     }
 
     return Promise.all(p)
@@ -531,30 +538,44 @@ async function modCommands(posts, mods) {
             let match = post.body.match(/!\W?(watch|unwatch|contest|reload|check|flair|agree|ad|pm|r|c)\W?(.*)?/i)
 
             if (match) {
-                console.log("command", post.body)
+                console.log("command", post.body, permaLinkHdr + post.permalink)
 
                 let m = match[1].toLowerCase()
                 let op
+                let parent
+                let id = post.parent_id
 
-                while (typeof post.parent_id !== "undefined" && post.parent_id.startsWith("t1_"))
-                    op = await reddit.getComment(post.parent_id).fetch()   // trace back up comment thread
+                if (id.startsWith("t1_"))
+                    parent = await reddit.getComment(id).fetch()   // trace back up comment thread
+                else
+                    parent = await reddit.getSubmission(id).fetch()   // get post
 
-                op = await reddit.getSubmission(post.parent_id).fetch()     // original post
+                id = post.parent_id
+
+                while (typeof id !== "undefined" && id.startsWith("t1_")) {
+                    op = await reddit.getComment(id).fetch()   // trace back up comment thread
+                    id = op.parent_id
+                }
+
+                if (id !== parent.parent_id)
+                    op = await reddit.getSubmission(id).fetch()   // get post
+                else
+                    op = parent
+
+                p.push(post.remove().catch(err => error(err)))
 
                 if (mods.includes(post.author_fullname)) {
                     switch (m) {
                         case "r": p.push(removePost(post, op)); break           // remove post
-                        case "c": p.push(sendComment(post, op)); break          // comment
-                        case "pm": p.push(sendMessage(post, op)); break         // pm op
+                        case "c": p.push(sendComment(post, parent)); break          // comment
+                        case "pm": p.push(sendMessage(post, parent)); break         // pm op
                         case "ad": p.push(setupAdvertiser(post, op)); break     // setup ad permission
-                        case "watch": p.push(setupWatch(post, op)); break       // send ops post to modqueue
-                        case "unwatch": p.push(clearWatch(post, op)); break
+                        case "watch": p.push(setupWatch(post, parent)); break       // send ops post to modqueue
+                        case "unwatch": p.push(clearWatch(post, parent)); break
                         case "contest": p.push(setupContest(post, op)); break   // setup contest
                         case "reload": p.push(loadSettings(post, op)); break    // reload settings from wiki
                         case "check": p.push(botStats(post, op)); break         // am I running?
                     }
-
-                    p.push(post.remove().catch(err => error(err)))
                 }
 
                 if (post.author_fullname === op.author_fullname || mods.includes(post.author_fullname)) {
@@ -562,8 +583,6 @@ async function modCommands(posts, mods) {
                         case "flair": p.push(setFlair(post, op)); break      // set flair
                         case "agree": p.push(checkMotherMayI(post, op)); break    // first time post mother-may-i
                     }
-
-                    p.push(post.remove().catch(err => error(err)))
                 }
             }
         }
@@ -572,33 +591,38 @@ async function modCommands(posts, mods) {
     return Promise.all(p)
 }
 
-
 function setFlair(post, op) {
     let p = []
-    let posts = []
 
     let m = post.body.match(/!\W?flair:(.*)/)
-    if (m) {
-        if (op.link_flair_template_id === "20526a8e-9448-11e8-9fdd-0e511532ebae")
-            op.link_flair_template_id = "30e40f0c-948f-11eb-bc74-0e0c6b05f4ff"
 
-        op.link_flair_text = m[1]
+    if (m) {
+        if (m[1].match(/answered/i)) {
+            op.link_flair_template_id = "30e40f0c-948f-11eb-bc74-0e0c6b05f4ff"
+            op.link_flair_text = "Answered"
+        }
+        else
+            op.link_flair_text = m[1]
 
         p.push(op.selectFlair({
             flair_template_id: op.link_flair_template_id,
             text: op.link_flair_text
         }).catch(err => error(err)))
 
+        console.log("set flair", op.link_flair_text, permaLinkHdr + op.permalink)
+
+        let posts = []
         posts.push(op)
+
         p.push(checkPostLimits(posts, true))    // approve post if limit ok
     }
+
+    return Promise.all(p)
 }
 
 function checkMotherMayI(post, op) {
-    let posts = []
-    posts.push(op)
-
-    return checkPostLimits(posts, true)    // approve post if limit ok
+    console.log("approve first post", permaLinkHdr + op.permalink)
+    return post.approve().catch(err => error(err))
 }
 
 function setupAdvertiser(post, op) {
@@ -630,6 +654,7 @@ function setupAdvertiser(post, op) {
                     ad.flair = field[1]
                 break
             }
+            case "contact":
             case "contacts": {
                 let contacts = field[1].split(",")
                 for (let c of contacts)
@@ -688,7 +713,7 @@ function listAdvertisers(post, flair) {
     return post.reply(text).catch(err => error(err))
 }
 
-function setupWatch(post, op) {
+async function setupWatch(post, op) {
     let watch = settings.watch.find(x => x.uid === op.author_fullname)
     let opts = post.body.split(" ")
     let p = []
@@ -788,7 +813,7 @@ function watchHistory(post, op, watch) {
     }
 }
 
-function clearWatch(post, op) {
+async function clearWatch(post, op) {
     let p = []
     let watch = settings.watch.find(x => x.uid === op.author_fullname)
 
@@ -863,7 +888,7 @@ function setupContest(post, op) {
 
 async function listContest(post, op) {
     let today = new Date()
-    let text = "!-Contest  \n"
+    let text = "!Current Contest  \n"
 
     let contest = await settings.contest.filter(x => {
         let start = new Date(x.start).valueOf()
@@ -912,7 +937,21 @@ function removePost(post, op) {
 }
 
 function sendComment(post, op) {
-    let message = post.body.slice(3) + "  \n\n*This comment was made by a moderator of r/NoMansSkyTheGame. If you have questions please contact them [here](https://www.reddit.com/message/compose?to=%2Fr%2FNoMansSkyTheGame).*"
+    let message = ""
+    let match = post.body.match(/!\W?c\W?([0-9,]+)/)
+
+    if (match) {
+        let list = match[1].split(",")
+
+        for (let r of list) {
+            let i = parseInt(r) - 1
+            message += typeof rules[i] !== "undefined" ? rules[i] + "  \n\n" : ""
+        }
+
+        message += botSig
+    } else
+        message = post.body.slice(3) + "  \n\n*This comment was made by a moderator of r/NoMansSkyTheGame. If you have questions please contact them [here](https://www.reddit.com/message/compose?to=%2Fr%2FNoMansSkyTheGame).*"
+
     console.log("post comment: ", message)
 
     return op.reply(message)

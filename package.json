@@ -22,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/blackholesuns/nmsce/issues"
   },
-  "homepage": "https://github.com/blackholesuns/nmsce#readme"
+  "homepage": "https://github.com/blackholesuns/nmsce#readme",
+  "dependencies": {
+    "eslint-config-standard": "^17.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.42.0"
+  }
 }

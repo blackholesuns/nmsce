@@ -90,19 +90,15 @@ exports.getGPList = functions.https.onRequest((request, response) => {
 })
 
 
-exports.nmsceItemCreated = functions.firestore.document("nmsce/{galaxy}/{type}/{id}")
+exports.nmsceItemCreated = functions.firestore.document("nmsceCombined/{id}")
     .onCreate(async (doc, context) => {
         let p = []
         let e = doc.data()
-         const nmsce = require('./nmsceSearch.js')
+        // const nmsce = require('./nmsceSearch.js')
 
-        p.push(nmsce.checkSearch(e))
+        // p.push(nmsce.checkSearch(e))
 
-        let ref = admin.firestore().doc("admin/" + e.uid)
-        let ed = await ref.get()
-        let mod = ed.exists && ed.data().roles.includes("nmsceEditor")
-
-        ref = admin.firestore().doc("bhs/nmsceTotals")
+        let ref = admin.firestore().doc("bhs/nmsceTotals")
         p.push(ref.get().then(async doc => {
             let d = {}
             if (doc.exists)
@@ -117,45 +113,43 @@ exports.nmsceItemCreated = functions.firestore.document("nmsce/{galaxy}/{type}/{
             if (typeof d[e.type] === "undefined")
                 d[e.type] = 0
 
+            d.Total++
             d[e.type]++
-            console.log(e.type, d[e.type])
-
             d[e.uid][e.type]++
             d[e.uid].name = e._name
-            if (mod)
-                d[e.uid].mod = true
 
+            console.log(e._name, e.type, d[e.uid][e.type], "All", d[e.type])
             return doc.ref.set(d, {
                 merge: true
             })
         }))
 
-        ref = admin.firestore().doc("bhs/nmsceMonthly")
-        p.push(ref.get().then(async doc => {
-            let d = {}
-            if (doc.exists)
-                d = doc.data()
+        // ref = admin.firestore().doc("bhs/nmsceMonthly")
+        // p.push(ref.get().then(async doc => {
+        //     let d = {}
+        //     if (doc.exists)
+        //         d = doc.data()
 
-            if (typeof d[e.uid] === "undefined")
-                d[e.uid] = {}
+        //     if (typeof d[e.uid] === "undefined")
+        //         d[e.uid] = {}
 
-            if (typeof d[e.uid][e.type] === "undefined")
-                d[e.uid][e.type] = 0
+        //     if (typeof d[e.uid][e.type] === "undefined")
+        //         d[e.uid][e.type] = 0
 
-            if (typeof d[e.type] === "undefined")
-                d[e.type] = 0
+        //     if (typeof d[e.type] === "undefined")
+        //         d[e.type] = 0
 
-            d[e.type]++
+        //     d[e.type]++
 
-            d[e.uid][e.type]++
-            d[e.uid].name = e._name
-            if (mod)
-                d[e.uid].mod = true
+        //     d[e.uid][e.type]++
+        //     d[e.uid].name = e._name
+        //     if (mod)
+        //         d[e.uid].mod = true
 
-            return doc.ref.set(d, {
-                merge: true
-            })
-        }))
+        //     return doc.ref.set(d, {
+        //         merge: true
+        //     })
+        // }))
 
         return Promise.all(p)
     })
@@ -528,7 +522,7 @@ function applyEdits(ts, elist) {
 //     return admin.firestore().doc("edits/" + e.time.toDate().getTime()).set(e)
 // }
 
-exports.scheduleBackupBHS = functions.pubsub.schedule('0 2 1,8,15,22 * *').onRun(context => {
+exports.scheduleBackupBHS = functions.pubsub.schedule('0 2 * * 0').onRun(context => {
     return doBackup()
 })
 
