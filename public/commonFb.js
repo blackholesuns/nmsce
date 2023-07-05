@@ -1,6 +1,6 @@
 'use strict';
-import { getAuth, signInWithRedirect, GoogleAuthProvider, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"
-import { Timestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+import { getAuth, signInWithRedirect, GoogleAuthProvider, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"
+import { Timestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
 import { buildGalaxyInfo } from "./commonNms.js";
 import { App, Auth, Firestore, Storage } from "./firebase.js";
 

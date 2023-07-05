@@ -1,8 +1,8 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"
-import { getFirestore } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
-import { getStorage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-storage.js"
-// import { } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-functions.js"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"
+import { getFirestore } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
+import { getStorage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js"
+// import { } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-functions.js"
 
 var fbconfig = {
     apiKey: FIREBASE_API,

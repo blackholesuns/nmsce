@@ -1,7 +1,7 @@
 'use strict'
 
-import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"
-import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"
+import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
 import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, resourceList, sentinelList, shipList, versionList } from "./constants.js";
@@ -1044,7 +1044,7 @@ class NMSCE {
         if (!entry.reg || !entry.sys || !entry.Economy || !entry.Lifeform)
             this.changeAddr(null, null, entry)
 
-        let link = `/preview?i=${entry.id}&g=${entry.galaxy.nameToId()}&t=${entry.type.nameToId()}`;
+        let link = `/preview?i=${entry.id}`
         $("[id|='permalink']").attr("href", link)
 
         let disp = function (flds, pnltype, slist) {
@@ -3243,10 +3243,8 @@ class NMSCE {
 
     redditCreate(state, accessToken) {
         if (!accessToken) {
-            if (nmsce.last) {
-                let e = nmsce.last
-                state = "post_" + e.id
-            }
+            if (nmsce.last)
+                state = "post_" + nmsce.last.id
 
             accessToken = nmsce.getRedditToken(state)
         }
@@ -4695,7 +4693,7 @@ class NMSCE {
 
         this.last = e
 
-        let link = `/preview?i=${e.id}&g=${e.galaxy.nameToId()}&t=${e.type.nameToId()}`
+        let link = `/preview?i=${e.id}`
         $("[id|='permalink']").attr("href", link)
 
         let idx = getIndex(objectList, "name", e.type)

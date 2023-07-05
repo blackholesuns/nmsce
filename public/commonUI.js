@@ -1,6 +1,6 @@
 "use strict";
 
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
 import { blackHoleSuns, bhs } from "./commonFb.js";
 import { fnmsce } from "./commonNms.js";
 import { nmsce } from "./nmsce.js";
