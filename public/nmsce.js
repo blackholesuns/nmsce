@@ -1,13 +1,26 @@
 'use strict'
 
 import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"
-import { Timestamp, collection, collectionGroup, query, where, orderBy, increment, arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
+import {
+    getCountFromServer, Timestamp, collection, collectionGroup, query, where, orderBy, increment,
+    arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
-import { addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects, reformatAddress, uuidv4, validateAddress } from "./commonNms.js";
-import { biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed, fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, resourceList, sentinelList, shipList, versionList } from "./constants.js";
+import {
+    addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects,
+    reformatAddress, uuidv4, validateAddress
+} from "./commonNms.js";
+import {
+    biomeList, classList, colorList, economyList, economyListTier, faunaList, faunaProductTamed,
+    fontList, frigateList, galaxyList, latestversion, lifeformList, modeList, resourceList, sentinelList,
+    shipList, versionList
+} from "./constants.js";
 import { calcImageSize } from "./imageSizeUtil.js";
 import { CollateChangeLog, Version } from "./metadata.js";
-import { DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath, GetThumbnailUrl, UploadImages } from "./storage.js";
+import {
+    DeleteImages, GetDisplayPath, GetDisplayUrl, GetOriginalPath, GetOriginalUrl, GetThumbnailPath,
+    GetThumbnailUrl, UploadImages
+} from "./storage.js";
 
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
@@ -1245,9 +1258,18 @@ class NMSCE {
         }
 
         // statements.push(orderBy("created", "desc")) would require index for every possible combination
-        let qury = query(ref, ...statements, limit(25))
+        let q = query(ref, ...statements, limit(25))
 
-        this.getWithObserver(null, qury, panel, true, dispFcn)
+        getCountFromServer(q).then(snapshot => {
+            let c = snapshot.data().count
+
+            if (!c)
+                bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
+            else
+                bhs.status("Search found " + c + " matches.")
+        })
+
+        this.getWithObserver(null, q, panel, true, dispFcn)
     }
 
     search(search) {
@@ -4465,9 +4487,6 @@ class NMSCE {
 
                 getDocs(ref).then(snapshot => {
                     if (snapshot.empty) {
-                        if (obs.type === "Search-Results")
-                            bhs.status("Nothing matching selection found. Try selecting fewer items. To match an entry it must contain everything selected.", true)
-
                         obs.cont = false
                         // obs.dispFcn([], obs.type) leave search tab open
                         return

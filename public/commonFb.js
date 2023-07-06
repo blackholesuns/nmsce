@@ -1,6 +1,8 @@
 'use strict';
-import { getAuth, signInWithRedirect, GoogleAuthProvider, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"
-import { Timestamp, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
+import { getAuth, signInWithRedirect, GoogleAuthProvider, GithubAuthProvider }
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"
+import { Timestamp, doc, setDoc, getDoc }
+    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
 import { buildGalaxyInfo } from "./commonNms.js";
 import { App, Auth, Firestore, Storage } from "./firebase.js";
 
@@ -75,6 +77,8 @@ export class blackHoleSuns {
         this.fbauth = Auth
         this.fs = Firestore
         this.fbstorage = Storage
+
+        // this.fs.enableIndexedDbPersistence()
 
         this.fbauth.onAuthStateChanged(this.onAuthStateChanged.bind(this))
     }
@@ -243,7 +247,7 @@ export class blackHoleSuns {
         //     this.status("Error: Missing platform. Changes not saved.", 0)
         //     ok = false
         // }
-    
+
         return ok
     }
 }
