@@ -3513,7 +3513,7 @@ class NMSCE {
                                     if (nmsce.last.Tags["pirate"])
                                         comment += "This is pirate raider ship. To buy this ship go to any trading post and wait for a pirate raid. It may take more than 1 raid for it to spawn and land.  \n\n"
 
-                                    else if (nmsce.last.type === "Ship")
+                                    else if (nmsce.last.type === "Ship" && nmsce.last.Type !== "Interceptor" && nmsce.last.Type !== "Living Ship")
                                         comment += "Ships can be found at any landing pad in the system.  \n\n"
                                 }
 
