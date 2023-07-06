@@ -1,6 +1,13 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.4",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Update to firebase 9.23.0. Add count of items found for search."
+        ]
+    },{
         Version: "1.2.3",
         Title: " ",
         Authors: ["spip01"],
