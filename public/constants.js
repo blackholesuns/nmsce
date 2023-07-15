@@ -2010,6 +2010,7 @@ export const faunaList = [
     { name: "Beetle" },
     { name: "Cat" },
     { name: "Cat, hexapodal" },
+    { name: "Cat, bipedal" },
     { name: "Cow, hexapodal" },
     { name: "Blob" },
     { name: "Antelope, robot" },

@@ -2068,7 +2068,7 @@ class NMSCE {
                 rloc.find("menu").change(f.onchange)
             }
 
-            if (f.imgText) {
+            if (f.imgText || f.imgUpdate) {
                 rloc.find("input").change(updateImageText.bind(this))
                 rloc.find("button").click(updateImageText.bind(this))
             }
@@ -3168,11 +3168,17 @@ class NMSCE {
 
     buildRedditTitleMenu() {
         const addToTitle = (evt) => {
-            let name = bhs.getMenu($(evt))
             let loc = $("#id-Title")
+            let name = bhs.getMenu($(evt))
+
+            if (name === "pirate") name = "Pirate Raider"
+            if (name === "2 glyphs") name = "You only need the first 2 glyphs to get to this system."
+            
             let title = loc.val() + name + " "
             loc.val(title)
         }
+
+        $("#id-Title").val("")
 
         if (nmsce.last.type == "Ship") {
             let title = []
@@ -5591,6 +5597,7 @@ const objectList = [{
             type: "number",
             range: 15,
             onchange: getPlanet,
+            imgUpdate: true,
         }, {
             name: "Class",
             type: "radio",
@@ -5861,6 +5868,7 @@ const objectList = [{
         ttip: planetNumTip,
         onchange: getPlanet,
         inputHide: true,
+        imgUpdate: true,
     }, {
         name: "Latitude",
         imgText: true,
@@ -5971,6 +5979,7 @@ const objectList = [{
         required: true,
         onchange: getPlanet,
         ttip: planetNumTip,
+        imgUpdate: true,
     }, {
         name: "Photo",
         type: "img",
@@ -6017,6 +6026,7 @@ const objectList = [{
         required: true,
         onchange: getPlanet,
         ttip: planetNumTip,
+        imgUpdate: true,
     }, {
         name: "Biome",
         type: "menu",
@@ -6123,6 +6133,7 @@ const objectList = [{
         onchange: getPlanet,
         ttip: planetNumTip,
         searchText: true,
+        imgUpdate: true,
     }, {
         name: "Latitude",
         imgText: true,
