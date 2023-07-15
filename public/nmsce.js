@@ -379,10 +379,18 @@ class NMSCE {
 
     setGalaxy(evt) {
         let galaxy = bhs.getMenu($("#menu-Galaxy"))
+
         if (galaxy)
-            bhs.updateUser({
-                galaxy: galaxy
-            })
+            if (fcedata) {
+                bhs.updateUser({
+                    galaxy: galaxy
+                })
+            } else {
+                let g = {}
+                g.nmscesettings = {}
+                g.nmscesettings.searchGalaxy = galaxy
+                bhs.updateUser(g)
+            }
     }
 
     setGlyphInput(evt, noupdate) {
@@ -572,8 +580,7 @@ class NMSCE {
     displaySystem(entry) {
         let loc = $("#panels")
 
-        let menu = $("#menu-Galaxy")
-        bhs.setMenu(menu, entry.galaxy)
+        bhs.setMenu($("#menu-Galaxy"), entry.galaxy)
 
         this.dispAddr(loc, entry.addr)
 
@@ -656,10 +663,11 @@ class NMSCE {
                 this.getEntries()
 
             this.updateTotals()
-        } else if (fnmsce) {
-            if (!bhs.user.galaxy)
-                bhs.user.galaxy = "Search All"
 
+            bhs.setMenu($("#menu-Galaxy"), bhs.user.galaxy)
+
+            $("#id-Player").val(bhs.user._name)
+        } else if (fnmsce) {
             if (bhs.user.uid) {
                 // if (typeof bhs.user.nmscesettings.hideSelf === "undefined")
                 //     bhs.user.nmscesettings.hideSelf = false
@@ -677,6 +685,11 @@ class NMSCE {
 
                 if (typeof this.entries["My Favorites"] === "undefined")
                     this.getResultsLists("My Favorites")
+
+                if (bhs.user.nmscesettings && bhs.user.nmscesettings.searchGalaxy)
+                    bhs.setMenu($("#menu-Galaxy"), bhs.user.nmscesettings.searchGalaxy)
+                else
+                    bhs.setMenu($("#menu-Galaxy"), "Search All")
             }
         }
 
@@ -688,18 +701,12 @@ class NMSCE {
             this.setGlyphInput(loc, true)
         }
 
-        let menu = $("#menu-Galaxy")
-        bhs.setMenu(menu, bhs.user.galaxy)
-
-        if (fcedata)
-            $("#id-Player").val(bhs.user._name)
-
         $("#searchlocaltt").hide()
         $("#searchlocal").hide()
         $("#row-savesearch").show()
 
-        if (bhs.isPatreon(2))
-            $("#id-notifySearch").show()
+        // if (bhs.isPatreon(2))
+        //     $("#id-notifySearch").show()
 
         this.getSearches()
     }
@@ -1164,8 +1171,7 @@ class NMSCE {
 
         $("#searchname").val(search.name)
 
-        let menu = $("#menu-Galaxy")
-        bhs.setMenu(menu, search.galaxy)
+        bhs.setMenu($("#menu-Galaxy"), search.galaxy)
 
         $("#ck-notify").prop("checked", search.notify)
         if (search.page !== "/upload" && search._name !== bhs.user.name)
@@ -2993,7 +2999,7 @@ class NMSCE {
     }
 
     setFont(evt) {
-        let font = $(evt).text()
+        let font = bhs.getMenu($(evt))
 
         let keys = Object.keys(nmsce.imageText)
         for (let id of keys) {
@@ -3160,6 +3166,49 @@ class NMSCE {
         }
     }
 
+    buildRedditTitleMenu() {
+        const addToTitle = (evt) => {
+            let name = bhs.getMenu($(evt))
+            let loc = $("#id-Title")
+            let title = loc.val() + name + " "
+            loc.val(title)
+        }
+
+        if (nmsce.last.type == "Ship") {
+            let title = []
+            let loc = $("#pnl-map #pnl-" + nmsce.last.type)
+
+            if (nmsce.last.Type) {
+                title.push({ name: nmsce.last.Type })
+                loc = loc.find("#slist-" + nmsce.last.Type)
+            }
+
+            let parts = Object.keys(nmsce.last.parts)
+            for (let p of parts) {
+                let name = loc.find("#bdr-" + p + " title").html()
+                if (name && typeof title.find(x => x.name === name) === "undefined")
+                    title.push({ name: name })
+            }
+
+            let tags = Object.keys(nmsce.last.Tags)
+            for (let p of tags)
+                title.push({ name: p })
+
+            let colors = Object.keys(nmsce.last.Color)
+            for (let p of colors)
+                title.push({ name: p })
+
+            bhs.buildMenu($("#redditPost"), "Build", title, addToTitle, {
+                labelsize: "col-md-2 col-3",
+                menusize: "col",
+            })
+            $("#redditPost #id-Build").show()
+        }
+        else
+            $("#redditPost #id-Build").hide()
+    }
+
+
     redditLogin(state) {
         let url = reddit.auth_url +
             "?client_id=" + reddit.client_id +
@@ -3169,6 +3218,7 @@ class NMSCE {
 
         window.open(url, "_self")
     }
+
 
     redditLoggedIn(state, code) {
         let accessToken = window.localStorage.getItem('nmsce-reddit-access-token')
@@ -3204,7 +3254,7 @@ class NMSCE {
                     }
                 },
                 error: (err) => {
-                    console.error(err);
+                    console.error(err.getAllResponseHeaders())
                     nmsce.postStatus(err.message)
                 },
             })
@@ -3339,7 +3389,7 @@ class NMSCE {
                         let data = s.data;
 
                         // if (data.over18 || data.subreddit_type == 'user')
-                        //     continue;
+                        //     continue
 
                         nmsce.subReddits.push({
                             name: data.display_name_prefixed,
@@ -3363,6 +3413,8 @@ class NMSCE {
                         bhs.setMenu(loc, def)
                         nmsce.setSubReddit(loc, accessToken)
                     }
+                    
+                    nmsce.buildRedditTitleMenu()
                 },
                 error(err) {
                     nmsce.postStatus(err.message)
@@ -3435,6 +3487,30 @@ class NMSCE {
 
                     if (flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
                         bhs.setMenu($("#menu-Flair"), flair.name)
+
+                    // if (nmsce.last.type === "Ship") {
+                    //     let title = []
+                    //         let loc = $("#pnl-map #pnl-"+nmsce.last.type)
+
+                    //     if (nmsce.last.Type) {
+                    //         title.push(nmsce.last.Type)
+                    //         loc = loc.find("#slist-"+nmsce.last.Type)
+                    //     }
+
+                    //     let parts = Object.keys(nmsce.last.parts)
+                    //     for (let p of parts) 
+                    //         title.push(loc.find("#bdr-"+p + " title").val())
+
+                    //     let tags = Object.keys(nmsce.last.Tags)
+                    //     for (let p of tags)
+                    //         title.push(p)
+
+                    //     let colors = Object.keys(nmsce.last.Color)
+                    //     for (let p of colors)
+                    //         title.push(p)
+
+                    //     console.log(title)
+                    // }
                 },
                 error(err) {
                     nmsce.postStatus(err.message)

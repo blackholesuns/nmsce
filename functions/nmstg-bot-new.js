@@ -294,6 +294,7 @@ async function checkPostLimits(posts, approve) {
             && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")) {
 
             if (typeof post.url !== "undefined" && post.url.match(/youtube/i)
+                || post.selftext.match(/youtube.com|twitch.tv/gi)
                 || typeof post.secure_media !== "undefined" && post.secure_media
                 && (typeof post.secure_media.reddit_video !== "undefined"
                     || typeof post.secure_media.oembed !== "undefined" && (post.secure_media.oembed.type === "video"
@@ -584,6 +585,8 @@ async function modCommands(posts, mods) {
                         case "agree": p.push(checkMotherMayI(post, op)); break    // first time post mother-may-i
                     }
                 }
+                else
+                    console.log("post", post.author_fullname, "op", op.author_fullname, permaLinkHdr + post.permalink, permaLinkHdr + op.permalink)
             }
         }
     }
