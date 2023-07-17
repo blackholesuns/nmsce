@@ -8,7 +8,7 @@ const buckets = [
 
 const storageInstances = buckets.map(v => getStorage(App, v));
 
-export const baseUrl = "https://cdn.nmsge.com"
+export const baseUrl = "https://cdn.nmsce.com"
 export const basePath = "/nmsce"
 export const displayPath = `${basePath}/disp`
 export const originalPath = `${basePath}/orig`
