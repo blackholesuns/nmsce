@@ -3173,7 +3173,7 @@ class NMSCE {
 
             if (name === "pirate") name = "Pirate Raider"
             if (name === "2 glyphs") name = "You only need the first 2 glyphs to get to this system."
-            
+
             let title = loc.val() + name + " "
             loc.val(title)
         }
@@ -3227,7 +3227,7 @@ class NMSCE {
 
 
     redditLoggedIn(state, code) {
-        let accessToken = window.localStorage.getItem('nmsce-reddit-access-token')
+        let accessToken = window.localStorage.getItem('nmsge-reddit-access-token')
         if (accessToken)
             nmsce.redditCreate(state)
 
@@ -3251,9 +3251,9 @@ class NMSCE {
                 },
                 success: (res) => {
                     if (res.access_token) {
-                        window.localStorage.setItem('nmsce-reddit-access-token', res.access_token)
-                        window.localStorage.setItem('nmsce-reddit-expires', new Date().getTime() + res.expires_in * 1000)
-                        window.localStorage.setItem('nmsce-reddit-refresh-token', res.refresh_token)
+                        window.localStorage.setItem('nmsge-reddit-access-token', res.access_token)
+                        window.localStorage.setItem('nmsge-reddit-expires', new Date().getTime() + res.expires_in * 1000)
+                        window.localStorage.setItem('nmsge-reddit-refresh-token', res.refresh_token)
 
                         if (state.includes("post_"))
                             nmsce.redditCreate(state, res.access_token)
@@ -3267,14 +3267,14 @@ class NMSCE {
     }
 
     getRedditToken(state) {
-        let accessToken = window.localStorage.getItem('nmsce-reddit-access-token')
-        let expires = window.localStorage.getItem('nmsce-reddit-expires')
-        let refreshToken = window.localStorage.getItem('nmsce-reddit-refresh-token')
-        let deviceid = window.localStorage.getItem('nmsce-reddit-device-id')
+        let accessToken = window.localStorage.getItem('nmsge-reddit-access-token')
+        let expires = window.localStorage.getItem('nmsge-reddit-expires')
+        let refreshToken = window.localStorage.getItem('nmsge-reddit-refresh-token')
+        let deviceid = window.localStorage.getItem('nmsge-reddit-device-id')
 
         if (!deviceid) {
             deviceid = uuidv4()
-            window.localStorage.setItem('nmsce-reddit-device-id', deviceid)
+            window.localStorage.setItem('nmsge-reddit-device-id', deviceid)
         }
 
         if (!accessToken || !expires || !refreshToken)
@@ -3300,8 +3300,8 @@ class NMSCE {
                 },
                 success(res) {
                     if (res.access_token) {
-                        window.localStorage.setItem('nmsce-reddit-access-token', res.access_token)
-                        window.localStorage.setItem('nmsce-reddit-expires', new Date().getTime() + (res.expires_in - 300) * 1000)
+                        window.localStorage.setItem('nmsge-reddit-access-token', res.access_token)
+                        window.localStorage.setItem('nmsge-reddit-expires', new Date().getTime() + (res.expires_in - 300) * 1000)
 
                         if (state.includes("post_"))
                             nmsce.redditCreate(state, res.access_token)
@@ -3362,7 +3362,7 @@ class NMSCE {
                 },
                 crossDomain: true,
                 success(res) {
-                    window.localStorage.setItem('nmsce-reddit-name', res.name)
+                    window.localStorage.setItem('nmsge-reddit-name', res.name)
                 },
                 error(err) {
                     nmsce.postStatus(err.message)
@@ -3419,7 +3419,7 @@ class NMSCE {
                         bhs.setMenu(loc, def)
                         nmsce.setSubReddit(loc, accessToken)
                     }
-                    
+
                     nmsce.buildRedditTitleMenu()
                 },
                 error(err) {
@@ -3546,18 +3546,18 @@ class NMSCE {
             return
         }
 
-        window.localStorage.setItem('nmsce-reddit-sr', sr)
-        window.localStorage.setItem('nmsce-reddit-flair', flair)
-        window.localStorage.setItem('nmsce-reddit-title', title)
+        window.localStorage.setItem('nmsge-reddit-sr', sr)
+        window.localStorage.setItem('nmsge-reddit-flair', flair)
+        window.localStorage.setItem('nmsge-reddit-title', title)
 
         let e = nmsce.last
-        let link = `https://nmsce.com/preview?i=${e.id}`
-        window.localStorage.setItem('nmsce-reddit-plink', link)
+        let link = `https://nmsge.com/preview?i=${e.id}`
+        window.localStorage.setItem('nmsge-reddit-plink', link)
 
-        link = `https://nmsce.com/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
-        window.localStorage.setItem('nmsce-reddit-slink', link)
+        link = `https://nmsge.com/?g=${e.galaxy.nameToId()}&s=${addrToGlyph(e.addr)}`
+        window.localStorage.setItem('nmsge-reddit-slink', link)
 
-        window.localStorage.setItem('nmsce-reddit-link', GetDisplayUrl(nmsce.last.Photo))
+        window.localStorage.setItem('nmsge-reddit-link', GetDisplayUrl(nmsce.last.Photo))
         nmsce.redditSubmit()
     }
 
@@ -3566,18 +3566,18 @@ class NMSCE {
             accessToken = nmsce.getRedditToken("submit")
 
         if (accessToken) {
-            let sr = window.localStorage.getItem('nmsce-reddit-sr')
+            let sr = window.localStorage.getItem('nmsge-reddit-sr')
             let i = getIndex(nmsce.subReddits, "name", sr)
             sr = nmsce.subReddits[i].url
 
-            let flair = window.localStorage.getItem('nmsce-reddit-flair')
+            let flair = window.localStorage.getItem('nmsge-reddit-flair')
             i = getIndex(nmsce.subRedditFlair, "name", flair)
             let flairId = nmsce.subRedditFlair[i].id
 
-            let plink = window.localStorage.getItem('nmsce-reddit-plink')
-            let slink = window.localStorage.getItem('nmsce-reddit-slink')
-            let title = window.localStorage.getItem('nmsce-reddit-title')
-            let link = window.localStorage.getItem('nmsce-reddit-link')
+            let plink = window.localStorage.getItem('nmsge-reddit-plink')
+            let slink = window.localStorage.getItem('nmsge-reddit-slink')
+            let title = window.localStorage.getItem('nmsge-reddit-title')
+            let link = window.localStorage.getItem('nmsge-reddit-link')
 
             let url = reddit.api_oauth_url + reddit.submitLink_endpt
 
@@ -3608,7 +3608,7 @@ class NMSCE {
                                 t = "t3_" + t[6]
                                 let url = reddit.api_oauth_url + reddit.comment_endpt
 
-                                let comment = "This was posted from the [NMSGE web app](https://nmsce.com). Here is the direct [link](" + plink + ") for more info about this item. This is a [link](" + slink + ") to everything found so far in this system.  \n\n"
+                                let comment = "This was posted from the [NMSGE web app](https://nmsge.com). Here is the direct [link](" + plink + ") for more info about this item. This is a [link](" + slink + ") to everything found so far in this system.  \n\n"
 
                                 if (typeof nmsce.last !== "undefined") {
                                     if (nmsce.last.Tags["2 glyphs"])
@@ -5303,17 +5303,17 @@ const mapColors = {
 }
 
 const clientIds = {
-    prod: "8oDpVp9JDDN7ng",
-    beta: "9Ukymj_MbqxWglSLm0kQqw",
+    nmsge: "8oDpVp9JDDN7ng",
+    nmsce: "9Ukymj_MbqxWglSLm0kQqw",
     alpha: "8DNnTDRJMlG9ZecGVV44Ew",
     local: "vCekWEy1EPnRIy2zpu3EeA"
 }
 const currentLocation = location.href.split("?")[0];
 
-let client_id = clientIds.prod;
+let client_id = clientIds.nmsce;
 
-if (currentLocation.includes("beta.nmsce.com"))
-    client_id = clientIds.beta;
+if (currentLocation.includes("nmsge.com"))
+    client_id = clientIds.nmsge;
 
 if (currentLocation.includes("localhost"))
     client_id = clientIds.local;
