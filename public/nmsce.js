@@ -5310,10 +5310,10 @@ const clientIds = {
 }
 const currentLocation = location.href.split("?")[0];
 
-let client_id = clientIds.nmsce;
+let client_id = clientIds.nmsge;
 
-if (currentLocation.includes("nmsge.com"))
-    client_id = clientIds.nmsge;
+if (currentLocation.includes("nmsce.com"))
+    client_id = clientIds.nmsce;
 
 if (currentLocation.includes("localhost"))
     client_id = clientIds.local;
