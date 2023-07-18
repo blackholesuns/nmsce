@@ -2034,6 +2034,7 @@ export const faunaList = [
     { name: "Fish" },
     { name: "Shark, eel, seasnake" },
     { name: "Cow, swimming" },
+    { name: "Cow, flying" },
     { name: "Bird" },
     { name: "Lizard, flying" },
     { name: "Wraith / snake, flying" },
