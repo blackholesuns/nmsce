@@ -793,8 +793,8 @@ class NMSCE {
         loc.find("#row-Planet-Name").hide()
         loc.find("#row-Class").hide()
 
-        $("#id-ssImage").hide()
-        $("#id-ssImage").attr("src", "")
+        $("#id-ss1Image").hide()
+        $("#id-ss1Image").attr("src", "")
         $("#redditlink").val("")
         $("#posted").empty()
         $("#imgtable").hide()
@@ -2842,7 +2842,7 @@ class NMSCE {
             }
 
             $("#editScreenshot").hide()
-            $("#id-ssImage").hide()
+            $("#id-ss1Image").hide()
             $("#id-canvas").show()
             $("#imageTextBlock").show()
             $("#editingScreenshot").show()
@@ -2855,7 +2855,7 @@ class NMSCE {
             $("#editScreenshot").show()
             $("#imageTextBlock").hide()
             $("#id-canvas").hide()
-            $("#id-ssImage").show()
+            $("#id-ss1Image").show()
             $("#updateScreenshot").hide()
             $("#editingScreenshot").hide()
         }
@@ -2910,7 +2910,7 @@ class NMSCE {
                 xhr.open('GET', url)
                 xhr.send()
             } else {
-                $("#id-ssImage").attr("src", url)
+                $("#id-ss1Image").attr("src", url)
 
                 $("#openReddit").removeClass("disabled")
                 $("#openReddit").removeAttr("disabled")

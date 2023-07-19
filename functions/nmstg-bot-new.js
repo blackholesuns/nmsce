@@ -536,7 +536,7 @@ async function modCommands(posts, mods) {
 
     for (let post of posts) {
         if (post.name.startsWith("t1_")) {
-            let match = post.body.match(/!\W?(watch|unwatch|contest|reload|check|flair|agree|ad|pm|r|c)\W?(.*)?/i)
+            let match = post.body.match(/!\W?(test|watch|unwatch|contest|reload|check|flair|agree|ad|pm|r|c)\W?(.*)?/i)
 
             if (match) {
                 console.log("command", post.body, permaLinkHdr + post.permalink)
@@ -546,6 +546,9 @@ async function modCommands(posts, mods) {
                 let parent
                 let id = post.parent_id
 
+                if (m === "agree")
+                    console.log("post", post.name, "parent", id)
+
                 if (id.startsWith("t1_"))
                     parent = await reddit.getComment(id).fetch()   // trace back up comment thread
                 else
@@ -553,15 +556,24 @@ async function modCommands(posts, mods) {
 
                 id = post.parent_id
 
+                if (m === "agree")
+                    console.log("parent", id)
+
                 while (typeof id !== "undefined" && id.startsWith("t1_")) {
                     op = await reddit.getComment(id).fetch()   // trace back up comment thread
                     id = op.parent_id
+
+                    if (m === "agree")
+                        console.log("trace", id)
                 }
 
                 if (id !== parent.parent_id)
                     op = await reddit.getSubmission(id).fetch()   // get post
                 else
                     op = parent
+
+                if (m === "agree")
+                    console.log("op", op.author_fullname, "post", post.author_fullname)
 
                 p.push(post.remove().catch(err => error(err)))
 
@@ -586,7 +598,7 @@ async function modCommands(posts, mods) {
                     }
                 }
                 else
-                    console.log("post", post.author_fullname, "op", op.author_fullname, permaLinkHdr + post.permalink, permaLinkHdr + op.permalink)
+                    console.log("op", op.name, op.author_fullname, "post", post.name, post.author_fullname)
             }
         }
     }
