@@ -4740,6 +4740,7 @@ class NMSCE {
                 e.Photo = this.last.Photo
                 e._name = this.last._name
                 e.created = new Timestamp(this.last.created.seconds, this.last.created.nanoseconds)
+                e.voted = Timestamp.now()
                 e.type = this.last.type
                 if (typeof this.last.Type !== "undefined")
                     e.Type = this.last.Type
