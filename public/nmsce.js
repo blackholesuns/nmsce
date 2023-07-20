@@ -917,8 +917,14 @@ class NMSCE {
                         entry[id] = loc.find("input").val()
                         break
                     case "tags":
-                        let tloc = loc.find("[id|='tag']")
                         entry[id] = {}
+
+                        if (id === "Color" || id === "Sail")
+                            for (let i of colorList)
+                                if (i.name !== " Nothing Selected")
+                                    entry[id][i.name] = false
+
+                        let tloc = loc.find("[id|='tag']")
 
                         for (let loc of tloc) {
                             let t = $(loc).attr("id").stripID().idToName()
@@ -985,10 +991,10 @@ class NMSCE {
             let parts = nmsce[(entry.Type ? entry.Type : entry.type).toLowerCase()]
             if (parts) {
                 entry.parts = {}
-                for (let p of Object.keys(parts)) {
-                    if (parts[p].state === "selected")
-                        entry.parts[p] = true
-                }
+                for (let p of Object.keys(parts))
+                    if (p !== "type") {
+                        entry.parts[p] = parts[p].state === "selected"
+                    }
             }
 
             entry.redditlink = $("#redditlink").val()
@@ -1092,11 +1098,13 @@ class NMSCE {
                     case "tags":
                         row.find("#list-" + id).empty()
                         let keys = Object.keys(entry[id])
-                        for (let t of keys) {
-                            let h = /idname/[Symbol.replace](tTag, t.nameToId())
-                            h = /title/[Symbol.replace](h, t)
-                            row.find("#list-" + id).append(h)
-                        }
+
+                        for (let t of keys)
+                            if (entry[id][t]) {
+                                let h = /idname/[Symbol.replace](tTag, t.nameToId())
+                                h = /title/[Symbol.replace](h, t)
+                                row.find("#list-" + id).append(h)
+                            }
                         break
                     case "menu":
                         let menu = row.find("#menu-" + id.nameToId())
@@ -1135,11 +1143,12 @@ class NMSCE {
             }
 
             let list = Object.keys(entry.parts)
-            for (let i of list) {
-                let loc = map.find("#map-" + i)
-                if (loc.length > 0)
-                    this.selectMap(loc, true)
-            }
+            for (let i of list)
+                if (entry.parts[i]) {
+                    let loc = map.find("#map-" + i)
+                    if (loc.length > 0)
+                        this.selectMap(loc, true)
+                }
         }
 
         if (entry.imageText)
