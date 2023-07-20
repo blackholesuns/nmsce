@@ -46,9 +46,9 @@
    inkscape:window-height="480"
    id="namedview7487"
    showgrid="false"
-   inkscape:zoom="1.2943363"
-   inkscape:cx="217.09968"
-   inkscape:cy="384.36688"
+   inkscape:zoom="5.1773452"
+   inkscape:cx="190.25195"
+   inkscape:cy="381.17991"
    inkscape:current-layer="layer1"
    inkscape:document-rotation="0"
    units="px"
@@ -28725,7 +28725,7 @@
      cy="472.16376"
      rx="10.931924"
      ry="10.048057" /><g
-     id="map-h71-7"
+     id="map-h72"
      style="clip-rule:evenodd;display:inline;fill-rule:evenodd;stroke-width:1.25744"
      transform="matrix(0.75104413,0.27037916,0.27311744,-0.74375975,65.915615,588.30264)"><g
        transform="matrix(0.0507448,0.0112201,-0.0112201,0.0507448,-7.57443,310.498)"
@@ -28772,7 +28772,7 @@
          id="path8460-5-3" /></g></g><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 171.14236,305.18734 4.66343,1.16949 4.97023,-6.53475 25.83088,0.289 35.08987,-8.82925 1.44205,-4.11057 -52.87182,-1.54781 -15.08673,10.06234 z"
-     id="bdr-h71-7"><title
+     id="bdr-h72"><title
        id="title45946">U-Wing Fin</title><desc
        id="desc9977-4">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h24&quot;],
 &quot;group&quot;:[17,30,31,24],
