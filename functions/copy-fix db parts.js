@@ -7,7 +7,7 @@ admin.initializeApp({
 require('events').EventEmitter.defaultMaxListeners = 0
 
 // *** Most of this file was outdated by the db change to a combined galaxy list. Save for reference 
-
+// add all parts & colors to ships so they can be searched for false.
 // remove orphaned images. check for images used by multiple entries
 // recalculate votes. some favorites are < 0. some favorites are true instead of 1
 
@@ -28,77 +28,133 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // delete "old"+type when copy to new db collection
 // copy all items after switching to new code jic some were entered between states
 
-async function fixTotals() {
-    let users = {}
-    let all = {}
-    all.Ship = 0
-    all.Freighter = 0
-    all.Frigate = 0
-    all["Multi-Tool"] = 0
-    all.Fauna = 0
-    all.Planet = 0
-    all.Base = 0
-
+async function padParts() {
     let ref = admin.firestore().collection("nmsceCombined")
-    let docs = await ref.listDocuments(ref)
-    console.log("total entries", docs.length)
-    all.Total = docs.length
+    ref = ref.where("type", "==", "Ship")
+    ref = ref.limit(5)
 
-    let count = 0
+    let snapshot = await ref.get()
 
-    for (let d of docs) {
-        let ref = admin.firestore().doc(d.path)
-        let snapshot = await ref.get()
+    for (let d of snapshot.docs) {
+        let doc = fixParts(d.data())
+        console.log(doc)
 
-        let doc = snapshot.data()
-        if (typeof users[doc.uid] === "undefined") {
-            users[doc.uid] = {}
-            users[doc.uid].Ship = 0
-            users[doc.uid].Freighter = 0
-            users[doc.uid].Frigate = 0
-            users[doc.uid]["Multi-Tool"] = 0
-            users[doc.uid].Fauna = 0
-            users[doc.uid].Planet = 0
-            users[doc.uid].Base = 0
-
-            users[doc.uid].name = doc._name
-        }
-
-        users[doc.uid][doc.type]++
-        all[doc.type]++
-
-        // if (++count > 500)
-        //     break
+        // d.ref.set(doc, { merge: true })
     }
 
-    let ids = Object.keys(users)
+    ref = admin.firestore().collection("nmsceCombined")
+    ref = ref.where("type", "==", "Freighter")
+    ref = ref.limit(5)
 
-    for (let uid of ids) {
-        let types = Object.keys(users[uid])
+    snapshot = await ref.get()
 
-        for (let t of types)
-            if (users[uid][t] === 0)
-                delete users[uid][t]
-    }
+    for (let d of snapshot.docs) {
+        let doc = fixParts(d.data())
+        console.log(doc)
 
-    ref = admin.firestore().doc("bhs/nmsceTotals")
-    all = mergeObjects(all, users)
-    // console.log(all)
-    ref.set(all)
-
-    console.log("contributing users", ids.length)
-
-    for (let id of ids) {
-        let ref = admin.firestore().doc("users/" + id)
-        delete users[id].name
-
-        let u = {}
-        u.nmsceTotals = users[id]
-        console.log(u)
-        ref.set(u, { merge: true })
+        // d.ref.set(doc, { merge: true })
     }
 }
-fixTotals()
+padParts()
+
+function fixParts(doc) {
+    let d = {}
+
+    let merge = function (d, obj) {
+        let keys = Object.keys(obj)
+
+        for (let k of keys)
+            d[k] = true
+
+        return d
+    }
+
+    if (typeof doc.Color !== "undefined")
+        d.Color = merge(doc.Color, colors)
+
+    if (typeof doc.Sail !== "undefined")
+        d.Sail = merge(doc.Sail, colors)
+
+    if (typeof doc.Type !== "undefined")
+        d.parts = merge(doc.parts, parts[doc.Type])
+
+    else if (doc.type === "Freighter")
+        d.parts = merge(doc.parts, parts[doc.type])
+
+    return d
+}
+
+// async function fixTotals() {
+//     let users = {}
+//     let all = {}
+//     all.Ship = 0
+//     all.Freighter = 0
+//     all.Frigate = 0
+//     all["Multi-Tool"] = 0
+//     all.Fauna = 0
+//     all.Planet = 0
+//     all.Base = 0
+
+//     let ref = admin.firestore().collection("nmsceCombined")
+//     let docs = await ref.listDocuments(ref)
+//     console.log("total entries", docs.length)
+//     all.Total = docs.length
+
+//     let count = 0
+
+//     for (let d of docs) {
+//         let ref = admin.firestore().doc(d.path)
+//         let snapshot = await ref.get()
+
+//         let doc = snapshot.data()
+//         if (typeof users[doc.uid] === "undefined") {
+//             users[doc.uid] = {}
+//             users[doc.uid].Ship = 0
+//             users[doc.uid].Freighter = 0
+//             users[doc.uid].Frigate = 0
+//             users[doc.uid]["Multi-Tool"] = 0
+//             users[doc.uid].Fauna = 0
+//             users[doc.uid].Planet = 0
+//             users[doc.uid].Base = 0
+
+//             users[doc.uid].name = doc._name
+//         }
+
+//         users[doc.uid][doc.type]++
+//         all[doc.type]++
+
+//         // if (++count > 500)
+//         //     break
+//     }
+
+//     let ids = Object.keys(users)
+
+//     for (let uid of ids) {
+//         let types = Object.keys(users[uid])
+
+//         for (let t of types)
+//             if (users[uid][t] === 0)
+//                 delete users[uid][t]
+//     }
+
+//     ref = admin.firestore().doc("bhs/nmsceTotals")
+//     all = mergeObjects(all, users)
+//     // console.log(all)
+//     ref.set(all)
+
+//     console.log("contributing users", ids.length)
+
+//     for (let id of ids) {
+//         let ref = admin.firestore().doc("users/" + id)
+//         delete users[id].name
+
+//         let u = {}
+//         u.nmsceTotals = users[id]
+//         console.log(u)
+//         ref.set(u, { merge: true })
+//     }
+// }
+// fixTotals()
 
 // async function combineGalaxies() {
 //     let ref = admin.firestore().collection("nmsce")
@@ -453,6 +509,54 @@ function mergeObjects(o, n) {
 //         console.log(common.galaxy, item.id, votes.docs.length)
 //     }
 // }
+
+const colors = {
+    Black: false, Blue: false, Brown: false, Chrome: false, Cream: false,
+    Gold: false, Green: false, Grey: false, Orange: false, Pink: false, Purple: false,
+    Red: false, Silver: false, Tan: false, Teal: false, White: false, Yellow: false,
+}
+
+const parts = {
+    Exotic: {
+        h10: false, h11: false, h12: false, h13: false, h14: false, h2: false, h3: false, h4: false, h5: false, h6: false, h7: false, h8: false, h9: false,
+    }, Interceptor: {
+        h1: false, h10: false, h11: false, h12: false, h13: false, h14: false, h15: false, h16: false, h17: false, h18: false, h19: false, h2: false, h20: false,
+        h21: false, h22: false, h24: false, h25: false, h26: false, h27: false, h28: false, h29: false, h3: false, h30: false, h31: false, h32: false, h33: false,
+        h34: false, h35: false, h36: false, h37: false, h38: false, h39: false, h4: false, h40: false, h41: false, h42: false, h43: false, h44: false, h45: false,
+        h46: false, h47: false, h48: false, h49: false, h5: false, h50: false, h51: false, h52: false, h53: false, h54: false, h55: false, h56: false, h57: false,
+        h58: false, h59: false, h6: false, h60: false, h61: false, h62: false, h63: false, h64: false, h65: false, h66: false, h68: false, h69: false, h7: false,
+        h71: false, h72: false, h8: false, h9: false,
+    }, Living: {
+        h1: false, h10: false, h11: false, h12: false, h13: false, h14: false, h15: false, h2: false, h3: false, h4: false, h5: false, h6: false, h7: false, h8: false, h9: false,
+    }, Hauler: {
+        h10: false, h102: false, h103: false, h104: false, h105: false, h106: false, h107: false, h108: false, h109: false, h11: false, h110: false, h111: false,
+        h113: false, h114: false, h115: false, h116: false, h117: false, h118: false, h119: false, h12: false, h13: false, h14: false, h15: false, h16: false,
+        h17: false, h18: false, h2: false, h3: false, h4: false, h5: false, h6: false, h7: false, h8: false, h9: false,
+    }, Freighter: {
+        h10: false, h102: false, h103: false, h104: false, h105: false, h106: false, h107: false, h108: false, h109: false, h11: false, h110: false, h112: false,
+        h113: false, h114: false, h115: false, h120: false, h13: false, h14: false, h15: false, h16: false, h17: false, h18: false, h19: false, h2: false, h20: false,
+        h21: false, h22: false, h23: false, h24: false, h25: false, h3: false, h30: false, h4: false, h40: false, h42: false, h6: false, h7: false, h8: false, h9: false,
+    }, Explorer: {
+        h10: false, h105: false, h107: false, h11: false, h113: false, h114: false, h115: false, h116: false, h117: false, h118: false, h119: false, h12: false,
+        h120: false, h121: false, h122: false, h123: false, h124: false, h125: false, h126: false, h127: false, h128: false, h129: false, h13: false, h130: false,
+        h131: false, h14: false, h15: false, h150: false, h16: false, h17: false, h18: false, h19: false, h20: false, h21: false, h22: false, h23: false, h24: false,
+        h25: false, h26: false, h27: false, h28: false, h29: false, h3: false, h30: false, h31: false, h33: false, h4: false, h5: false, h50: false, h6: false, h7: false,
+        h8: false, h9: false,
+    }, Solar: {
+        h1: false, h10: false, h11: false, h12: false, h13: false, h14: false, h15: false, h16: false, h17: false, h18: false, h19: false, h2: false, h20: false, h3: false,
+        h4: false, h5: false, h6: false, h7: false, h8: false, h9: false,
+    }, Fighter: {
+        h10: false, h102: false, h103: false, h104: false, h105: false, h106: false, h107: false, h108: false, h109: false, h11: false, h110: false, h111: false,
+        h112: false, h113: false, h117: false, h12: false, h13: false, h14: false, h15: false, h16: false, h17: false, h18: false, h19: false, h2: false, h20: false,
+        h21: false, h25: false, h27: false, h28: false, h29: false, h3: false, h4: false, h6: false, h7: false, h8: false, h9: false,
+    }, Shuttle: {
+        h10: false, h102: false, h103: false, h104: false, h105: false, h106: false, h107: false, h108: false, h109: false, h11: false, h110: false, h111: false,
+        h112: false, h113: false, h118: false, h119: false, h12: false, h120: false, h121: false, h122: false, h123: false, h124: false, h125: false, h126: false,
+        h13: false, h14: false, h15: false, h16: false, h17: false, h18: false, h19: false, h2: false, h21: false, h22: false, h23: false, h24: false, h25: false,
+        h26: false, h27: false, h28: false, h29: false, h3: false, h30: false, h31: false, h32: false, h33: false, h4: false, h40: false, h41: false, h6: false, h7: false,
+        h8: false, h9: false,
+    }
+}
 
 const newFaunaList = [
     " Nothing Selected",
