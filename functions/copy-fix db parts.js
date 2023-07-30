@@ -1,6 +1,5 @@
 const admin = require('firebase-admin')
 var serviceAccount = require("./nms-bhs-8025d3f3c02d.json")
-const { object } = require('firebase-functions/v1/storage')
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 })
@@ -29,42 +28,47 @@ require('events').EventEmitter.defaultMaxListeners = 0
 // copy all items after switching to new code jic some were entered between states
 
 async function padParts() {
+    let sec = new Date().valueOf() / 1000 - 24 * 60 * 60
+
     let ref = admin.firestore().collection("nmsceCombined")
     ref = ref.where("type", "==", "Ship")
-    ref = ref.limit(5)
+    // ref = ref.where("modded._seconds", "<=", sec)
+    // ref = ref.limit(100)
 
     let snapshot = await ref.get()
+    // console.log(snapshot.docs.length)
 
     for (let d of snapshot.docs) {
+        console.log(d.data().id)
         let doc = fixParts(d.data())
-        console.log(doc)
 
-        // d.ref.set(doc, { merge: true })
+        d.ref.set(doc)
     }
 
-    ref = admin.firestore().collection("nmsceCombined")
-    ref = ref.where("type", "==", "Freighter")
-    ref = ref.limit(5)
+    // ref = admin.firestore().collection("nmsceCombined")
+    // ref = ref.where("type", "==", "Freighter")
+    // ref = ref.limit(5)
 
-    snapshot = await ref.get()
+    // snapshot = await ref.get()
 
-    for (let d of snapshot.docs) {
-        let doc = fixParts(d.data())
-        console.log(doc)
+    // for (let d of snapshot.docs) {
+    //     let doc = fixParts(d.data())
+    //     // console.log(d.id)
 
-        // d.ref.set(doc, { merge: true })
-    }
+    //     d.ref.set(doc, { merge: true })
+    // }
 }
 padParts()
 
 function fixParts(doc) {
-    let d = {}
+    let d = doc
 
-    let merge = function (d, obj) {
-        let keys = Object.keys(obj)
+    let merge = function (doc, obj) {
+        const d = mergeObjects({}, obj)
+        let keys = Object.keys(doc)
 
         for (let k of keys)
-            d[k] = true
+            d[k] = doc[k]
 
         return d
     }
@@ -75,11 +79,21 @@ function fixParts(doc) {
     if (typeof doc.Sail !== "undefined")
         d.Sail = merge(doc.Sail, colors)
 
-    if (typeof doc.Type !== "undefined")
+    if (typeof doc.Markings !== "undefined")
+        d.Markings = merge(doc.Markings, colors)
+
+    if (typeof doc.Type !== "undefined" && typeof doc.parts !== "undefined")
         d.parts = merge(doc.parts, parts[doc.Type])
 
     else if (doc.type === "Freighter")
         d.parts = merge(doc.parts, parts[doc.type])
+
+    d.modded = doc.modded
+    d.modded._nanoseconds = 0
+    d.modded._seconds = parseInt(new Date().valueOf() / 1000)
+
+    if (typeof doc.parts === "undefined")
+        console.error("https://nmsge.com/upload?i=" + doc.id)
 
     return d
 }

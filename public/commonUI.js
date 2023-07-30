@@ -93,7 +93,7 @@ blackHoleSuns.prototype.doLoggedin = function (user) {
                     }
                 }
             }
-            
+
             nmsce.displayUser()
         })
         .catch((err) => {
@@ -122,7 +122,7 @@ blackHoleSuns.prototype.doLoggedin = function (user) {
 };
 
 blackHoleSuns.prototype.isPatreon = function (tier) {
-    return bhs.hasRole("nmsceEditor")|| bhs.hasRole("admin")
+    return bhs.hasRole("nmsceEditor") || bhs.hasRole("admin")
         ? true
         : typeof bhs.patreon === "number"
             ? bhs.patreon >= tier
@@ -134,19 +134,29 @@ blackHoleSuns.prototype.hasRole = function (role) {
 };
 
 blackHoleSuns.prototype.isRole = function (role) {
-    let ok = bhs.roles;
-    ok = ok && bhs.roles.includes(role);
-    return ok;
+    return bhs.user.role === role;
 };
 
 
-blackHoleSuns.prototype.setAdmin = function (clear) {
+blackHoleSuns.prototype.setAdmin = function (state) {
+    bhs.user.role = bhs.user.role === "admin" || typeof state !== "undefined" && !state ? "user" : "admin"
+
     bhs.updateUser({
-        role:
-            typeof clear !== "undefined" || bhs.user.role === "admin"
-                ? "user"
-                : "admin",
+        role: bhs.user.role,
     });
+
+    let save = $("#save")
+
+    if (bhs.user.role === "admin" ) {
+        save.removeClass("btn-def")
+        save.addClass("btn-green")
+        $("#id-Player").prop("disabled", true)
+    }
+    else {
+        save.removeClass("btn-green")
+        save.addClass("btn-def")
+        $("#id-Player").prop("disabled", false)
+    }
 };
 
 blackHoleSuns.prototype.toggleTips = function () {

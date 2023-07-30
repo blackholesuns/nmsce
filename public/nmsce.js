@@ -919,7 +919,7 @@ class NMSCE {
                     case "tags":
                         entry[id] = {}
 
-                        if (id === "Color" || id === "Sail")
+                        if (id === "Color" || id === "Sail" || id === "Markings")
                             for (let i of colorList)
                                 if (i.name !== " Nothing Selected")
                                     entry[id][i.name] = false
@@ -991,10 +991,10 @@ class NMSCE {
             let parts = nmsce[(entry.Type ? entry.Type : entry.type).toLowerCase()]
             if (parts) {
                 entry.parts = {}
+
                 for (let p of Object.keys(parts))
-                    if (p !== "type") {
+                    if (p !== "type")
                         entry.parts[p] = parts[p].state === "selected"
-                    }
             }
 
             entry.redditlink = $("#redditlink").val()
@@ -1132,16 +1132,16 @@ class NMSCE {
 
         disp(obj.fields, "#pnl-" + entry.type)
 
+        let map = $("#pnl-map #pnl-" + entry.type)
+        map.show()
+
+        let loc = $("#pnl-" + entry.type + " #menu-Type")
+        if (loc.length > 0) {
+            nmsce.selectSublist(loc)
+            map = map.find("#slist-" + entry.Type)
+        }
+
         if (entry.parts) {
-            let map = $("#pnl-map #pnl-" + entry.type)
-            map.show()
-
-            let loc = $("#pnl-" + entry.type + " #menu-Type")
-            if (loc.length > 0) {
-                nmsce.selectSublist(loc)
-                map = map.find("#slist-" + entry.Type)
-            }
-
             let list = Object.keys(entry.parts)
             for (let i of list)
                 if (entry.parts[i]) {
@@ -3201,7 +3201,7 @@ class NMSCE {
             let parts = Object.keys(nmsce.last.parts)
             for (let p of parts) {
                 let name = loc.find("#bdr-" + p + " title").html()
-                if (name && typeof title.find(x => x.name === name) === "undefined")
+                if (name && typeof title.find(x => x.name === name) === "undefined" && nmsce.last.parts[p])
                     title.push({ name: name })
             }
 
@@ -3211,7 +3211,15 @@ class NMSCE {
 
             let colors = Object.keys(nmsce.last.Color)
             for (let p of colors)
-                title.push({ name: p })
+                if (nmsce.last.Color[p])
+                    title.push({ name: p })
+
+            if (typeof nmsce.last.Sail !== "undefined") {
+                let colors = Object.keys(nmsce.last.Sail)
+                for (let p of colors)
+                    if (nmsce.last.Sail[p])
+                        title.push({ name: p })
+            }
 
             bhs.buildMenu($("#redditPost"), "Build", title, addToTitle, {
                 labelsize: "col-md-2 col-3",
@@ -3502,30 +3510,6 @@ class NMSCE {
 
                     if (flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
                         bhs.setMenu($("#menu-Flair"), flair.name)
-
-                    // if (nmsce.last.type === "Ship") {
-                    //     let title = []
-                    //         let loc = $("#pnl-map #pnl-"+nmsce.last.type)
-
-                    //     if (nmsce.last.Type) {
-                    //         title.push(nmsce.last.Type)
-                    //         loc = loc.find("#slist-"+nmsce.last.Type)
-                    //     }
-
-                    //     let parts = Object.keys(nmsce.last.parts)
-                    //     for (let p of parts) 
-                    //         title.push(loc.find("#bdr-"+p + " title").val())
-
-                    //     let tags = Object.keys(nmsce.last.Tags)
-                    //     for (let p of tags)
-                    //         title.push(p)
-
-                    //     let colors = Object.keys(nmsce.last.Color)
-                    //     for (let p of colors)
-                    //         title.push(p)
-
-                    //     console.log(title)
-                    // }
                 },
                 error(err) {
                     nmsce.postStatus(err.message)
@@ -4191,11 +4175,13 @@ class NMSCE {
 
                 this.displayListEntry(entry)    // before update screenshot because it creates the display space
                 this.updateScreenshot(entry)
-
-                bhs.status(entry.type + " " + entry.Name + " saved.")
             }
             else
                 this.last = {}
+
+            this.clearPanel()
+            bhs.status(entry.type + " " + entry.Name + " saved.")
+            bhs.setAdmin(false)
         }).catch(err => {
             bhs.status("ERROR: " + err)
         })
@@ -5392,8 +5378,6 @@ function colorMapParts(pnlid) {
 function colorMapPart(part) {
     part.loc.find("*").css("stroke", mapColors[part.state])
 }
-
-var lastsel = 0;
 
 function getPlanet(evt) {
     if (!fcedata)
