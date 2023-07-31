@@ -547,7 +547,7 @@ async function modCommands(posts, mods) {
                 let id = post.parent_id
 
                 if (m === "agree")
-                    console.log("post", post.name, "parent", id)
+                    console.log("post id", post.name, "parent id", id)
 
                 if (id.startsWith("t1_"))
                     parent = await reddit.getComment(id).fetch()   // trace back up comment thread
@@ -557,14 +557,15 @@ async function modCommands(posts, mods) {
                 id = post.parent_id
 
                 if (m === "agree")
-                    console.log("parent", id)
+                    console.log("parent id", id)
 
                 while (typeof id !== "undefined" && id.startsWith("t1_")) {
                     op = await reddit.getComment(id).fetch()   // trace back up comment thread
-                    id = op.parent_id
 
                     if (m === "agree")
-                        console.log("trace", id)
+                        console.log("trace id", id,"parent", op.parent_id)
+
+                    id = op.parent_id
                 }
 
                 if (id !== parent.parent_id)
@@ -573,7 +574,7 @@ async function modCommands(posts, mods) {
                     op = parent
 
                 if (m === "agree")
-                    console.log("op", op.author_fullname, "post", post.author_fullname)
+                    console.log("op name", op.author_fullname, "post", post.author_fullname)
 
                 p.push(post.remove().catch(err => error(err)))
 
@@ -598,7 +599,7 @@ async function modCommands(posts, mods) {
                     }
                 }
                 else
-                    console.log("op", op.name, op.author_fullname, "post", post.name, post.author_fullname)
+                    console.log("op id", op.name, "op name",op.author_fullname, "post id", post.name,"post name", post.author_fullname)
             }
         }
     }

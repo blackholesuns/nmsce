@@ -313,10 +313,46 @@ body {
     color: #008000;
 }
 
+.badge-blue {
+    color: #ffffff !important;
+    background-color: #0008ff !important;
+    border-color: gold !important;
+}
+
+.badge-green {
+    color: #ffffff !important;
+    background-color: #00ff00 !important;
+    border-color: gold !important;
+}
+
+.badge-red {
+    color: #ffffff !important;
+    background-color: #ff0000 !important;
+    border-color: gold !important;
+}
+
+.badge-orange {
+    color: #ffffff !important;
+    background-color: #cb7a00 !important;
+    border-color: gold !important;
+}
+
+.badge-purple {
+    color: #ffffff !important;
+    background-color: #70015b !important;
+    border-color: gold !important;
+}
+.badge-black {
+    color: #ffffff !important;
+    background-color: #000000 !important;
+    border-color: gold !important;
+}
+
 .btn-green {
     color: #008000;
     background-color: #88f188;
     border-color: gold;
+    border: 3px;
 }
 
 .btn-green.disabled,

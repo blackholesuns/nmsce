@@ -3175,57 +3175,81 @@ class NMSCE {
         }
     }
 
+    addToTitle(evt) {
+        let loc = $("#id-Title")
+        let name = $(evt).text()
+
+        if (name === "pirate") name = "Pirate Raider"
+        if (name === "2 glyphs") name = "You only need the first 2 glyphs to get to this system."
+
+        loc.val(loc.val() + (name === "," ? "" : " ") + name)
+    }
+
     buildRedditTitleMenu() {
-        const addToTitle = (evt) => {
-            let loc = $("#id-Title")
-            let name = bhs.getMenu($(evt))
-
-            if (name === "pirate") name = "Pirate Raider"
-            if (name === "2 glyphs") name = "You only need the first 2 glyphs to get to this system."
-
-            let title = loc.val() + name + " "
-            loc.val(title)
-        }
-
         $("#id-Title").val("")
 
         if (nmsce.last.type == "Ship") {
             let title = []
             let loc = $("#pnl-map #pnl-" + nmsce.last.type)
 
+            const hdr = `<button class='badge badge-pill badge-primary badge-color h5' onclick='nmsce.addToTitle(this)'>title</button>&nbsp;`
+            let htm = ""
+
             if (nmsce.last.Type) {
-                title.push({ name: nmsce.last.Type })
+                htm = /color/g[Symbol.replace](hdr, "blue")
+                htm = /title/g[Symbol.replace](htm, nmsce.last.Type === "Living" ? "Living Ship" : nmsce.last.Type)
+
                 loc = loc.find("#slist-" + nmsce.last.Type)
             }
 
             let parts = Object.keys(nmsce.last.parts)
             for (let p of parts) {
                 let name = loc.find("#bdr-" + p + " title").html()
-                if (name && typeof title.find(x => x.name === name) === "undefined" && nmsce.last.parts[p])
-                    title.push({ name: name })
+                if (name && typeof title.find(x => x.name === name) === "undefined" && nmsce.last.parts[p]) {
+                    let h = /color/g[Symbol.replace](hdr, "success")
+                    htm += /title/g[Symbol.replace](h, name)
+                }
             }
 
             let tags = Object.keys(nmsce.last.Tags)
-            for (let p of tags)
-                title.push({ name: p })
+            for (let p of tags) {
+                let h = /color/g[Symbol.replace](hdr, "green")
+                htm += /title/g[Symbol.replace](h, p)
+            }
 
             let colors = Object.keys(nmsce.last.Color)
             for (let p of colors)
-                if (nmsce.last.Color[p])
-                    title.push({ name: p })
+                if (nmsce.last.Color[p]) {
+                    let h = /color/g[Symbol.replace](hdr, "orange")
+                    htm += /title/g[Symbol.replace](h, p)
+                }
 
             if (typeof nmsce.last.Sail !== "undefined") {
                 let colors = Object.keys(nmsce.last.Sail)
                 for (let p of colors)
-                    if (nmsce.last.Sail[p])
-                        title.push({ name: p })
+                    if (nmsce.last.Sail[p]) {
+                        let h = /color/g[Symbol.replace](hdr, "purple")
+                        htm += /title/g[Symbol.replace](h, p)
+                    }
             }
 
-            bhs.buildMenu($("#redditPost"), "Build", title, addToTitle, {
-                labelsize: "col-md-2 col-3",
-                menusize: "col",
-            })
-            $("#redditPost #id-Build").show()
+            let h = /color/g[Symbol.replace](hdr, "black")
+            htm += /title/g[Symbol.replace](h, ",")
+
+            h = /color/g[Symbol.replace](hdr, "black")
+            htm += /title/g[Symbol.replace](h, "&")
+
+            loc = $("#redditPost #id-Build")
+            loc.empty()
+            loc.append(htm)
+            loc.show()
+            $("#redditPost").show()
+
+            // bhs.buildMenu($("#redditPost"), "Build", title, addToTitle, {
+            //     labelsize: "col-md-2 col-3",
+            //     menusize: "col",
+            // })
+            // $("#redditPost #id-Build").show()
         }
         else
             $("#redditPost #id-Build").hide()
@@ -3337,6 +3361,9 @@ class NMSCE {
     }
 
     redditCreate(state, accessToken) {
+        // nmsce.buildRedditTitleMenu()
+        // return
+
         if (!accessToken) {
             if (nmsce.last)
                 state = "post_" + nmsce.last.id
@@ -5131,8 +5158,10 @@ class NMSCE {
             else if (f.type === "tags") {
                 let keys = Object.keys(e[f.name])
                 title = ""
-                for (let k of keys)
-                    title += k + " "
+                for (let k of keys) {
+                    if (e[f.name][k])
+                        title += k + " "
+                }
             } else
                 title = e[f.name]
 
@@ -5155,8 +5184,10 @@ class NMSCE {
                         else if (s.type === "tags") {
                             let keys = Object.keys(e[s.name])
                             title = ""
-                            for (let k of keys)
-                                title += k + " "
+                            for (let k of keys) {
+                                if (e[s.name][k])
+                                    title += k + " "
+                            }
                         } else
                             title = e[s.name]
 
