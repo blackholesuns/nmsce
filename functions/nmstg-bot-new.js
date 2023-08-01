@@ -546,25 +546,15 @@ async function modCommands(posts, mods) {
                 let parent
                 let id = post.parent_id
 
-                if (m === "agree")
-                    console.log("post id", post.name, "parent id", id)
-
                 if (id.startsWith("t1_"))
                     parent = await reddit.getComment(id).fetch()   // trace back up comment thread
                 else
                     parent = await reddit.getSubmission(id).fetch()   // get post
 
-                id = post.parent_id
-
-                if (m === "agree")
-                    console.log("parent id", id)
+                id = parent.parent_id
 
                 while (typeof id !== "undefined" && id.startsWith("t1_")) {
                     op = await reddit.getComment(id).fetch()   // trace back up comment thread
-
-                    if (m === "agree")
-                        console.log("trace id", id,"parent", op.parent_id)
-
                     id = op.parent_id
                 }
 
@@ -572,9 +562,6 @@ async function modCommands(posts, mods) {
                     op = await reddit.getSubmission(id).fetch()   // get post
                 else
                     op = parent
-
-                if (m === "agree")
-                    console.log("op name", op.author_fullname, "post", post.author_fullname)
 
                 p.push(post.remove().catch(err => error(err)))
 
@@ -592,14 +579,12 @@ async function modCommands(posts, mods) {
                     }
                 }
 
-                if (post.author_fullname === op.author_fullname || mods.includes(post.author_fullname)) {
+                if (post.is_submitter) {
                     switch (m) {
                         case "flair": p.push(setFlair(post, op)); break      // set flair
                         case "agree": p.push(checkMotherMayI(post, op)); break    // first time post mother-may-i
                     }
                 }
-                else
-                    console.log("op id", op.name, "op name",op.author_fullname, "post id", post.name,"post name", post.author_fullname)
             }
         }
     }
