@@ -4139,20 +4139,23 @@ class NMSCE {
                 blob: await new Promise(resolve => orig.toBlob(resolve, "image/jpeg", 0.9))
             });
 
-            UploadImages(images);
+            UploadImages(images)
             $("#imgtable").hide()
 
-            $("#dltab-" + entry.type).click()
 
-            let loc = $("#displayPanels #list-" + entry.type)
-            loc = loc.find("#row-" + entry.id + " img")
-            if (loc.length > 0) {
-                let url = thumb.toDataURL()
-                loc.attr("src", url)
+            if (entry.uid === bhs.user.uid) {
+                $("#dltab-" + entry.type).click()
 
-                $('html, body').animate({
-                    scrollTop: $("#id-table").offset().top
-                }, 500)
+                let loc = $("#displayPanels #list-" + entry.type)
+                loc = loc.find("#row-" + entry.id + " img")
+                if (loc.length > 0) {
+                    let url = thumb.toDataURL()
+                    loc.attr("src", url)
+
+                    $('html, body').animate({
+                        scrollTop: $("#id-table").offset().top
+                    }, 500)
+                }
             }
         }
 
@@ -4188,6 +4191,8 @@ class NMSCE {
             ref = doc(bhs.fs, "nmsceCombined/" + entry.id)
 
         setDoc(ref, entry).then(() => {
+            this.last = {}
+
             if (entry.uid === bhs.user.uid) {
                 this.last = mergeObjects({}, entry)
 
@@ -4202,13 +4207,15 @@ class NMSCE {
 
                 this.displayListEntry(entry)    // before update screenshot because it creates the display space
                 this.updateScreenshot(entry)
-            }
-            else
-                this.last = {}
 
-            this.clearPanel()
-            bhs.status(entry.type + " " + entry.Name + " saved.")
-            bhs.setAdmin(false)
+                bhs.status(entry.type + " " + entry.Name + " saved.")
+            }
+            else if (bhs.isRole("admin")) {
+                this.updateScreenshot(entry)
+
+                bhs.status("Admin " + entry.type + " " + entry.Name + " saved.")
+                bhs.setAdmin(false)
+            }
         }).catch(err => {
             bhs.status("ERROR: " + err)
         })
