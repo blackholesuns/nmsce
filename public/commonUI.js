@@ -151,11 +151,14 @@ blackHoleSuns.prototype.setAdmin = function (state) {
         save.removeClass("btn-def")
         save.addClass("btn-green")
         $("#id-Player").prop("disabled", true)
+        if (nmsce.last)
+            $("#id-Player").val(nmsce.last._name)
     }
     else {
         save.removeClass("btn-green")
         save.addClass("btn-def")
         $("#id-Player").prop("disabled", false)
+        $("#id-Player").val(bhs.user._name)
     }
 };
 
