@@ -71,3 +71,4 @@ local.*.js
 functions/ships.json
 redditpost.json
 functions/livingships.txt
+functions/eng.traineddata

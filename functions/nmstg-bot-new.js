@@ -293,8 +293,8 @@ async function checkPostLimits(posts, approve) {
             && !post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video")
             && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")) {
 
-            if (typeof post.url !== "undefined" && post.url.match(/youtube/i)
-                || post.selftext.match(/youtube.com|twitch.tv/gi)
+            if (typeof post.url !== "undefined" && post.url.match(/youtube\.com|twitch\.tv/gi)
+                || post.selftext.match(/youtube\.com|twitch\.tv/gi)
                 || typeof post.secure_media !== "undefined" && post.secure_media
                 && (typeof post.secure_media.reddit_video !== "undefined"
                     || typeof post.secure_media.oembed !== "undefined" && (post.secure_media.oembed.type === "video"
@@ -622,8 +622,8 @@ function setFlair(post, op) {
 }
 
 function checkMotherMayI(post, op) {
-    console.log("approve first post", permaLinkHdr + op.permalink)
-    return post.approve().catch(err => error(err))
+    console.log("approve first post", permaLinkHdr + poopst.permalink)
+    return op.approve().catch(err => error(err))
 }
 
 function setupAdvertiser(post, op) {

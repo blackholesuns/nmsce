@@ -14,7 +14,7 @@ $(document).ready(() => {
         selector: '[data-toggle="tooltip"]'
     })
 
-    $("#bhsmenus").load("bhsmenus.html", () => {
+    $("#bhsmenus").load("header.html", () => {
         $("#login").hide()
 
         let page = window.location.pathname.replace(/(.*)\//, "$1")

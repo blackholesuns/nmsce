@@ -3,12 +3,13 @@
 // Copyright 2019-2021 Black Hole Suns
 // Written by Stephen Piper
 
-var glyph
+export var glyph
 
 function Glyph() {}
 
 export function buildGlyphModal(dispFcn) {
-    glyph = new Glyph()
+    window.glyph = glyph = new Glyph()
+
     glyph.display = dispFcn
 
     tmImage.load("/bin/model.json", "/bin/metadata.json").then(model => glyph.model = model)
