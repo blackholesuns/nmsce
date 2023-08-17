@@ -148,89 +148,90 @@ let nav = `
     <a id="tab-idname" class="nav-item nav-link txt-def h6 rounded-top active" style="border-color:black;" 
         data-toggle="tab" href="#hdr-idname" role="tab" aria-controls="hdr-idname" aria-selected="true">
         title
-    </a>`;
+    </a>`
 let header = `
     <div id="hdr-idname" class="tab-pane active" role="tabpanel" aria-labelledby="tab-idname">
         <div id="pnl-idname" class="row"></div>
-    </div>`;
-let mapHeader = `<div id="pnl-idname" class="border rounded" style="display:none;"></div>`;
-const tSubList = `<div id="slist-idname" class="row pl-10" style="display:none"></div>`;
-
-const tReq = `&nbsp;<font style="color:red">*</font>`;
+    </div>`
+let mapHeader = `<div id="pnl-idname" class="border rounded" style="display:none;"></div>`
+const tSubList = `<div id="slist-idname" class="row pl-10" style="display:none"></div>`
+const tReq = `&nbsp;<font style="color:red">*</font>`
 const tText = `&nbsp;
     <span data-toggle="tooltip" data-html="true" data-placement="bottom" title="ttext">
         <i class="far fa-question-circle text-danger h6"></i>
-    </span>`;
-
-const inpHdr = `<div class="col-lg-7 col-14" data-allowhide="ihide">`;
-const inpLongHdr = `<div class="col-14" data-allowhide="ihide">`;
-const inpEnd = `</div>`;
-
+    </span>`
+const inpHdr = `<div class="col-lg-7 col-14" data-allowhide="ihide">`
+const inpLongHdr = `<div class="col-14" data-allowhide="ihide">`
+const inpEnd = `</div>`
 const tString = `
     <div id="row-idname" data-type="string" data-req="ifreq" class="row">
         <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" class="rounded col-lg-7 col-9">&nbsp;
         <!--i class="fas fa-check text-success hidden"></i-->
-    </div>`;
-const tMap = `<div id="row-idname" class="" data-type="map"></div>`;
+    </div>`
+const tMap = `<div id="row-idname" class="" data-type="map"></div>`
 const tLongString = `
     <div id="row-idname" data-type="string" data-allowhide="ihide" data-req="ifreq" class="row">
         <div class="col-lg-6 col-4 pl-15 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" class="rounded col">
-    </div>`;
+    </div>`
 const tNumber = `
     <div id="row-idname" data-type="number" data-allowhide="ihide" data-req="ifreq" data-search="stype" class="row">
         <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" type="number" class="rounded col-lg-7 col-9" min=-1 max=range value=-1>
-    </div>`;
+    </div>`
 const tFloat = `
     <div id="row-idname" data-type="float" data-allowhide="ihide" data-req="ifreq" data-search="stype" class="row">
         <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" type="number" class="rounded col-lg-7 col-9" step=0.01 max=range value=-1>
-    </div>`;
+    </div>`
 const tTags = `
     <div id="row-idname" class="row pl-10 pr-10" data-type="tags" data-allowhide="ihide" data-req="ifreq">
-        <div id="id-idname" class="col-lg-6 col-7"></div>
+        <div id="id-idname" class="col-lg-5 col-md-6 col-7"></div>
         <div id="newtag-idname" class="col-7 row hidden">
             <input id="txt-idname" type="text" class="col-5"></input>
             <button id="add-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
             <button id="cancel-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.cancelTag(this)">Cancel</button>
         </div>
-        <div class="col-7 border">
+        <div id="box-idname" class="col-7 border">
             <div id="list-idname" class="row"></div>
         </div>
-    </div>`;
+    </div>`
 const tTag = `<div id="tag-idname" class="border pointer txt-input-def" style="border-radius:8px; background-color:#d0d0d0" onclick="$(this).remove()">&nbsp;title&nbsp;<i class="far fa-times-circle" style="color:#ffffff;"></i>&nbsp;</div>&nbsp;`;
+const tExact = `
+    <label id="id-match" class="col-lg-2 col-sm-3 col-4 txt-label-def">
+        Exact Match&nbsp
+        <input id="ck-match" type="checkbox">
+    </label>`
 const tMenu = `
     <div id="row-idname" data-type="menu" data-allowhide="ihide" data-req="ifreq">
         <div id="id-idname"></div>
-    </div>`;
+    </div>`
 const tRadio = `
     <div id="row-idname" data-type="radio" data-allowhide="ihide" data-req="ifreq" class="row pl-0">
         <div class="radio col-lg-5 col-4 txt-label-def">titlettip</div>
         <div class="col">
             <div id="list" class="row"></div>
         </div>&nbsp;
-    </div>`;
+    </div>`
 const tRadioItem = `
     <label class="col h6 txt-blue">
         <input type="radio" class="radio txt-label-def" id="rdo-tname" data-last=false onclick="nmsce.toggleRadio(this)">
         &nbsp;titlettip
-    </label>`;
+    </label>`
 const tCkItem = `
     <div id="row-idname" data-type="checkbox" data-allowhide="ihide" data-req="false">
         <label id="id-idname" class=" txt-label-def">
             titlettip&nbsp
             <input id="ck-idname" type="checkbox">
         </label>
-    </div>`;
+    </div>`
 const tImg = `
     <div id="row-idname" data-req="ifreq" data-type="img" class="row">
         <div class="col-lg-2 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" type="file" class="col form-control form-control-sm" 
             accept="image/*" name="files[]"  data-type="img" onchange="nmsce.loadScreenshot(this)">&nbsp
-    </div>`;
-
+    </div>`
 const resultsItem = `
     <div id="row-idname" class="col-lg-p250 col-md-p333 col-sm-7 col-14 pointer bkg-white txt-label-def border rounded h6">
         <div class="row">
@@ -250,7 +251,7 @@ const resultsItem = `
         <div class="pl-15 pr-5 row" style="min-height:20px" onclick="nmsce.selectResult(this)">
             <img id="img-idname" src="imgsrc" style="width: 97%;">
         </div>
-    </div>`;
+    </div>`
 
 function showLatLong() {
     let loc = $("#typePanels #hdr-Ship")
@@ -1544,7 +1545,7 @@ class NMSCE {
             let val
 
             let itm = {}
-            itm.name = loc.attr("id").stripID()
+            let name = itm.name = loc.attr("id").stripID()
             itm.type = rdata.type
             if (rdata.search)
                 itm.query = rdata.search
@@ -1574,10 +1575,19 @@ class NMSCE {
                             tlist.push(t)
                     }
 
-                    if (tlist.length > 0) {
-                        itm.list = tlist
-                        search.push(itm)
+                    if (loc.find("#id-match input").prop("checked")) {
+                        for (let l of loc.find("option"))
+                            search.push({
+                                name: name + "." + l.text,
+                                type: "exact",
+                                val: tlist.includes(l.text)
+                            })
                     }
+                    else
+                        if (tlist.length > 0) {
+                            itm.list = tlist
+                            search.push(itm)
+                        }
                     break
                 case "menu":
                     if (!loc.attr("id").startsWith("menu"))
@@ -1992,8 +2002,11 @@ class NMSCE {
                                 sort: true,
                                 required: f.required,
                                 labelsize: "col-lg-4 col-md-5 col-sm-6 col-7",
-                                menusize: "col-7"
+                                menusize: "col-4"
                             })
+
+                            if (fnmsce && f.searchExact)
+                                loc.find("#box-" + id).after(tExact)
                         } else {
                             let ref = doc(bhs.fs, "tags/" + itmid)
                             getDoc(ref).then(doc => {
@@ -5564,12 +5577,14 @@ const objectList = [{
             type: "map",
             sub: "bodies",
             search: true,
-        }, {
-            name: "Parts-2",
-            type: "map",
-            sub: "wings",
-            search: true,
-        }, {
+        },
+        //  {
+        //     name: "Parts-2",
+        //     type: "map",
+        //     sub: "wings",
+        //     search: true,
+        // }, 
+        {
             name: "Slots",
             type: "radio",
             ttip: "slotTtip",
@@ -5648,6 +5663,7 @@ const objectList = [{
             ttip: "Translucent sail color.",
             type: "tags",
             search: true,
+            searchExact: true,
             list: colorList,
             max: 1,
             sub: "includeSail"
@@ -5657,6 +5673,7 @@ const objectList = [{
         ttip: "Main body & wing colors. For colored chrome use the color + chrome.",
         type: "tags",
         search: true,
+        searchExact: true,
         list: colorList,
         max: 4,
     }, {
@@ -5664,6 +5681,7 @@ const objectList = [{
         ttip: "Any decals, stripes, etc.",
         type: "tags",
         search: true,
+        searchExact: true,
         list: colorList,
         max: 4,
     }, {

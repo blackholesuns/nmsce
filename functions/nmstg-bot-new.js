@@ -622,7 +622,7 @@ function setFlair(post, op) {
 }
 
 function checkMotherMayI(post, op) {
-    console.log("approve first post", permaLinkHdr + poopst.permalink)
+    console.log("approve first post", permaLinkHdr + op.permalink)
     return op.approve().catch(err => error(err))
 }
 

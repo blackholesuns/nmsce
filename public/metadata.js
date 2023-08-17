@@ -1,6 +1,13 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.6",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Add 'Exact Match' to ship color selection. If selected it won't return ships with any other colors selected."
+        ]
+    }, {
         Version: "1.2.5",
         Title: " ",
         Authors: ["spip01"],
