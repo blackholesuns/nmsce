@@ -461,7 +461,7 @@ function checkNewPosters(posts) {
                 if (!post.banned_by && (typeof post.preview !== "undefined" || typeof post.media_metadata !== "undefined")) {
                     console.log("new poster", post.author.name, permaLinkHdr + post.permalink)
                     let p = []
-                    p.push(post.reply(firstPost + botSig + firstPostCmd).catch(err => error(err)))
+                    p.push(post.reply(firstPost + botSig + firstPostCmd).lock().catch(err => error(err)))
 
                     // if (!commentedList.includes(post.name)) {
                     //     commentedList.push(post.name)

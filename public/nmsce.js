@@ -1101,7 +1101,7 @@ class NMSCE {
                         let keys = Object.keys(entry[id])
 
                         for (let t of keys)
-                            if (entry[id][t]) {
+                            if (entry[id][t] || id === "Tags") {
                                 let h = /idname/[Symbol.replace](tTag, t.nameToId())
                                 h = /title/[Symbol.replace](h, t)
                                 row.find("#list-" + id).append(h)
@@ -1148,7 +1148,7 @@ class NMSCE {
                 if (entry.parts[i]) {
                     let loc = map.find("#map-" + i)
                     if (loc.length > 0)
-                        this.selectMap(loc, true)
+                        this.selectMap(loc, "selected")
                 }
         }
 
@@ -1238,7 +1238,7 @@ class NMSCE {
 
                     for (let i of itm.list) {
                         let loc = map.find("#map-" + i)
-                        this.selectMap(loc, true)
+                        this.selectMap(loc, "selected")
                     }
                     break
             }
@@ -1260,21 +1260,19 @@ class NMSCE {
 
         statements.push(where("type", "==", search.type))
 
-        for (let q of search.search) {
+        for (let q of search.search)
             switch (q.type) {
                 case "tags":
-                case "map":
+                    // case "map":
                     for (let i of q.list)
                         statements.push(where(q.name + "." + i, "==", true))
                     break
                 default:
                     statements.push(where(q.name, q.query ? q.query : "==", q.val))
-                    break
             }
-        }
 
         // statements.push(orderBy("created", "desc")) would require index for every possible combination
-        let q = query(ref, ...statements, limit(25))
+        let q = query(ref, ...statements)
 
         getCountFromServer(q).then(snapshot => {
             let c = snapshot.data().count
@@ -1284,6 +1282,8 @@ class NMSCE {
             else
                 bhs.status("Search found " + c + " matches.")
         })
+
+        q = query(q, limit(25))
 
         this.getWithObserver(null, q, panel, true, dispFcn)
     }
@@ -1582,12 +1582,18 @@ class NMSCE {
                                 type: "exact",
                                 val: tlist.includes(l.text)
                             })
+                    } else if (name === "Color" || name === "Sail" || name === "Markings") {
+                        for (let l of tlist)
+                            search.push({
+                                name: name + "." + l,
+                                type: "exact",
+                                val: true
+                            })
+
+                    } else if (tlist.length > 0) {
+                        itm.list = tlist
+                        search.push(itm)
                     }
-                    else
-                        if (tlist.length > 0) {
-                            itm.list = tlist
-                            search.push(itm)
-                        }
                     break
                 case "menu":
                     if (!loc.attr("id").startsWith("menu"))
@@ -1628,18 +1634,14 @@ class NMSCE {
         let parts = nmsce[(i >= 0 ? search[i].val : s.type).toLowerCase()]
         if (parts) {
             for (let p of Object.keys(parts)) {
-                if (parts[p].state === "selected")
-                    list.push(p)
-            }
-
-            if (list.length > 0) {
-                search.push({
-                    name: "parts",
-                    tab: s.type,
-                    Type: i >= 0 ? search[i].val : "",
-                    type: "map",
-                    list: list
-                })
+                if (parts[p].state === "selected" || parts[p].state === "error")
+                    search.push({
+                        name: "parts." + p,
+                        tab: s.type,
+                        Type: i >= 0 ? search[i].val : "",
+                        type: "map",
+                        val: parts[p].state === "selected"
+                    })
             }
         }
 
@@ -2282,12 +2284,23 @@ class NMSCE {
 
         let part = parts[evtid]
         let partsList = Object.keys(parts)
-        let selected = part.state = set || part.state !== "selected" ? "selected" : "enabled"
+
+        if (!set) {
+            let states = ["enabled", "selected"]
+            if (fnmsce)
+                states.unshift("error")
+
+            let found = (states.indexOf(part.state) + 1) % states.length
+            part.state = states[found]
+        }
+        else
+            part.state = set
 
         for (let p of partsList)
             if (p !== "type") {
                 parts[p].proc = false
-                parts[p].state = parts[p].state === "selected" ? "selected" : "enabled"
+                if (parts[p].state === "disabled")
+                    parts[p].state = "enabled"
             }
 
         const setState = function (id, state) {
@@ -2344,7 +2357,7 @@ class NMSCE {
             }
         }
 
-        setState(evtid, selected)
+        setState(evtid, part.state)
 
         for (let p of partsList)
             disableParts(p)
@@ -2382,8 +2395,6 @@ class NMSCE {
             sloc.prop("checked", true)
             this.restoreImageText(null, true)
         }
-
-        part.state = selected === "selected" ? "selected" : part.state
 
         colorMapParts(pnlid)
     }
@@ -5179,7 +5190,7 @@ class NMSCE {
                 let keys = Object.keys(e[f.name])
                 title = ""
                 for (let k of keys) {
-                    if (e[f.name][k])
+                    if (typeof e[f.name][k] !== "boolean" || e[f.name][k])
                         title += k + " "
                 }
             } else
@@ -5205,7 +5216,7 @@ class NMSCE {
                             let keys = Object.keys(e[s.name])
                             title = ""
                             for (let k of keys) {
-                                if (e[s.name][k])
+                                if (typeof e[s.name][k] !== "boolean" || e[s.name][k])
                                     title += k + " "
                             }
                         } else
@@ -5267,7 +5278,8 @@ class NMSCE {
             else if (f.type === "tags") {
                 let keys = Object.keys(e[f.name])
                 for (let k of keys)
-                    title += k + " "
+                    if (typeof e[f.name][k] !== "boolean" || e[f.name][k])
+                        title += k + " "
             } else
                 title = e[f.name]
 
@@ -5286,7 +5298,8 @@ class NMSCE {
                         else if (s.type === "tags") {
                             let keys = Object.keys(e[s.name])
                             for (let k of keys)
-                                title += k + " "
+                                if (typeof e[s.name][k] !== "boolean" || e[s.name][k])
+                                    title += k + " "
                         } else
                             title = e[s.name]
 
@@ -5663,7 +5676,6 @@ const objectList = [{
             ttip: "Translucent sail color.",
             type: "tags",
             search: true,
-            searchExact: true,
             list: colorList,
             max: 1,
             sub: "includeSail"
@@ -5681,7 +5693,7 @@ const objectList = [{
         ttip: "Any decals, stripes, etc.",
         type: "tags",
         search: true,
-        searchExact: true,
+        // searchExact: true,
         list: colorList,
         max: 4,
     }, {

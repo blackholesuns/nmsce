@@ -5,6 +5,7 @@ export const ChangeLog = [
         Title: " ",
         Authors: ["spip01"],
         Changes: [
+            "Add exclude part to search selection. Click a part to cycle through selected, excluded & not selected.",
             "Add 'Exact Match' to ship color selection. If selected it won't return ships with any other colors selected."
         ]
     }, {

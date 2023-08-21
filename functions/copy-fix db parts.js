@@ -30,33 +30,33 @@ require('events').EventEmitter.defaultMaxListeners = 0
 async function padParts() {
     let sec = new Date().valueOf() / 1000 - 24 * 60 * 60
 
-    let ref = admin.firestore().collection("nmsceCombined")
-    ref = ref.where("type", "==", "Ship")
-    // ref = ref.where("modded._seconds", "<=", sec)
-    // ref = ref.limit(100)
+    // let ref = admin.firestore().collection("nmsceCombined")
+    // ref = ref.where("type", "==", "Ship")
+    // // ref = ref.where("modded._seconds", "<=", sec)
+    // // ref = ref.limit(100)
 
-    let snapshot = await ref.get()
-    // console.log(snapshot.docs.length)
-
-    for (let d of snapshot.docs) {
-        console.log(d.data().id)
-        let doc = fixParts(d.data())
-
-        d.ref.set(doc)
-    }
-
-    // ref = admin.firestore().collection("nmsceCombined")
-    // ref = ref.where("type", "==", "Freighter")
-    // ref = ref.limit(5)
-
-    // snapshot = await ref.get()
+    // let snapshot = await ref.get()
+    // // console.log(snapshot.docs.length)
 
     // for (let d of snapshot.docs) {
+    //     console.log(d.data().id)
     //     let doc = fixParts(d.data())
-    //     // console.log(d.id)
 
-    //     d.ref.set(doc, { merge: true })
+    //     d.ref.set(doc)
     // }
+
+    let ref = admin.firestore().collection("nmsceCombined")
+    ref = ref.where("type", "==", "Freighter")
+    // ref = ref.limit(20)
+
+    snapshot = await ref.get()
+    console.log(snapshot.docs.length)
+
+    for (let d of snapshot.docs) {
+        let doc = fixParts(d.data())
+        // console.log("https://nmsge.com/upload?i=" + d.data().id)
+        d.ref.set(doc, { merge: true })
+    }
 }
 padParts()
 
@@ -76,16 +76,16 @@ function fixParts(doc) {
     if (typeof doc.Color !== "undefined")
         d.Color = merge(doc.Color, colors)
 
-    if (typeof doc.Sail !== "undefined")
-        d.Sail = merge(doc.Sail, colors)
+    // if (typeof doc.Sail !== "undefined")
+    //     d.Sail = merge(doc.Sail, colors)
 
-    if (typeof doc.Markings !== "undefined")
-        d.Markings = merge(doc.Markings, colors)
+    // if (typeof doc.Markings !== "undefined")
+    //     d.Markings = merge(doc.Markings, colors)
 
-    if (typeof doc.Type !== "undefined" && typeof doc.parts !== "undefined")
-        d.parts = merge(doc.parts, parts[doc.Type])
+    // if (typeof doc.Type !== "undefined" && typeof doc.parts !== "undefined")
+    //     d.parts = merge(doc.parts, parts[doc.Type])
 
-    else if (doc.type === "Freighter")
+    if (doc.type === "Freighter")
         d.parts = merge(doc.parts, parts[doc.type])
 
     d.modded = doc.modded
