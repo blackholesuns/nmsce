@@ -187,19 +187,19 @@ const tFloat = `
     </div>`
 const tTags = `
     <div id="row-idname" class="row pl-10 pr-10" data-type="tags" data-allowhide="ihide" data-req="ifreq">
-        <div id="id-idname" class="col-lg-5 col-md-6 col-7"></div>
+        <div id="id-idname" class="col-lg-6 col-md-6 col-sm-7 col-14"></div>
         <div id="newtag-idname" class="col-7 row hidden">
             <input id="txt-idname" type="text" class="col-5"></input>
             <button id="add-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.newTag(this)">Add</button>
             <button id="cancel-idname" type="text" class="col-4 btn btn-def btn-sm" onclick="nmsce.cancelTag(this)">Cancel</button>
         </div>
-        <div id="box-idname" class="col-7 border">
+        <div id="box-idname" class="col-lg-5 col-md-6 col-sm-7 col-14 border">
             <div id="list-idname" class="row"></div>
         </div>
     </div>`
 const tTag = `<div id="tag-idname" class="border pointer txt-input-def" style="border-radius:8px; background-color:#d0d0d0" onclick="$(this).remove()">&nbsp;title&nbsp;<i class="far fa-times-circle" style="color:#ffffff;"></i>&nbsp;</div>&nbsp;`;
 const tExact = `
-    <label id="id-match" class="col-lg-2 col-sm-3 col-4 txt-label-def">
+    <label id="id-match" class="col-lg-3 col-sm-4 col-14 txt-label-def">
         Exact Match&nbsp
         <input id="ck-match" type="checkbox">
     </label>`
@@ -209,7 +209,7 @@ const tMenu = `
     </div>`
 const tRadio = `
     <div id="row-idname" data-type="radio" data-allowhide="ihide" data-req="ifreq" class="row pl-0">
-        <div class="radio col-lg-5 col-4 txt-label-def">titlettip</div>
+        <div class="radio col-lg-5 col-5 txt-label-def">titlettip</div>
         <div class="col">
             <div id="list" class="row"></div>
         </div>&nbsp;
