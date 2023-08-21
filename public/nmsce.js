@@ -1101,7 +1101,7 @@ class NMSCE {
                         let keys = Object.keys(entry[id])
 
                         for (let t of keys)
-                            if (typeof entry[id][t] !== "boolean"|| entry[id][t]) {
+                            if (typeof entry[id][t] !== "boolean" || entry[id][t]) {
                                 let h = /idname/[Symbol.replace](tTag, t.nameToId())
                                 h = /title/[Symbol.replace](h, t)
                                 row.find("#list-" + id).append(h)
@@ -2354,7 +2354,7 @@ class NMSCE {
                                         intersects = part.group.intersects(check.group)
 
                                         if (intersects.length > 0 && !(part.requires && part.requires.includes(p)))
-                                            setState(p, set && (check.state === "selected" || check.state === "error") ? "error" : "disabled")
+                                            setState(p, set && check.state === "selected" || check.state === "error" ? "error" : "disabled")
                                     }
                                 }
                             }
