@@ -2286,12 +2286,18 @@ class NMSCE {
         let partsList = Object.keys(parts)
 
         if (!set) {
-            let states = ["enabled", "selected"]
-            if (fnmsce)
-                states.unshift("error")
-
-            let found = (states.indexOf(part.state) + 1) % states.length
-            part.state = states[found]
+            switch (part.state) {
+                case "disabled":
+                case "enabled":
+                    part.state = "selected"
+                    break
+                case "selected":
+                    part.state = fnmsce ? "error" : "enabled"
+                    break
+                case "error":
+                    part.state = "enabled"
+                    break
+            }
         }
         else
             part.state = set
