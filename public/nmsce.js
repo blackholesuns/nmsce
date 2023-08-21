@@ -1101,7 +1101,7 @@ class NMSCE {
                         let keys = Object.keys(entry[id])
 
                         for (let t of keys)
-                            if (entry[id][t] || id === "Tags") {
+                            if (typeof entry[id][t] !== "boolean"|| entry[id][t]) {
                                 let h = /idname/[Symbol.replace](tTag, t.nameToId())
                                 h = /title/[Symbol.replace](h, t)
                                 row.find("#list-" + id).append(h)
@@ -1545,7 +1545,7 @@ class NMSCE {
             let val
 
             let itm = {}
-            let name = itm.name = loc.attr("id").stripID()
+            itm.name = loc.attr("id").stripID()
             itm.type = rdata.type
             if (rdata.search)
                 itm.query = rdata.search
@@ -1578,14 +1578,14 @@ class NMSCE {
                     if (loc.find("#id-match input").prop("checked")) {
                         for (let l of loc.find("option"))
                             search.push({
-                                name: name + "." + l.text,
+                                name: itm.name + "." + l.text,
                                 type: "exact",
                                 val: tlist.includes(l.text)
                             })
                     } else if (name === "Color" || name === "Sail" || name === "Markings") {
                         for (let l of tlist)
                             search.push({
-                                name: name + "." + l,
+                                name: itm.name + "." + l,
                                 type: "exact",
                                 val: true
                             })
