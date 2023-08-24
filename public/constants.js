@@ -224,6 +224,10 @@ export const versionList = [
         name: "singularity",
         version: 4.30,
         date: "6/7/2023"
+    }, {
+        name: "echoes",
+        version: 4.40,
+        date: "8/24/2023"
     }
 ];
 

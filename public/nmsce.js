@@ -852,8 +852,8 @@ class NMSCE {
 
         entry._name = this.last._name ? this.last._name : bhs.user._name
         entry.uid = this.last.uid ? this.last.uid : bhs.user.uid
-        entry.galaxy = this.last.galaxy ? this.last.galaxy : bhs.user.galaxy
         entry.version = this.last.version ? this.last.version : latestversion
+        entry.galaxy = bhs.user.galaxy  // allows galaxy edit
 
         entry.id = this.last.id ? this.last.id : null
         entry.created = this.last.created ? new Timestamp(this.last.created.seconds, this.last.created.nanoseconds) : null
@@ -861,7 +861,7 @@ class NMSCE {
         entry.reddit = this.last.reddit ? this.last.reddit : null
         entry.redditlink = this.last.redditlink ? this.last.redditlink : null
 
-        entry.page = "nmsce"
+        entry.page = "nmsge"
 
         loc = $("#panels")
         entry.addr = loc.find("#id-addr").val()
