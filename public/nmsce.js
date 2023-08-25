@@ -5902,6 +5902,12 @@ const objectList = [{
             name: "Alien"
         }, {
             name: "Experimental"
+        }, {
+            name: "Royal"
+        }, {
+            name: "Atlantid"
+        }, {
+            name: "Staff"
         }],
         imgText: true,
         search: true,
