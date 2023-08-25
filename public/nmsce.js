@@ -3212,7 +3212,7 @@ class NMSCE {
         if (name === "pirate") name = "Pirate Raider"
         if (name === "2 glyphs") name = "You only need the first 2 glyphs to get to this system."
 
-        loc.val(loc.val() + (name === "," ? "" : " ") + name)
+        loc.val(loc.val() + (loc.val().length === 0 || name === "," ? "" : " ") + name)
     }
 
     buildRedditTitleMenu() {
@@ -3233,11 +3233,18 @@ class NMSCE {
             }
 
             let parts = Object.keys(nmsce.last.parts)
+            let used = []
+
             for (let p of parts) {
                 let name = loc.find("#bdr-" + p + " title").html()
-                if (name && typeof title.find(x => x.name === name) === "undefined" && nmsce.last.parts[p]) {
-                    let h = /color/g[Symbol.replace](hdr, "success")
-                    htm += /title/g[Symbol.replace](h, name)
+                
+                if (!used.includes(name)) {
+                    used.push(name)
+
+                    if (name && typeof title.find(x => x.name === name) === "undefined" && nmsce.last.parts[p]) {
+                        let h = /color/g[Symbol.replace](hdr, "success")
+                        htm += /title/g[Symbol.replace](h, name)
+                    }
                 }
             }
 
