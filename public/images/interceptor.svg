@@ -28260,7 +28260,7 @@
      x="3.5275116"
      y="7.1820774"><title
        id="title9349">Cylon</title><desc
-       id="desc7016">{&quot;group&quot;:[2],
+       id="desc7016">{&quot;group&quot;:[2,6],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h3"
@@ -28269,7 +28269,7 @@
      x="47.247356"
      y="7.1820774"><title
        id="title9357">Narrow</title><desc
-       id="desc7018">{&quot;group&quot;:[2],
+       id="desc7018">{&quot;group&quot;:[2,3],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h4"
@@ -28278,7 +28278,7 @@
      x="88.63102"
      y="7.1820774"><title
        id="title9353">Wide</title><desc
-       id="desc7020">{&quot;group&quot;:[2],
+       id="desc7020">{&quot;group&quot;:[2,35],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h5"
@@ -28287,7 +28287,7 @@
      x="158.38254"
      y="26.130234"><title
        id="title9359">Octa Spot</title><desc
-       id="desc7024">{&quot;group&quot;:[3],
+       id="desc7024">{&quot;group&quot;:[3,6],
 &quot;requires&quot;:[&quot;h4&quot;,&quot;h60&quot;]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h6"
@@ -28296,7 +28296,7 @@
      x="158.4295"
      y="2.9967346"><title
        id="title9355">Quadra Spot</title><desc
-       id="desc7022">{&quot;group&quot;:[3],
+       id="desc7022">{&quot;group&quot;:[3,6],
 &quot;requires&quot;:[&quot;h4&quot;, &quot;h60&quot;]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h22"
@@ -28616,8 +28616,8 @@
      x="40.03577"
      y="96.810783"><title
        id="title9365">Pi</title><desc
-       id="desc7054">{&quot;group&quot;:[6],
-&quot;requires&quot;:[&quot;h60&quot;]}</desc></rect><rect
+       id="desc7054">{&quot;group&quot;:[6,35],
+&quot;requires&quot;:[&quot;h3&quot;,&quot;h60&quot;]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h7"
      width="34.329807"
@@ -28679,7 +28679,7 @@
      x="147.21432"
      y="96.20771"><title
        id="title9379">Linea</title><desc
-       id="desc7060">{&quot;requires&quot;:[&quot;h60&quot;]}</desc></rect><rect
+       id="desc7060">{&quot;group&quot;:[6],&quot;requires&quot;:[&quot;h60&quot;]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h14"
      width="29.327438"
