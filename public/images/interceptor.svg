@@ -28596,7 +28596,7 @@
      x="269.7804"
      y="4.1764603"><title
        id="title9385">Ant</title><desc
-       id="desc7030">{&quot;requires&quot;:[&quot;h60&quot;]}</desc></rect><path
+       id="desc7030">{&quot;requires&quot;:[&quot;h25&quot;,&quot;h60&quot;]}</desc></rect><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 17.730924,534.11167 -12.4521442,13.31731 11.4144652,12.97143 38.394112,13.49026 43.409559,-2.76723 56.553494,7.26399 5.36133,-4.66971 1.72947,-8.47466 z"
      id="bdr-h66"><title
