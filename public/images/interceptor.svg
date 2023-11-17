@@ -28399,7 +28399,8 @@
      id="bdr-h28"
      sodipodi:nodetypes="ccccccc"><title
        id="title9405">Hilt</title><desc
-       id="desc7072">{&quot;requires&quot;:[&quot;h25&quot;,&quot;h60&quot;]}
+       id="desc7072">{&quot;group&quot;:[36],
+&quot;requires&quot;:[&quot;h25&quot;,&quot;h60&quot;]}
 </desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 181.99839,159.69318 17.91199,4.15321 0.47235,19.6809 -13.11171,17.57798 -18.67648,3.51118 -2.30503,-7.04517 10.04878,-12.82055 z"
@@ -28411,7 +28412,8 @@
      d="m 63.182626,190.3826 11.634822,-26.0534 18.120482,-29.44015 32.2094,17.28845 -0.4947,7.25036 -10.79922,32.0445 -45.782013,2.96944 z"
      id="bdr-h26"><title
        id="title9401">Guard</title><desc
-       id="desc7070">{&quot;requires&quot;:[&quot;h25&quot;, &quot;h60&quot;]}</desc></path><path
+       id="desc7070">{&quot;group&quot;:[36],
+&quot;requires&quot;:[&quot;h25&quot;,&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 229.24806,188.7965 61.87901,11.16412 22.9586,-28.86658 -25.43928,-35.25432 -26.23871,21.49735 -2.68784,6.96301 -21.85629,11.7451 z"
      id="bdr-h27"><title
