@@ -28375,8 +28375,8 @@
      d="m 245.74871,295.55596 57.42053,20.85977 7.90657,18.36036 -2.22465,21.63708 -33.44695,6.15341 -28.85649,-2.61475 -47.47827,-15.17735 -28.71203,-37.67956 38.84022,-3.44873 z"
      id="bdr-h24"><title
        id="title9453">U-Wing</title><desc
-       id="desc7064">{&quot;group&quot;:[11,17,32],
-&quot;okGroup&quot;:[12,31,34],
+       id="desc7064">{&quot;group&quot;:[17,32],
+&quot;okGroup&quot;:[12,14,32,34,40],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 273.86041,216.62638 6.63317,-7.71653 23.49721,0.53218 1.12427,9.04695 -6.40833,26.60869 h -8.88172 z"
@@ -28489,7 +28489,7 @@
      id="bdr-h42"><title
        id="title9435">X-Wing Bottom</title><desc
        id="desc7104">{&quot;group&quot;:[14,17,21,22],
-&quot;okGroup&quot;:[13,20,25],
+&quot;okGroup&quot;:[13,20,25,32],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 12.648893,448.72501 2.067016,12.82259 31.743489,12.08566 28.052385,18.71804 37.796897,4.56897 6.3487,-1.32647 9.30158,-20.33929 -28.052389,-7.51669 -23.25894,-2.26903 z"
@@ -28497,15 +28497,15 @@
      sodipodi:nodetypes="cccccccccc"><title
        id="title9431">X-Wing Rear Bottom</title><desc
        id="desc19470">{&quot;group&quot;:[14,17,22],
-&quot;okGroup&quot;:[13,20,25],
+&quot;okGroup&quot;:[13,20,25,32],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 2.6628399,453.8141 5.4601922,0.45467 2.8817679,8.94207 27.90765,9.24518 34.429544,22.58247 v 5.0015 L 15.858305,482.15587 3.4211998,465.6358 Z"
      id="bdr-h44"><title
        id="title9469">Pincer Bottom</title><desc
        id="desc7106">{&quot;requires&quot;:[&quot;h60&quot;],
-&quot;group&quot;:[20,17],
-&quot;okGroup&quot;:[22,25,13,20]}</desc></path><path
+&quot;group&quot;:[20,17,40],
+&quot;okGroup&quot;:[22,25,13,20,32]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 137.32408,500.87128 0.66747,-13.35001 41.88428,-17.02126 37.21194,3.83813 30.2034,14.18438 63.2436,14.85189 v 16.35377 l -4.67235,7.84313 -73.75639,-10.34626 -59.23872,0.16688 -31.8721,-9.34501 z"
      id="bdr-h55"><title
@@ -28519,7 +28519,7 @@
        id="title9473">I-Fin Bottom</title><desc
        id="desc7134">{&quot;requires&quot;:[&quot;h55&quot;,&quot;h60&quot;],
 &quot;group&quot;:[24,17,34],
-&quot;okGroup&quot;:[11,12,24]}</desc></path><path
+&quot;okGroup&quot;:[11,12,24,32]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 236.10413,555.06816 3.54843,-0.26199 7.62252,-4.19161 59.14032,0.91692 7.62253,8.90718 -0.65711,18.99326 -8.41107,6.81138 -55.5919,-7.33534 -12.87945,-9.03816 z"
      id="bdr-h63"><title
@@ -28561,8 +28561,8 @@
      id="bdr-h50"><title
        id="title9465">Carriage Bottom</title><desc
        id="desc7122">{&quot;requires&quot;:[&quot;h60&quot;],
-&quot;group&quot;:[17,25,37],
-&quot;okGroup&quot;:[20,22,37]}</desc></path><path
+&quot;group&quot;:[17,25,37,40],
+&quot;okGroup&quot;:[20,22,32,37]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 165.819,664.01353 -23.48094,-0.58999 -24.77888,6.37192 4.60179,45.19345 32.68452,2.59597 4.83779,7.6699 22.53697,1.65198 20.88506,-12.74384 10.9735,2.47797 5.66374,-6.48992 -0.82596,-9.20389 3.77583,-7.55191 4.3658,-7.31591 -34.21845,-11.44586 z"
      id="bdr-h60"><title
@@ -28572,7 +28572,7 @@
      id="bdr-h61"><title
        id="title9457">Tank</title><desc
        id="desc7144">{&quot;group&quot;:[12,17],
-&quot;okGroup&quot;:[11],
+&quot;okGroup&quot;:[11,32],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 186.17385,540.42404 -12.11715,4.4681 -2.63417,6.74597 2.98539,7.27164 8.95615,11.38931 32.31239,10.25037 15.54156,-7.97251 0.70245,-19.62466 -10.09763,-11.12648 z"
@@ -28585,7 +28585,7 @@
      id="bdr-h58"><title
        id="title9451">I-Wing Closed Bottom</title><desc
        id="desc7140">{&quot;group&quot;:[12,17],
-&quot;okGroup&quot;:[11],
+&quot;okGroup&quot;:[11,32],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 214.91846,580.2743 12.01461,4.50563 28.20098,9.17814 58.2375,16.02002 v 8.51063 l -7.00853,9.01125 -65.74664,-7.50938 -51.39585,-1.50187 -30.704,-3.83814 -7.00854,-11.34751 5.00609,-16.68751 9.67845,-7.00876 z"
@@ -28781,8 +28781,8 @@
      id="bdr-h72"><title
        id="title45946">U-Wing Fin</title><desc
        id="desc9977-4">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h24&quot;],
-&quot;group&quot;:[17,31,24],
-&quot;okGroup&quot;:[11,12,34]}</desc></path><g
+&quot;group&quot;:[17,32],
+&quot;okGroup&quot;:[12,14,32,34,40]}</desc></path><g
      id="g22572"
      style="display:inline;stroke-width:8.62887"
      transform="matrix(0.43800237,0,0,0.43801687,101.81862,272.37941)"><title
