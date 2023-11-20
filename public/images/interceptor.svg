@@ -28441,7 +28441,7 @@
      id="bdr-h51"><title
        id="title9445">I-Wing Top</title><desc
        id="desc7124">{&quot;group&quot;:[11,17],
-&quot;okGroup&quot;:[12,24,33],
+&quot;okGroup&quot;:[12,24],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 205.74997,405.53945 51.35715,2.87098 48.19036,8.47619 6.60896,-3.28111 0.96381,3.00769 -3.30448,9.43318 -39.24073,0.68357 -63.47358,-11.48388 z"
@@ -28511,7 +28511,7 @@
      id="bdr-h55"><title
        id="title9447">I-Wing Bottom</title><desc
        id="desc7132">{&quot;group&quot;:[12,17],
-&quot;okGroup&quot;:[11,24,32],
+&quot;okGroup&quot;:[11,24],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 202.82369,522.4848 15.41795,0.40578 34.24695,0.27051 50.89287,7.4391 3.82037,-1.21731 4.63903,1.35256 -4.36615,8.65641 -38.61309,3.24616 -64.40062,-12.03782 z"
@@ -28572,7 +28572,7 @@
      id="bdr-h61"><title
        id="title9457">Tank</title><desc
        id="desc7144">{&quot;group&quot;:[12,17],
-&quot;okGroup&quot;:[11,32],
+&quot;okGroup&quot;:[11,32,33],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 186.17385,540.42404 -12.11715,4.4681 -2.63417,6.74597 2.98539,7.27164 8.95615,11.38931 32.31239,10.25037 15.54156,-7.97251 0.70245,-19.62466 -10.09763,-11.12648 z"
@@ -28585,7 +28585,7 @@
      id="bdr-h58"><title
        id="title9451">I-Wing Closed Bottom</title><desc
        id="desc7140">{&quot;group&quot;:[12,17],
-&quot;okGroup&quot;:[11,32],
+&quot;okGroup&quot;:[11,32,33],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 214.91846,580.2743 12.01461,4.50563 28.20098,9.17814 58.2375,16.02002 v 8.51063 l -7.00853,9.01125 -65.74664,-7.50938 -51.39585,-1.50187 -30.704,-3.83814 -7.00854,-11.34751 5.00609,-16.68751 9.67845,-7.00876 z"
@@ -28593,7 +28593,7 @@
      sodipodi:nodetypes="ccccccccccccc"><title
        id="title9449">I-Wing Closed Top</title><desc
        id="desc7138">{&quot;group&quot;:[11,17],
-&quot;okGroup&quot;:[12],
+&quot;okGroup&quot;:[12,34],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.524999;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h1"
