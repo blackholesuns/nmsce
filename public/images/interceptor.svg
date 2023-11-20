@@ -28536,9 +28536,9 @@
      d="m 64.546185,575.47788 39.172655,-0.5988 39.47399,4.29145 v 4.49104 l -9.84339,6.28747 -53.837291,4.99005 -11.550912,-12.37533 z"
      id="bdr-h47"><title
        id="title9443">X-Fin</title><desc
-       id="desc7112">{&quot;requires&quot;:[&quot;h60&quot;],
+       id="desc7112">{&quot;requires&quot;:[&quot;h45&quot;,&quot;h60&quot;],
 &quot;group&quot;:[17,23],
-&quot;okGroup&quot;:[21,39,20,22]}</desc></path><path
+&quot;okGroup&quot;:[38,39]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="M 2.7007652,666.46722 2.9367545,655.61136 35.50328,635.07961 93.556649,647.82345 109.36793,663.39926 94.028629,687.23497 Z"
      id="bdr-h64"><title
@@ -28607,8 +28607,8 @@
      d="m 17.730924,534.11167 -12.4521442,13.31731 11.4144652,12.97143 38.394112,13.49026 43.409559,-2.76723 56.553494,7.26399 5.36133,-4.66971 1.72947,-8.47466 z"
      id="bdr-h66"><title
        id="title9439">X-Wing Front Bottom</title><desc
-       id="desc19472">{&quot;group&quot;:[14,17,21,38],
-&quot;okGroup&quot;:[13,18,23],
+       id="desc19472">{&quot;group&quot;:[17,21,38],
+&quot;okGroup&quot;:[18,23,38],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 80.883994,321.53489 11.749347,13.53313 25.430179,-0.93981 1.12666,-6.57858 -13.68078,-11.46556 -16.73884,-3.75923 z"
@@ -28709,8 +28709,8 @@
      id="bdr-h45"
      sodipodi:nodetypes="ccccccccccc"><title
        id="title9437">X-Wing Front Top</title><desc
-       id="desc7108">{&quot;group&quot;:[13,17,21,38],
-&quot;okGroup&quot;:[14,18,23],
+       id="desc7108">{&quot;group&quot;:[17,21,38],
+&quot;okGroup&quot;:[18,23,38],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 4.14221,355.90717 5.1828573,1.32809 5.5555887,-7.29245 28.733229,0.43046 39.07024,-9.73548 1.620892,-4.59417 -58.808609,-1.95123 -16.8236215,11.19828 z"
