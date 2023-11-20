@@ -28375,8 +28375,8 @@
      d="m 245.74871,295.55596 57.42053,20.85977 7.90657,18.36036 -2.22465,21.63708 -33.44695,6.15341 -28.85649,-2.61475 -47.47827,-15.17735 -28.71203,-37.67956 38.84022,-3.44873 z"
      id="bdr-h24"><title
        id="title9453">U-Wing</title><desc
-       id="desc7064">{&quot;group&quot;:[11,17,30,32],
-&quot;okGroup&quot;:[12,19,31,34],
+       id="desc7064">{&quot;group&quot;:[11,17,32],
+&quot;okGroup&quot;:[12,31,34],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 273.86041,216.62638 6.63317,-7.71653 23.49721,0.53218 1.12427,9.04695 -6.40833,26.60869 h -8.88172 z"
@@ -28440,15 +28440,15 @@
      d="m 189.72115,351.68489 -30.20341,15.85313 -0.50061,17.18815 6.34104,4.33876 41.55054,10.01251 44.72107,3.00375 56.0682,11.34751 6.00731,-9.17814 -4.33861,-18.35626 -54.56637,-18.02253 -27.36662,-11.84813 z"
      id="bdr-h51"><title
        id="title9445">I-Wing Top</title><desc
-       id="desc7124">{&quot;group&quot;:[11,17,30],
-&quot;okGroup&quot;:[12,19,24,33],
+       id="desc7124">{&quot;group&quot;:[11,17],
+&quot;okGroup&quot;:[12,24,33],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 205.74997,405.53945 51.35715,2.87098 48.19036,8.47619 6.60896,-3.28111 0.96381,3.00769 -3.30448,9.43318 -39.24073,0.68357 -63.47358,-11.48388 z"
      id="bdr-h52"><title
        id="title9471">I-Fin Top</title><desc
        id="desc7126">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h51&quot;],
-&quot;group&quot;:[24,17,30,33],
+&quot;group&quot;:[24,17,33],
 &quot;okGroup&quot;:[11,12,24]}</desc></path><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h53"
@@ -28593,7 +28593,7 @@
      sodipodi:nodetypes="ccccccccccccc"><title
        id="title9449">I-Wing Closed Top</title><desc
        id="desc7138">{&quot;group&quot;:[11,17],
-&quot;okGroup&quot;:[12,19],
+&quot;okGroup&quot;:[12],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.524999;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h1"
@@ -28781,7 +28781,7 @@
      id="bdr-h72"><title
        id="title45946">U-Wing Fin</title><desc
        id="desc9977-4">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h24&quot;],
-&quot;group&quot;:[17,30,31,24],
+&quot;group&quot;:[17,31,24],
 &quot;okGroup&quot;:[11,12,34]}</desc></path><g
      id="g22572"
      style="display:inline;stroke-width:8.62887"
