@@ -28482,14 +28482,14 @@
      id="bdr-h41"><title
        id="title9433">X-Wing Top</title><desc
        id="desc7102">{&quot;group&quot;:[13,17,21,22],
-&quot;okGroup&quot;:[14,20,23],
+&quot;okGroup&quot;:[14,20],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 2.9911856,416.76508 -0.1617952,7.27721 30.7411066,15.03956 30.579313,16.81843 35.756761,7.92408 45.626279,-3.55775 78.14713,9.05608 4.69206,-15.03955 -139.629345,-21.99335 -14.07619,-0.32343 z"
      id="bdr-h42"><title
        id="title9435">X-Wing Bottom</title><desc
        id="desc7104">{&quot;group&quot;:[14,17,21,22],
-&quot;okGroup&quot;:[13,20,23],
+&quot;okGroup&quot;:[13,20],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 12.648893,448.72501 2.067016,12.82259 31.743489,12.08566 28.052385,18.71804 37.796897,4.56897 6.3487,-1.32647 9.30158,-20.33929 -28.052389,-7.51669 -23.25894,-2.26903 z"
@@ -28505,7 +28505,7 @@
        id="title9469">Pincer Bottom</title><desc
        id="desc7106">{&quot;requires&quot;:[&quot;h60&quot;],
 &quot;group&quot;:[20,17],
-&quot;okGroup&quot;:[22,13,20,23]}</desc></path><path
+&quot;okGroup&quot;:[22,13,20]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 137.32408,500.87128 0.66747,-13.35001 41.88428,-17.02126 37.21194,3.83813 30.2034,14.18438 63.2436,14.85189 v 16.35377 l -4.67235,7.84313 -73.75639,-10.34626 -59.23872,0.16688 -31.8721,-9.34501 z"
      id="bdr-h55"><title
@@ -28718,7 +28718,7 @@
        id="title9467">Pincer Top</title><desc
        id="desc9977">{&quot;requires&quot;:[&quot;h60&quot;],
 &quot;group&quot;:[17,20],
-&quot;okGroup&quot;:[22,14,20,23]}</desc></path><ellipse
+&quot;okGroup&quot;:[22,14,20]}</desc></path><ellipse
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#ff0000;fill-opacity:0;fill-rule:evenodd;stroke:#ff0000;stroke-width:1;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      id="path6962"
      cx="294.58252"
