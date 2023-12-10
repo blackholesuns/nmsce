@@ -28435,7 +28435,8 @@
      id="bdr-h38"
      inkscape:label=""><title
        id="title18591">Antenna</title><desc
-       id="desc7096">{&quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
+       id="desc7096">{&quot;group&quot;:[41],
+&quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 189.72115,351.68489 -30.20341,15.85313 -0.50061,17.18815 6.34104,4.33876 41.55054,10.01251 44.72107,3.00375 56.0682,11.34751 6.00731,-9.17814 -4.33861,-18.35626 -54.56637,-18.02253 -27.36662,-11.84813 z"
      id="bdr-h51"><title
@@ -28458,7 +28459,7 @@
      y="434.28809"><title
        id="title18527">X-Wing Offset Top</title><desc
        id="desc7128">{&quot;requires&quot;:[&quot;h60&quot;],
-&quot;group&quot;:[18,17],
+&quot;group&quot;:[18,17,41],
 &quot;okGroup&quot;:[38]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h54"
