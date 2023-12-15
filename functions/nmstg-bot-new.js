@@ -75,8 +75,8 @@ async function getNew() {
     }).then(async posts => {
         let p = []
 
-        if (!lastPost.name || lastPost.full + recheck < date)
-            console.log(posts.length, "posts / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
+        // if (!lastPost.name || lastPost.full + recheck < date)
+            // console.log(posts.length, "posts / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
 
         if (posts.length > 0) {
             lastPost = posts[0]
@@ -294,7 +294,7 @@ async function checkPostLimits(posts, approve) {
             && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")) {
 
             if (typeof post.url !== "undefined" && post.url.match(/youtube\.com|twitch\.tv/gi)
-                || post.selftext.match(/youtube\.com|twitch\.tv/gi)
+                || post.selftext.match(/youtu\.be|youtube\.com|twitch\.tv|bitchute.com/gi)
                 || typeof post.secure_media !== "undefined" && post.secure_media
                 && (typeof post.secure_media.reddit_video !== "undefined"
                     || typeof post.secure_media.oembed !== "undefined" && (post.secure_media.oembed.type === "video"
@@ -345,7 +345,7 @@ async function checkPostLimits(posts, approve) {
                 p.push(post.remove().catch(err => error(err)))
                 // p.push(post.report({ reason: "Flair needs editing" }).catch(err => error(err)))
 
-                console.log("Ad flair doesn't match:", post.author.name, permaLinkHdr + post.permalink)
+                console.log("Ad flair doesn't match:", post.link_flair_text, permaLinkHdr + post.permalink)
                 continue
             }
 
@@ -888,7 +888,7 @@ function setupContest(post, op) {
 }
 
 async function listContest(post, op) {
-    let today = new Date()
+    let today = new Date().valueOf()
     let text = "!Current Contest  \n"
 
     let contest = await settings.contest.filter(x => {
@@ -899,9 +899,9 @@ async function listContest(post, op) {
     })
 
     for (let c of contest)
-        text += "start: " + c.start + " flair: " + c.flair + " [post](" + c.link + ")  \n"
+        text += "start: " + c.start + "end: " + c.end + " flair: " + c.flair + " [post](" + c.link + ")  \n"
 
-    console.log(text)
+    // console.log(text)
 
     return post.reply(text).catch(err => error(err))
 }
@@ -1085,7 +1085,7 @@ const removedPost = 'Your post has been removed because it violates the followin
 const postLimit = "Posting limit exceded: OP is allowed to make "
 const contestLimit = "Contest limit exceded: OP is allowed to make "
 const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*  \n"
-const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n\n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime please review our posting rules listed in the sidebar.  \n\n***If you have reviewed the rules and this post doesn't break them then you can approve this post yourself by adding the comment '!agree'.*** Your post will still be evaluated by a moderator but it will be visible on the sub until then. \n\n"
+const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n\n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime please review our posting rules listed in the sidebar.  \n\n`If you have reviewed the rules and this post doesn't break them then you can approve this post yourself by adding the comment '!agree'.` Your post will still be evaluated by a moderator but it will be visible on the sub until then. \n\n"
 const firstPostCmd = "!filter-first post"
 const permaLinkHdr = "https://reddit.com"
-const civFlair = "-Please complete this [applicaion](https://forms.gle/wE3vtTWtJH1bZaQg7) before using this flair. Please contact the moderators when its completed so we don't miss it.  \n-If you have already applied and been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the \"Civ Advertisement\" flair to replace it with your unique flair.  \n-If you just forgot to edit the flair use '!flair:Your Unique Flair' and the flair will be edited and post automatically approved.\n"
+const civFlair = "-Please complete this [applicaion](https://forms.gle/wE3vtTWtJH1bZaQg7) before using this flair. Please contact the moderators when its completed so we don't miss it.  \n-If you have already applied and been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the \"Civ Advertisement\" flair to replace it with your unique flair.  \n*-If you just forgot to edit the flair use '!flair:Your Unique Flair' and the flair will be edited and post automatically approved.*\n"
