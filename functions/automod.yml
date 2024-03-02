@@ -47,13 +47,26 @@ parent_submission:
 #action: remove
 
 ---
-# send bot commands to modqueue
+# send bot commands to modqueue to be excecuted
 type: comment
 moderators_exempt: false
 body (regex): '^!\W?(.*)'
 ~body (includes): '!filter-first post'
 action: filter
 action_reason: command {{match-1}}
+
+---
+# deal with mjjstral's paid ship configuration services
+domain+body (regex, includes): ['nms(\.|\W*dot\W*)center', 'no\W*mans\W*app', 'ship\W*customizer', 'youtube.com/watch?v=eoIKW-scW1g', '(ship|delivery|service)\W*(bot|app)', 'discord.gg/AEXcap6', 'Creative\W*and\W*Sharing\W*Hub']
+#filter for now 3/2/24 just to whatch what happen
+action: filter
+action_reason: "Configuration bot"
+
+---
+author:
+    name: "mjjstral"
+action: filter
+action_reason: "permanent watch list"
 
 ---
 ### add bug comment to bug flair -4/7/21 sp
@@ -80,76 +93,69 @@ comment: |
 
 ---
 ### Spoiler Tags and Flair
-    type: submission
-    title (regex, includes): ["spoilers?"]
-    set_spoiler: true
+type: submission
+title (regex, includes): ["spoilers?"]
+set_spoiler: true
 
 ---
-    # approve post from the nmsce app -sp
-    type: submission
-    url (regex): "https://firebasestorage.googleapis.com/v0/b/nms-bhs.appspot.com/.*"
-    action: approve
+# approve post from the nmsce app -sp
+type: submission
+url (regex): "https://firebasestorage.googleapis.com/v0/b/nms-bhs.appspot.com/.*"
+action: approve
 
 ---
-    type: submission
-    # 19/07/16 asking for votes -sp
-    title (regex, includes): '(please|do(n\W?t|\snot)?)\s+(up|down)\s+vote'
-    action: remove
-    action_reason: "Title contains \"vote\""
+reports: 10
+action: remove
+action_reason: "Removed - 10 reports"
 
 ---
-    standard: crowdfunding sites
-    action: remove
-    action_reason: "Crowdfunding Site"
-    comment: Your {{kind}} has been automatically removed because a crowdfunding link was detected.
+type: submission
+title (regex, includes): '(please|do(n\W?t|\snot)?)\s+(up|down)\s+vote'
+action: remove
+action_reason: "Title contains \"vote\""
 
 ---
-    standard: amazon affiliate links
-    action: remove
-    action_reason: "Amazon affiliate links"
-    comment: Your {{kind}} has been automatically removed because an affiliate link was detected.
+standard: crowdfunding sites
+action: remove
+action_reason: "Crowdfunding Site"
+comment: Your {{kind}} has been automatically removed because a crowdfunding link was detected.
 
 ---
-    domain+body (regex): ["gamesdeal.com.*a_aid","cdkeys.*","instant-gaming.*","kinguin.*","allkeyshop.*","g2a.*","eneba.*","instant-gaming.*","mmoga.*","fanatical.*"]
-    action: remove
-    action_reason: "Greymarket site"
+standard: amazon affiliate links
+action: remove
+action_reason: "Amazon affiliate links"
+comment: Your {{kind}} has been automatically removed because an affiliate link was detected.
 
 ---
-    domain+body (includes): ["amazon.co", "amzn.to", "ebay.co", "//a.co", "etsy.com", "patreon.com"]
-    action: remove
-    action_reason: "Online retailer"
+domain+body (regex): ["gamesdeal.com.*a_aid","cdkeys.*","instant-gaming.*","kinguin.*","allkeyshop.*","g2a.*","eneba.*","instant-gaming.*","mmoga.*","fanatical.*"]
+action: remove
+action_reason: "Greymarket site"
 
 ---
-    domain+body (regex, includes): ["nms.center", "nomansapp.com", "ship\Wcustomizer", "youtube.com/watch?v=eoIKW-scW1g", "(ship|delivery|service)\Wbot", "discord.gg/AEXcap6", "Creative and Sharing Hub"]
-    action: remove
-    action_reason: "Configuration bot"
+domain+body (includes): ["amazon.co", "amzn.to", "ebay.co", "//a.co", "etsy.com", "patreon.com"]
+action: remove
+action_reason: "Online retailer"
 
 ---
-    body+domain: [Kdramastars.com, Kpopstarz.com, 2p.com, crossmap.com, christiantoday.com, vcpost.com, vinereport.com, latinospost.com, gameseek.co.uk, n4g.com, neptunegames.it, gamepur.com, designntrend.com, gospelherald.com, parentherald.com, dailystar.co.uk, youthhealthmag.com, thebitbag.com, aqweeb.com, no-mans-sky.net, shrink.me]
-    action: remove
-    action_reason: "Click-bait"
+body+domain: [Kdramastars.com, Kpopstarz.com, 2p.com, crossmap.com, christiantoday.com, vcpost.com, vinereport.com, latinospost.com, gameseek.co.uk, n4g.com, neptunegames.it, gamepur.com, designntrend.com, gospelherald.com, parentherald.com, dailystar.co.uk, youthhealthmag.com, thebitbag.com, aqweeb.com, no-mans-sky.net, shrink.me]
+action: remove
+action_reason: "Click-bait"
 
 ---
-    reports: 10
-    action: remove
-    action_reason: "Removed - 10 reports"
+body (regex): ['cock[- ]?(?!pit)sucker', 'dyke', 'fag(g[eoi]t)?', 'femi[- ]?nazi', 'he-she', 'shemale', 'trann(y', 'ie)', 'k[iy]ke', 'krouts?', 'autist', 'shit[- ]?lord', 'neck[- ]?beard', 'leg[- ]?beard', 'weeaboo', 'fur[- ]?fag', 'be[ea]ner', 'chink', 'gook', 'honk(ie|ey)', 'jigg?[ae]r?boo', 'k[iy]ke', 'n[ie]gg?(er|a|let|ro|uh?)', 'porch.?monk', 'spick', 'wet[ -]?back', 'zion(ists?|ism)', '(towel|rag)[ -]?head', 'gingerdick', "dick[ -]?head", "kill ?yoursel(f|ves?)", "shit[ -]?(head|lord)", "twat", "cock[- ]?(?!pit)sucker", "r/dontputyourdickinthat", "r/NoKinkShaming"]
+action: remove
+action_reason: "hostility 1"
 
 ---
-    body (regex): ['cock[- ]?(?!pit)sucker', 'dyke', 'fag(g[eoi]t)?', 'femi[- ]?nazi', 'he-she', 'shemale', 'trann(y', 'ie)', 'k[iy]ke', 'krouts?', 'autist', 'shit[- ]?lord', 'neck[- ]?beard', 'leg[- ]?beard', 'weeaboo', 'fur[- ]?fag', 'be[ea]ner', 'chink', 'gook', 'honk(ie|ey)', 'jigg?[ae]r?boo', 'k[iy]ke', 'n[ie]gg?(er|a|let|ro|uh?)', 'porch.?monk', 'spick', 'wet[ -]?back', 'zion(ists?|ism)', '(towel|rag)[ -]?head', 'gingerdick', "dick[ -]?head", "kill ?yoursel(f|ves?)", "shit[ -]?(head|lord)", "twat", "cock[- ]?(?!pit)sucker", "r/dontputyourdickinthat", "r/NoKinkShaming"]
-    action: remove
-    action_reason: "hostility 1"
+type: any
+body+title (includes-word, regex): ["cuck", "cunt", "dick[ -]?head", "douche", "fuc?k? (you|u|yo)", "fuck? ?(off|tool|loser)", "prick", "shit[ -]?head", "twat", 'retard?(ed|s)', 'slut?(ty|s)', 'bitch', 'asshole']
+action: remove
+action_reason: "hostility 2"
 
 ---
-    type: any
-    body+title (includes-word, regex): ["cuck", "cunt", "dick[ -]?head", "douche", "fuc?k? (you|u|yo)", "fuck? ?(off|tool|loser)", "prick", "shit[ -]?head", "twat", 'retard?(ed|s)', 'slut?(ty|s)', 'bitch', 'asshole']
-    action: remove
-    action_reason: "hostility 2"
-
----
-### combined several url filters into 1 rule - 12/5/21 - sp
-    type: any
-    body+domain (includes): ["lifestyles-usa.com", "bighoppers.ltd", "zoodilaces.com", "zeelaces.com", "cottonbureau.com", "mixaly.design", "qualtrics.com", "xporn.com", "onlyfans.com", "linktr.ee", "artstation.com"]
-    action: spam
-    action_reason: spam {{match-1}}
+type: any
+body+domain (includes): ["lifestyles-usa.com", "bighoppers.ltd", "zoodilaces.com", "zeelaces.com", "cottonbureau.com", "mixaly.design", "qualtrics.com", "xporn.com", "onlyfans.com", "linktr.ee", "artstation.com"]
+action: spam
+action_reason: spam {{match-1}}
 
 ---
