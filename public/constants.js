@@ -228,6 +228,10 @@ export const versionList = [
         name: "echoes",
         version: 4.40,
         date: "8/24/2023"
+    }, {
+        name: "omega",
+        version: 4.50,
+        date: "2/14/2024"
     }
 ];
 

@@ -2,7 +2,7 @@
   "projects": {
     "bhs": "nms-bhs",
     "test": "test-nms-bhs",
-    "nmsce": "nmsce.app",
+    "nmsce": "nmsce-app",
     "prod": "nms-bhs"
   },
   
