@@ -464,13 +464,13 @@ function validatePosts(posts, modqueue) {
                 }
             }
 
-            if (flair.platform) {
-                platform = checkList(platformList, post)
-                if (!platform) {
-                    reason += (reason ? ", " : "") + "platform"
-                    ok = false
-                }
-            }
+            // if (flair.platform) {
+            //     platform = checkList(platformList, post)
+            //     if (!platform) {
+            //         reason += (reason ? ", " : "") + "platform"
+            //         ok = false
+            //     }
+            // }
 
             if (flair.mode) {
                 mode = checkList(modeList, post)

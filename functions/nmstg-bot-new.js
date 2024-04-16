@@ -32,9 +32,9 @@ async function main() {
     await loadSettings()
     getWeekly()
 
-    setInterval(() => getComments(), 30 * 1000)     // for watched comments
-    setInterval(() => getModqueue(), 10 * 1000)     // for moderator commands
-    setInterval(() => getNew(), 15 * 1000)          // post limits, etc.
+    setInterval(() => getComments(), 29 * 1000)     // for watched comments
+    setInterval(() => getModqueue(), 11 * 1000)     // for moderator commands
+    setInterval(() => getNew(), 11 * 1000)          // post limits, etc.
     setInterval(() => getContest(), 5 * 60 * 1000)  // update contest wiki
 }
 
@@ -76,7 +76,7 @@ async function getNew() {
         let p = []
 
         // if (!lastPost.name || lastPost.full + recheck < date)
-            // console.log(posts.length, "posts / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
+        // console.log(posts.length, "posts / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
 
         if (posts.length > 0) {
             lastPost = posts[0]
@@ -99,7 +99,7 @@ async function getNew() {
             }))
 
         return Promise.all(p)
-    }).catch(err => error(err)))
+    }).catch(err => error(err, 1)))
 
     await Promise.all(p)
 
@@ -116,7 +116,7 @@ async function getModqueue() {
         p.push(modCommands(posts, mods))
         p.push(checkReported(posts))
         return Promise.all(p)
-    }).catch(err => error(err)))
+    }).catch(err => error(err, 2)))
 
     await Promise.all(p)
 
@@ -134,7 +134,7 @@ async function getComments() {
             limit: 50 // if startup misses a few nbd
         } : {
             before: lastComment.name
-        }).catch(err => error(err))
+        }).catch(err => error(err, 3))
 
         if (!lastComment.name || lastComment.full + recheck < date)
             console.log(posts.length, "comments / ", parseInt((posts[0].created_utc - posts[posts.length - 1].created_utc) / 60), "minutes")
@@ -194,9 +194,8 @@ async function loadSettings(post) {
         flairPostLimit = []
         anyPostLimit = {}
 
-        if (typeof allPost.any === undefined) {
+        if (typeof allPost.any === undefined) 
             allPost = {}
-        }
 
         for (let e of settings.ads) {
             if (e.flair) {
@@ -266,7 +265,7 @@ async function loadSettings(post) {
     console.log("reload settings")
 
     if (typeof post !== "undefined")
-        return post.reply("!-All settings reloaded").catch(err => error(err))
+        return post.reply("!-All settings reloaded").catch(err => error(err, 4))
 }
 
 function updateSettings() {
@@ -275,7 +274,7 @@ function updateSettings() {
     return sub.getWikiPage("botsettings").edit({
         text: JSON.stringify(settings),
         reason: "bot-update"
-    }).catch(err => error(err))
+    }).catch(err => error(err, 5))
 }
 
 var commentedList = []
@@ -306,7 +305,7 @@ async function checkPostLimits(posts, approve) {
                 p.push(post.selectFlair({
                     flair_template_id: post.link_flair_template_id,
                     text: post.link_flair_text
-                }).catch(err => error(err)))
+                }).catch(err => error(err, 6)))
             }
         }
 
@@ -324,9 +323,9 @@ async function checkPostLimits(posts, approve) {
                     .distinguish({
                         status: true
                     }).lock()
-                    .catch(err => error(err)))
+                    .catch(err => error(err, 7)))
 
-                p.push(post.remove().catch(err => error(err)))
+                p.push(post.remove().catch(err => error(err, 8)))
 
                 console.log("Ad flair op not approved:", post.author.name, permaLinkHdr + post.permalink)
                 continue
@@ -340,10 +339,10 @@ async function checkPostLimits(posts, approve) {
                     .distinguish({
                         status: true
                     }).lock()
-                    .catch(err => error(err)))
+                    .catch(err => error(err, 9)))
 
-                p.push(post.remove().catch(err => error(err)))
-                // p.push(post.report({ reason: "Flair needs editing" }).catch(err => error(err)))
+                p.push(post.remove().catch(err => error(err, 10)))
+                // p.push(post.report({ reason: "Flair needs editing" }).catch(err => error(err, 11)))
 
                 console.log("Ad flair doesn't match:", post.link_flair_text, permaLinkHdr + post.permalink)
                 continue
@@ -411,15 +410,15 @@ async function checkPostLimits(posts, approve) {
                     .distinguish({
                         status: true
                     }).lock()
-                    .catch(err => error(err)))
+                    .catch(err => error(err, 12)))
             }
 
-            p.push(post.remove().catch(err => error(err)))
+            p.push(post.remove().catch(err => error(err, 13)))
         }
         else {
             if (approve) {
                 console.log("approve", permaLinkHdr + post.permalink)
-                p.push(post.approve().catch(err => error(err)))
+                p.push(post.approve().catch(err => error(err, 14)))
             }
 
             if (typeof limit.start_utc !== "undefined" && post.created_utc > limit.start_utc
@@ -461,11 +460,11 @@ function checkNewPosters(posts) {
                 if (!post.banned_by && (typeof post.preview !== "undefined" || typeof post.media_metadata !== "undefined")) {
                     console.log("new poster", post.author.name, permaLinkHdr + post.permalink)
                     let p = []
-                    p.push(post.reply(firstPost + botSig + firstPostCmd).lock().catch(err => error(err)))
+                    p.push(post.reply(firstPost + botSig + firstPostCmd).lock().catch(err => error(err, 16)))
 
                     // if (!commentedList.includes(post.name)) {
                     //     commentedList.push(post.name)
-                    //     p.push(post.reply(firstPost+botSig).catch(err => error(err)))
+                    //     p.push(post.reply(firstPost+botSig).catch(err => error(err,17)))
                     // }
 
                     return Promise.all(p)
@@ -486,7 +485,7 @@ function checkReported(posts) {
         // if (post.name.startsWith("t1") && !post.banned_by)
         //     for (let r of post.user_reports)
         //         if (r[0].includes("poiler"))
-        //             p.push(post.reply("!filter-spoiler").catch(err => error(err)))
+        //             p.push(post.reply("!filter-spoiler").catch(err => error(err,18)))
     }
 
     return Promise.all(p)
@@ -525,7 +524,7 @@ async function updateWikiThreads(posts) {
             return wiki.edit({
                 text: page,
                 reason: "bot-update scheduled thread urls"
-            }).catch(err => error(err))
+            }).catch(err => error(err, 19))
         }
     }
 }
@@ -563,7 +562,7 @@ async function modCommands(posts, mods) {
                 else
                     op = parent
 
-                p.push(post.remove().catch(err => error(err)))
+                p.push(post.remove().catch(err => error(err, 20)))
 
                 if (mods.includes(post.author_fullname)) {
                     switch (m) {
@@ -608,7 +607,7 @@ function setFlair(post, op) {
         p.push(op.selectFlair({
             flair_template_id: op.link_flair_template_id,
             text: op.link_flair_text
-        }).catch(err => error(err)))
+        }).catch(err => error(err, 21)))
 
         console.log("set flair", op.link_flair_text, permaLinkHdr + op.permalink)
 
@@ -623,7 +622,7 @@ function setFlair(post, op) {
 
 function checkMotherMayI(post, op) {
     console.log("approve first post", permaLinkHdr + op.permalink)
-    return op.approve().catch(err => error(err))
+    return op.approve().catch(err => error(err, 22))
 }
 
 function setupAdvertiser(post, op) {
@@ -711,7 +710,7 @@ function listAdvertisers(post, flair) {
             if (!ad.flair || ad.flair === flair)
                 text += buildAd(ad)
 
-    return post.reply(text).catch(err => error(err))
+    return post.reply(text).catch(err => error(err, 24))
 }
 
 async function setupWatch(post, op) {
@@ -791,7 +790,7 @@ async function setupWatch(post, op) {
 
 function watchHistory(post, op, watch) {
     if (watch === undefined)
-        return post.reply("!-No watch history for " + op.author.name).catch(err => error(err))
+        return post.reply("!-No watch history for " + op.author.name).catch(err => error(err, 25))
     else {
         let text = "!-Watch history for " + op.author.name + "  \n\n"
         text += watch.active ? "**Actively watching**  \n" : "*No active watch*  \n"
@@ -810,7 +809,7 @@ function watchHistory(post, op, watch) {
             }
         }
 
-        return post.reply(text).catch(err => error(err))
+        return post.reply(text).catch(err => error(err, 26))
     }
 }
 
@@ -903,12 +902,12 @@ async function listContest(post, op) {
 
     // console.log(text)
 
-    return post.reply(text).catch(err => error(err))
+    return post.reply(text).catch(err => error(err, 27))
 }
 
 function botStats(post, op) {
     console.log("bot check")
-    return post.reply("!-Bot Running").catch(err => error(err))
+    return post.reply("!-Bot Running").catch(err => error(err, 28))
 }
 
 function removePost(post, op) {
@@ -927,10 +926,10 @@ function removePost(post, op) {
         .distinguish({
             status: true
         }).lock()
-        .catch(err => error(err)))
+        .catch(err => error(err, 29)))
 
     p.push(op.remove()
-        .catch(err => error(err)))
+        .catch(err => error(err, 30)))
 
     console.log("remove post: rule: " + list + " " + permaLinkHdr + op.permalink)
 
@@ -959,7 +958,7 @@ function sendComment(post, op) {
         .distinguish({
             status: true
         }).lock()
-        .catch(err => error(err))
+        .catch(err => error(err, 31))
 }
 
 function sendMessage(post, op) {
@@ -971,9 +970,9 @@ function sendMessage(post, op) {
         to: op.author.name,
         subject: "Message from r/NoMansSkyTheGame",
         text: message
-    }).catch(err => error(err)))
+    }).catch(err => error(err, 32)))
 
-    p.push(post.reply("!-sending message to " + op.author.name).catch(err => error(err)))
+    p.push(post.reply("!-sending message to " + op.author.name).catch(err => error(err, 33)))
 
     return Promise.all(p)
 }
@@ -1008,9 +1007,9 @@ async function checkWatched(posts) {
             if (watch.notify === "report" || post.name.startsWith("t1"))
                 p.push(post.report({
                     reason: "Watch " + post.author.name + " " + watch.reason
-                }).catch(err => error(err)))
+                }).catch(err => error(err, 34)))
             else
-                p.push(post.reply("!filter-watched user '" + watch.reason + "'").catch(err => error(err)))
+                p.push(post.reply("!filter-watched user '" + watch.reason + "'").catch(err => error(err, 35)))
         }
     }
 
@@ -1072,11 +1071,11 @@ async function checkContest(posts, contest) {
     await sub.getWikiPage("conteststats").edit({
         text: text,
         reason: "bot-update"
-    }).catch(err => error(err))
+    }).catch(err => error(err, 36))
 }
 
-function error(err) {
-    console.log(new Date().toUTCString(), err.name, err.message)
+function error(err, add) {
+    console.log(new Date().toUTCString(), add ? add : "", err.name, err.message)
     // console.log(err)
 }
 
@@ -1085,7 +1084,7 @@ const removedPost = 'Your post has been removed because it violates the followin
 const postLimit = "Posting limit exceded: OP is allowed to make "
 const contestLimit = "Contest limit exceded: OP is allowed to make "
 const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*  \n"
-const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n\n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime please review our posting rules listed in the sidebar.  \n\n`If you have reviewed the rules and this post doesn't break them then you can approve this post yourself by adding the comment '!agree'.` Your post will still be evaluated by a moderator but it will be visible on the sub until then. \n\n"
+const firstPost = "Thank you for posting to r/NoMansSkyTheGame and taking an active part in the community!  \n\n-Since this is your first post to r/NoMansSkyTheGame it has been queued for moderator approval. This is one of the anti-spam measures we're forced to use because of the proliferation of bots on reddit. In the meantime please review our posting rules listed in the sidebar.  \n\n**If you have reviewed the rules and this post doesn't break them then you can approve this post yourself by adding the comment '!agree'.** Your post will still be evaluated by a moderator but it will be visible on the sub until then. \n\n"
 const firstPostCmd = "!filter-first post"
 const permaLinkHdr = "https://reddit.com"
 const civFlair = "-Please complete this [applicaion](https://forms.gle/wE3vtTWtJH1bZaQg7) before using this flair. Please contact the moderators when its completed so we don't miss it.  \n-If you have already applied and been accepted please contact the moderators with a unique flair you'd like to use for your group. Also, you can have multiple contacts for your group making post. Please provide the uid of any users you'd like to add. In the future you will need to edit the \"Civ Advertisement\" flair to replace it with your unique flair.  \n*-If you just forgot to edit the flair use '!flair:Your Unique Flair' and the flair will be edited and post automatically approved.*\n"
