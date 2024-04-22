@@ -20,7 +20,7 @@ async function main() {
     reddit.config({
         continueAfterRatelimitError: true,
         requestTimeout: 90000,
-        retryErrorCodes: [-3008, -4077],
+        retryErrorCodes: [-3008, -4077, -4078, 500, 504],
         maxRetryAttempts: 5
     })
 
@@ -61,6 +61,9 @@ async function getMessages() {
 
 async function loadSettings() {
     let p = []
+
+//     let x = await sub._get({uri: "api/widgets"}).catch(err=>error("get",err))
+// console.log(x)
 
     p.push(sub.getLinkFlairTemplates().then(res => {
         flairList = []
@@ -127,7 +130,7 @@ async function getNew() {
     let p = []
 
     p.push(sub.getNew(!lastPost.name ? {
-        limit: 100 // day
+        limit: 30 // day
     } : lastPost.full + recheck < date ? {
         limit: 10 // hour
     } : {
@@ -141,10 +144,8 @@ async function getNew() {
             posts = posts.sort((a, b) => a.created_utc - b.created_utc)
 
             await checkFlair(posts)      // force order so bad posts are deleted before the limits are checked
-            await checkPostLimits(posts)
-
-            if (posts.length < 10)
-                p.push(checkTitle(posts))
+            p.push(checkPostLimits(posts))
+            p.push(checkTitle(posts))
         }
 
         if (posts.length > 0 || !lastPost.full || lastPost.full + recheck < date)
@@ -172,34 +173,45 @@ async function checkTitle(posts) {
             continue
 
         let text = ""
+        let first = ""
         let startLen = 0
 
-        if (flair.name === "Request") {
+        if ((flair.name === "Request" || flair.name.includes("Starship")) && post.title.match(/(starbou?rne? runner)|(golden vector)|(Utopian? speeder)/ig)) {
+            p.push(redirectToThread(post))
+            continue
+        }
+
+        if (flair.name === "Request")
             text = "Many items are easy to find using the [search bar](https://www.reddit.com/r/NMSGlyphExchange/comments/1byxb6p/how_to_navigate_the_search_bar/) or the [nmsce app](https://nmsge.com). *Please search before posting a request.* If you haven't searched and subsequently find your item upon searching please delete this post.  \n\nPosts requesting easily found items will be removed. Requests are only allowed for locations, not a trade, of items (excepting dragon eggs). Requests for expedition items are not allowed because they have no location."
 
-        } else if (flair.galaxy) {
-            text = "Some info about this post:  \n\n"
+        else if (flair.galaxy) {
+            let userPosts = await sub.search({ query: "author:" + post.author.name, limit: 5 })
+                .catch(err => error("edu", err))
+
+            if (userPosts.length < 5)
+                first = "Thank you for posting to NMSCE and taking an active part in the community!  \n\nSince this is one of your first 5 posts to NMSCE please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery.  \n  \n"
+
+            let title = post.title.toLowerCase() + " " + post.selftext.toLowerCase()
+            text = "Some info about this post:  \n"
             startLen = text.length
 
             if (!post.link_flair_text.includes("Euclid"))
-                text += "- This " + flair.name.toLowerCase() + " is *not* in the Euclid/starting galaxy. **Shared glyphs only work in the specified galaxy.** If you need help getting there contact Pan Galactic Star Cabs - [Discord link](https://discord.gg/mNtrkGVg). They can take you to any galaxy, any system for free!  \n\n"
+                text += "- This " + flair.name.toLowerCase() + " is *not* in the Euclid/starting galaxy. **Shared glyphs only work in the specified galaxy.** If you need help getting there contact [Pan Galactic Star Cabs](https://discord.gg/mNtrkGVg). They can take you to any galaxy, any system for free!  \n  \n"
 
             if (flair.name === "Starship") {
-                if (post.title.match(/(trad(?:ers?|ing)\W?posts?)|station/ig)
-                    || post.selftext.match(/(trad(?:ers?|ing)\W?posts?)|station/ig))
+                let partsMatched = shipParts.filter(a => title.includes(a))
+                // console.log("part matches", partsMatched.length, permaLinkHdr + post.permalink)
 
-                    text += "- Starships can be found at any landing pad in the system. Please do not include trading post or station in your post.  \n"
+                if (userPosts.length >= 5 && partsMatched.length < 3)
+                    text += "- Please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery."
 
-                if ((post.title.includes("wave") || post.selftext.includes("wave"))
-                    && !post.title.match(/tested|reload|always/ig
-                        && !post.selftext.match(/tested|reload|always/ig)))
+                if (title.match(/(trad(?:ers?|ing)\W?posts?)|station/ig))
+                    text += "- Starships can be found at any active landing pad in the system. Please do not include trading post or station in your post.  \n"
 
+                if (title.match(/\Wwave/ig) && !title.match(/tested|reload|always/ig))
                     text += "- 1st wave is the first group ships that land at a station after a reset not the first ships that land after you land. This should always be tested before posting. Wave is only valid at a station.  \n"
 
-                if ((post.title.match(/class|rank/ig) || post.selftext.match(/class|rank/ig))
-                    && !post.title.match(/guppy|squid|exotic|crashed|sunken|living|interceptor|sentinel/ig)
-                    && !post.selftext.match(/guppy|squid|exotic|crashed|sunken|living|interceptor|sentinel/ig))
-
+                if (title.match(/class|rank/ig) && !title.match(/guppy|squid|exotic|crashed|sunken|living|interceptor|sentinel/ig))
                     text += "- The specific class of a ship is random based on the system economy. Class should not be specified unless it's for a crashed ship in which case latitude & longitude must be included.  \n"
 
             } else if (flair.mode) {
@@ -211,24 +223,13 @@ async function checkTitle(posts) {
 
                 text += "A base uploaded in permadeath is visible to everyone. A base uploaded in any of the other modes, i.e. normal, is *not* visible to players in permadeath."
             }
+
+            if (first)
+                text = first + (text.length !== startLen ? "---\n  \n" + text : "")
         }
 
         if (text.length !== startLen)
             p.push(uniqueReply(post, text, text.slice(0, 16)))
-
-        let list = await sub.search({ query: "author:" + post.author.name, limit: 5 })
-            .catch(err => error("edu", err))
-
-        if (list.length !== 5 && flair.galaxy) {
-            text = "Thank you for posting to NMSCE and taking an active part in the community!  \n\nSince this is one of your first 5 posts to NMSCE please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery."
-
-            if (text.length !== startLen)
-                await delay(6000)
-
-            console.log("first 5", permaLinkHdr + post.permalink)
-
-            p.push(uniqueReply(post, text, text.slice(0, 16), true))
-        }
     }
 
     return Promise.all(p)
@@ -244,13 +245,13 @@ async function uniqueReply(post, text, part, noSticky) {
 
         if (part && c.body.startsWith(part) || c.body === text) {
             found = true
-            console.log("found comment:", c.body.slice(0, 16))
+            // console.log("found comment:", c.body.slice(0, 16))
             break
         }
     }
 
     if (!found) {
-        console.log("reply:", text.slice(0, 16), permaLinkHdr + post.permalink)
+        // console.log("reply:", text.slice(0, 16), permaLinkHdr + post.permalink)
 
         return post.reply(text)
             .distinguish({
@@ -258,6 +259,25 @@ async function uniqueReply(post, text, part, noSticky) {
                 sticky: noSticky ? false : true
             }).lock().catch(err => error("ur1", err))
     }
+}
+
+async function redirectToThread(post) {
+    let p = []
+    let thread = await sub.search({ query: "flair_text:trading", sort: "new", limit: 1 }).catch(err => error("re0", err))
+
+    let text = "Thank you for posting to r/NMSCoordinateExchange! Please make your request [here]("+permaLinkHdr+thread[0].permalink+") instead. The trading thread was specifically created for requesting items that are generally not allowed as posts themselves. See rule 8."
+
+    console.log("redirect", permaLinkHdr + post.permalink)
+
+    p.push(post.remove().catch(err => error("ct2", err)))
+
+    p.push(post.reply(text)
+        .distinguish({
+            status: true,
+            sticky: true
+        }).lock().catch(err => error("ct3", err)))
+
+    return Promise.all(p)
 }
 
 async function getModqueue() {
@@ -354,7 +374,7 @@ function checkFlair(posts, origFlair) {
 
         if (!flair) {
             if (!modList.includes(post.author_fullname) && post.author.name !== "AutoModerator") {
-                console.log("bad flair", "https://reddit.com" + post.permalink)
+                console.log("bad flair", permaLinkHdr + post.permalink)
 
                 p.push(post.reply(unrecognizedFlair)
                     .distinguish({
@@ -372,7 +392,7 @@ function checkFlair(posts, origFlair) {
 
         if (!flair.galaxy) {
             if (newFlair !== post.link_flair_text || origFlair && newFlair !== origFlair) {
-                console.log("reset flair", post.link_flair_text, newFlair, "https://reddit.com" + post.permalink)
+                console.log("reset flair", post.link_flair_text, newFlair, permaLinkHdr + post.permalink)
 
                 p.push(post.selectFlair({
                     flair_template_id: flair.flair_template_id,
@@ -415,7 +435,7 @@ function checkFlair(posts, origFlair) {
         // newFlair +=  (flair.version ? "/" + version : "")
 
         if (newFlair !== post.link_flair_text || origFlair && newFlair !== origFlair) {
-            console.log("edit flair", post.link_flair_text, newFlair, "https://reddit.com" + post.permalink)
+            console.log("edit flair", post.link_flair_text, newFlair, permaLinkHdr + post.permalink)
 
             p.push(post.selectFlair({
                 flair_template_id: flair.flair_template_id,
@@ -424,12 +444,23 @@ function checkFlair(posts, origFlair) {
         }
 
         if (!reason && post.banned_by && (post.banned_by.name === "nmsceBot" || post.banned_by.name === "AutoModerator")) {
-            p.push(post.approve().catch(err => error("13a", err)))
             p.push(removeBotComments(post, "##What"))
+            let found = false
+
+            for (let c of post.comments)    // don't approve removed via rule
+                if (c.body.startsWith(removedPost)) {
+                    found = true
+                    break
+                }
+
+            if (!found) {
+                console.log("approve", permaLinkHdr + post.permalink)
+                p.push(post.approve().catch(err => error("13a", err)))
+            }
         }
 
         if (reason) {
-            const editFlair = '##What [is/are] the [missing]?  \n---\nPlease, reply to this comment with the [missing] to have the bot rewrite the flair and approve the post, e.g. [example] '
+            const editFlair = '##What [is/are] the [missing]?  \n---\n######Please, reply to this comment with the [missing] to have the bot rewrite the flair and approve the post, e.g. [example] '
             const noGal = 'If everything is included and you still received this message please double check the galaxy spelling.'
 
             let text = editFlair.replace(/\[is\/are\]/g, reason.includes("&") ? "are" : "is")
@@ -441,9 +472,9 @@ function checkFlair(posts, origFlair) {
             else
                 text = text.replace(/\[example\]/, "Eissemtam") + noGal
 
-            text += botSig
+            text += 'For future posts you can include required information in the title and the bot will automatically update the flair.' +botSig
 
-            console.log("missing", reason, "https://reddit.com" + post.permalink)
+            console.log("missing", reason, permaLinkHdr + post.permalink)
 
             p.push(post.reply(text)
                 .distinguish({
@@ -491,7 +522,7 @@ async function modCommands(posts) {
         if (post.name.startsWith("t1_")) {
 
             let flair = post.body.startsWith("!") ? getItem(flairList, post.body) : null
-            let match = post.body.match(/!\W?(user|flair|pm|or|rall|r|c)\W?(.*)?/i)
+            let match = post.body.match(/!\W?(user|flair|pm|or|rall|redirect|r|c)\W?(.*)?/i)
             let m = match ? match[1].toLowerCase() : null
 
             if (flair || m) {
@@ -518,6 +549,7 @@ async function modCommands(posts) {
                                 p.push(removePostCmd(post, parent)); break          // remove post & quote rule
 
                             case "c": p.push(sendCommentCmd(post, parent)); break    // comment
+                            case "redirect": p.push(redirectToThread(parent)); break
                             case "rall": p.push(removeAll(post, parent)); break      // remove all of an ops posts or comments
                         }
 
@@ -557,6 +589,16 @@ async function setUserFlairCmd(post) {
     let award = false
     let template
     let text = null
+
+    // if (!pflair && flair && flair.name === "Hunter") {
+    //     const types = ["Fighter", "Hauler", "Explorer", "Shuttle", "Interceptor", "Staff", "Solar", "Living Ship"]
+    //     let matched = types.find(a => post.body.includes(a))
+    //     if (matched.length) {
+    //         pflair = {}
+    //         pflair.name = matched[0]
+    //         pflair.galaxy = true
+    //     }
+    // }
 
     if (modList.includes(post.author_fullname)) {
         text = post.body.replace(/!user\W+(.*)/i, "$1")
@@ -703,7 +745,7 @@ function sendCommentCmd(post, op) {
 
 function error(s, err) {
     console.log(new Date().toUTCString(), s ? s : "",
-        typeof err.cause !== "undefined" ? err.cause.errorno : "", err.name, err.message)
+        typeof err.cause !== "undefined" ? err.cause.errno : "", err.name, err.message)
     console.error(JSON.stringify(err))
 }
 
@@ -781,6 +823,23 @@ const botSig = "  \n---\n*This action was taken by the nmsceBot. If you have any
 const modSig = "  \n---\n*This comment was made by a moderator of r/NMSCoordinateExchange. If you have questions please contact them [here](https://www.reddit.com/message/compose?to=/r/NMSCoordinateExchange).*"
 const replyWaitRequest = "Because of a problem with people instantly answering \"!searched\" to the bot there is a 5 min cooldown period before the response will be accepted. Please reply after the cooldown has expired."
 
+const shipParts =
+    ["2rpedo", "afterburner", "alpha", "ant", "anvil", "arm", "asos", "ball", "barrel", "body", "bowie",
+        "boy", "cargo", "carriage", "channel", "chin", "coolant", "cooling", "cowl", "crescent", "curved",
+        "cylon", "d-flect", "delta", "dish", "dishes", "downlet", "drill", "droid", "duck", "duct", "elytra",
+        "exhaust", "exotic", "explorer", "falcon", "fan", "fat", "fighter", "filter", "fin", "firefly", "firespray",
+        "foil", "foot", "fork", "fuel", "fusion", "grapple", "grill", "grouper", "guard", "gull", "guppy", "halo",
+        "hammerhead", "hauler", "hex", "hilt", "hopper", "horizon", "horza", "hover", "interceptor", "jackal",
+        "jet", "jumper", "keg", "lambda", "laser", "light", "linea", "living", "lunch", "magnatreme", "mantis",
+        "marlin", "mecha", "mohawk", "mosquito", "mu", "narrow", "needle", "nose", "octa", "omega", "omicron",
+        "pedestal", "pelican", "pi", "plough", "pod", "pointed", "pommel", "ports", "quadra", "quasar", "r2",
+        "rasa", "raven", "razor", "rectangle", "royal", "rudder", "sabre", "scorpion", "sentinel", "shard",
+        "shark", "shield", "shielded", "shockwave", "short", "shuttle", "single", "slab", "slope", "snowspeeder",
+        "solar", "spectrometer", "spider", "spikes", "squid", "stabilizer", "star", "starburst", "starscream",
+        "stinger", "stubby", "tail", "talon", "tank", "tau", "teeth", "tie", "tilt", "torpedo", "triple", "tristar",
+        "tusked", "upsilon", "vector", "vent", "vented", "verta", "vertical", "viper", "voyager", "vulture",
+        "wedge", "widow"]
+
 const modeList = [{
     match: /(custom)|(creative)|(relaxed)|(normal)|(survival)|(expedition)/i,
     name: "Normal"
@@ -790,7 +849,7 @@ const modeList = [{
 }]
 
 const galaxyList = [{
-    match: /\bEuc\w+d\b/i,
+    match: /\bEl?uc\w+d\b/i,
     name: "Euclid"
 }, {
     match: /\bHilb\w+t\b(Dim\w+n\b)?/i,
