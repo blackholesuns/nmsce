@@ -6,7 +6,7 @@ import { Timestamp, doc, setDoc, getDoc }
 import { buildGalaxyInfo } from "./commonNms.js";
 import { App, Auth, Firestore, Storage } from "./firebase.js";
 
-// Copyright 2019-2023 Black Hole Suns
+// Copyright 2019-2024 Black Hole Suns
 // Written by Stephen Piper
 
 export var bhs;

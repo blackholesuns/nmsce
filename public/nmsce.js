@@ -25,7 +25,7 @@ import {
 if (window.location.hostname === "localhost")
     setLogLevel("verbose");
 
-// Copyright 2019-2023 Black Hole Suns
+// Copyright 2019-2024 Black Hole Suns
 // Written by Stephen Piper
 
 export var nmsce;

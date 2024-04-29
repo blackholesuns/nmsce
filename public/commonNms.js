@@ -2,7 +2,7 @@
 
 import { galaxyRaw, galaxyList, economyList, levelRgb } from "./constants.js";
 
-// Copyright 2019-2023 Black Hole Suns
+// Copyright 2019-2024 Black Hole Suns
 // Written by Stephen Piper
 
 export const findex = window.location.pathname.includes("index")
