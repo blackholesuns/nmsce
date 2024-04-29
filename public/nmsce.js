@@ -3237,7 +3237,7 @@ class NMSCE {
 
             for (let p of parts) {
                 let name = loc.find("#bdr-" + p + " title").html()
-                
+
                 if (!used.includes(name)) {
                     used.push(name)
 
@@ -3484,8 +3484,8 @@ class NMSCE {
                             link: data.name
                         })
 
-                        if (data.display_name_prefixed === "r/NMSGlyphExchange")
-                            def = "r/NMSGlyphExchange"
+                        if (data.display_name_prefixed === "r/NMSCoordinateExchange")
+                            def = "r/NMSCoordinateExchange"
                     }
 
                     bhs.buildMenu($("#redditPost"), "SubReddit", nmsce.subReddits, nmsce.setSubReddit, {
@@ -3530,41 +3530,29 @@ class NMSCE {
                 crossDomain: true,
                 success(res) {
                     nmsce.subRedditFlair = []
-                    let flair = {}
-                    flair.name = nmsce.last.type + '/' + nmsce.last.galaxy
-                    let found = false
 
                     for (let s of res) {
-                        s.text = s.text.replace("&amp;", "&")
+                        if (nmsce.subReddits[i].name.includes("Exchange")) {
+                            if (s.text.includes("EDIT")) {
+                                let name = s.text.split("/")[0]
+                                name += '/' + nmsce.last.galaxy.idToName()
+                                name += name.startsWith("Base") ? "/" + nmsce.last["Game-Mode"] : ""
 
-                        nmsce.subRedditFlair.push({
-                            name: s.text,
-                            text_color: s.text_color === "light" ? "white" : "black",
-                            color: s.background_color,
-                            id: s.id,
-                        })
-
-                        let name = s.text.split("/")[0]
-
-                        if (name === nmsce.last.type
-                            || name === "Starship" && nmsce.last.type === "Ship"
-                            || name === "Multi Tool" && nmsce.last.type === "Multi-Tool") {
-
-                            flair.name = name + "/" + nmsce.last.galaxy
-                            if (name === "Base")
-                                flair.name += "/" + nmsce.last["Game-Mode"]
-
-                            flair.id = s.id
-                            flair.text_color = s.text_color === "light" ? "white" : "black"
-                            flair.color = s.background_color
-
-                            if (s.text === flair.name)
-                                found = true
-                        }
+                                nmsce.subRedditFlair.push({
+                                    name: name,
+                                    text_color: s.text_color === "light" ? "white" : "black",
+                                    color: s.background_color,
+                                    id: s.id,
+                                })
+                            }
+                        } else
+                            nmsce.subRedditFlair.push({
+                                name: s.text,
+                                text_color: s.text_color === "light" ? "white" : "black",
+                                color: s.background_color,
+                                id: s.id,
+                            })
                     }
-
-                    if (!found && flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
-                        nmsce.subRedditFlair.push(flair)
 
                     bhs.buildMenu($("#redditPost"), "Flair", nmsce.subRedditFlair, null, {
                         required: true,
@@ -3572,8 +3560,10 @@ class NMSCE {
                         menusize: "col"
                     })
 
-                    if (flair.id && nmsce.subReddits[i].name === "r/NMSGlyphExchange")
-                        bhs.setMenu($("#menu-Flair"), flair.name)
+                    let flair = nmsce.last.type.idToName() + '/' + nmsce.last.galaxy.idToName() +
+                        (name === "Base" ? "/" + nmsce.last["Game-Mode"] : "")
+
+                    bhs.setMenu($("#menu-Flair"), flair)
                 },
                 error(err) {
                     nmsce.postStatus(err.message)
