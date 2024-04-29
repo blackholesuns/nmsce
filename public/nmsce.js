@@ -1645,7 +1645,7 @@ class NMSCE {
             }
         }
 
-        if (s.search === []) {
+        if (s.search.length === 0) {
             bhs.status("No search selection.")
             return null
         }
@@ -3552,7 +3552,7 @@ class NMSCE {
 
                             flair.name = name + "/" + nmsce.last.galaxy
                             if (name === "Base")
-                                flair.name += "/" + nmsce.last["Game Mode"]
+                                flair.name += "/" + nmsce.last["Game-Mode"]
 
                             flair.id = s.id
                             flair.text_color = s.text_color === "light" ? "white" : "black"
