@@ -20,7 +20,7 @@ async function main() {
     reddit.config({
         continueAfterRatelimitError: true,
         requestTimeout: 90000,
-        retryErrorCodes: [-3008, -4077, -4078, 500, 504],
+        retryErrorCodes: [-3008, -4077, -4078, 429, 500, 502, 503, 504],
         maxRetryAttempts: 5
     })
 
@@ -62,8 +62,8 @@ async function getMessages() {
 async function loadSettings() {
     let p = []
 
-//     let x = await sub._get({uri: "api/widgets"}).catch(err=>error("get",err))
-// console.log(x)
+    //     let x = await sub._get({uri: "api/widgets"}).catch(err=>error("get",err))
+    // console.log(x)
 
     p.push(sub.getLinkFlairTemplates().then(res => {
         flairList = []
@@ -163,6 +163,45 @@ async function getNew() {
     return Promise.all(p)
 }
 
+async function getBestOf(post, type) {
+    let p = []
+    let flairs = flairList.filter(a => a.galaxy)
+    let n = post.body.match(/(\d+)/g)
+    n = n ? parseInt(n[0]) : 4
+
+    if (type) {
+        p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts=>{
+            return {type:type.name, posts:posts}
+        }))
+    } else
+        for (let type of flairs) {
+            p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts=>{
+                return {name:type.name, posts:posts}
+            }))
+
+            await delay(1000)
+        }
+
+    return Promise.all(p).then(async res=>{
+        let text = "##Top Posts  \n"
+
+        for (let type of res) {
+            if (type.posts.length === 0)
+                continue
+
+            text += "###"+type.name + "  \n|Engagement|Title/Link|\n|----:|:-----------------------------------------|\n"
+
+            for (let post of type.posts) {
+                post = await post.expandReplies({depth:1})
+
+                text += "|"+(post.ups+post.downs+post.comments.length)+"|["+post.title.slice(0,40)+"]("+permaLinkHdr+post.permalink+")|\n"
+            }
+        }
+
+        return post.reply(text)
+    })
+}
+
 async function checkTitle(posts) {
     let p = []
 
@@ -202,8 +241,8 @@ async function checkTitle(posts) {
                 let partsMatched = shipParts.filter(a => title.includes(a))
                 // console.log("part matches", partsMatched.length, permaLinkHdr + post.permalink)
 
-                if (userPosts.length >= 5 && partsMatched.length < 3)
-                    text += "- Please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery."
+                if (userPosts.length >= 5 && partsMatched.length < 3 && !title.includes("squid"))
+                    text += "- Please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery.  \n"
 
                 if (title.match(/(trad(?:ers?|ing)\W?posts?)|station/ig))
                     text += "- Starships can be found at any active landing pad in the system. Please do not include trading post or station in your post.  \n"
@@ -221,7 +260,7 @@ async function checkTitle(posts) {
                 else
                     text += " is NOT visible to permadeath players. "
 
-                text += "A base uploaded in permadeath is visible to everyone. A base uploaded in any of the other modes, i.e. normal, is *not* visible to players in permadeath."
+                text += "A base uploaded in permadeath is visible to everyone. A base uploaded in any of the other modes, i.e. normal, is *not* visible to players in permadeath.  \n"
             }
 
             if (first)
@@ -265,7 +304,7 @@ async function redirectToThread(post) {
     let p = []
     let thread = await sub.search({ query: "flair_text:trading", sort: "new", limit: 1 }).catch(err => error("re0", err))
 
-    let text = "Thank you for posting to r/NMSCoordinateExchange! Please make your request [here]("+permaLinkHdr+thread[0].permalink+") instead. The trading thread was specifically created for requesting items that are generally not allowed as posts themselves. See rule 8."
+    let text = "Thank you for posting to r/NMSCoordinateExchange! Please make your request [here](" + permaLinkHdr + thread[0].permalink + ") instead. The trading thread was specifically created for requesting items that are generally not allowed as posts themselves. See rule 8."
 
     console.log("redirect", permaLinkHdr + post.permalink)
 
@@ -443,22 +482,6 @@ function checkFlair(posts, origFlair) {
             }).catch(err => error(13, err)))
         }
 
-        if (!reason && post.banned_by && (post.banned_by.name === "nmsceBot" || post.banned_by.name === "AutoModerator")) {
-            p.push(removeBotComments(post, "##What"))
-            let found = false
-
-            for (let c of post.comments)    // don't approve removed via rule
-                if (c.body.startsWith(removedPost)) {
-                    found = true
-                    break
-                }
-
-            if (!found) {
-                console.log("approve", permaLinkHdr + post.permalink)
-                p.push(post.approve().catch(err => error("13a", err)))
-            }
-        }
-
         if (reason) {
             const editFlair = '##What [is/are] the [missing]?  \n---\n######Please, reply to this comment with the [missing] to have the bot rewrite the flair and approve the post, e.g. [example] '
             const noGal = 'If everything is included and you still received this message please double check the galaxy spelling.'
@@ -472,7 +495,7 @@ function checkFlair(posts, origFlair) {
             else
                 text = text.replace(/\[example\]/, "Eissemtam") + noGal
 
-            text += 'For future posts you can include required information in the title and the bot will automatically update the flair.' +botSig
+            text += 'For future posts you can include required information in the title and the bot will automatically update the flair.' + botSig
 
             console.log("missing", reason, permaLinkHdr + post.permalink)
 
@@ -483,6 +506,13 @@ function checkFlair(posts, origFlair) {
                 }).catch(err => error(15, err)))
 
             p.push(post.remove({ reason: "missing " + reason }).catch(err => error("15a", err)))
+
+        } else if ((post.mod_reports.find(a => a[1] === "Artemis-Bot")
+            || post.banned_by && (post.banned_by.name === "nmsceBot" || post.banned_by.name === "AutoModerator"))) {
+
+            p.push(removeBotComments(post, "##What"))
+            p.push(post.approve().catch(err => error("13a", err)))
+            console.log("approve", permaLinkHdr + post.permalink)
         }
     }
 
@@ -495,9 +525,11 @@ async function removeBotComments(post, message) {
     post = await post.expandReplies({ depth: 1 }).catch(err => error("rm", err))
 
     for (let comment of post.comments) {
-        if (comment.author.name === "nmsceBot" && (!message || comment.body.startsWith(message))) {
-            console.log("delete message", message, permaLinkHdr + post.permalink)
+        if ((comment.author.name === "nmsceBot" || comment.author.name === "AutoModerator")
+            && (!message || comment.body.startsWith(message))) {
+
             p.push(comment.delete().catch(err => error("rc", err)))
+            console.log("delete message", message, permaLinkHdr + post.permalink)
         }
     }
 
@@ -522,7 +554,7 @@ async function modCommands(posts) {
         if (post.name.startsWith("t1_")) {
 
             let flair = post.body.startsWith("!") ? getItem(flairList, post.body) : null
-            let match = post.body.match(/!\W?(user|flair|pm|or|rall|redirect|r|c)\W?(.*)?/i)
+            let match = post.body.match(/!\W?(user|flair|pm|or|rall|redirect|best|r|c)\W?(.*)?/i)
             let m = match ? match[1].toLowerCase() : null
 
             if (flair || m) {
@@ -538,7 +570,7 @@ async function modCommands(posts) {
 
                 p.push(post.remove().catch(err => error("mc2", err)))
 
-                if (flair) {
+                if (flair && !m) {
                     if (modList.includes(post.author_fullname) || post.is_submitter)
                         p.push(changeFlairCmd(post, op))
                 } else {
@@ -550,6 +582,7 @@ async function modCommands(posts) {
 
                             case "c": p.push(sendCommentCmd(post, parent)); break    // comment
                             case "redirect": p.push(redirectToThread(parent)); break
+                            case "best": p.push(getBestOf(post, flair)); break
                             case "rall": p.push(removeAll(post, parent)); break      // remove all of an ops posts or comments
                         }
 
@@ -812,7 +845,7 @@ Moderator Commands:
     
     Commands can be concatenated together e.g. !m-gpr2,3o for missing galaxy & platform, remove for violcation of rule 2 & 3 and add offtopic comment`
 const respDescription = "In order to help other players find your post using the search-bar you should consider adding a more descriptive title to future post. It is recommended to include main color(s), ship type and major parts. The NMSCE [wiki page](https://www.reddit.com/r/NMSCoordinateExchange/about/wiki/shipparts) has a link to the named parts list for most types of ships."
-const respOffTopic = "Since this post is off topic you might try posting in r/NoMansSkyTheGame.  \n"
+const respOffTopic = "This post is off topic for NMSCE you might try posting in r/NoMansSkyTheGame.  \n  \n"
 const respShiploc = `All ships can be found at any landing pad in the system not just specific space stations or trading posts. The same ships are available on all platforms and game modes. Things to check if you don't find the ship you're looking for: 1) Are you in the correct galaxy? 2) Are you in the correct system? It's very easy to enter the glyphs incorrectly so please double check your location.`
 const respShipclass = `Each individually spawned ship has a random class & number of slots. In a T3, e.g. wealthy, system a ship has a 2% chance of spawning as an S class. In a T2, e.g. developing, economy the percentage is 1%. In a T1 0%. The range of slots is based on the configuration of the ship. An S class ship will have the max possible number of slots in it's range. Only crashed ships have a fixed configuration of size and class.`
 const respLinks = `If you select "images & videos" before selecting your images then they will show up on the front page as images instead of links.`
