@@ -1,5 +1,6 @@
 'use strict'
 
+const { promises } = require('nodemailer/lib/xoauth2')
 const login = require('./nmsce-bot.json')
 const snoowrap = require('snoowrap')
 const reddit = new snoowrap(login)
@@ -32,9 +33,66 @@ async function main() {
     setInterval(() => getModqueue(), 13 * 1000)     // for moderator commands
     setInterval(() => getNew(), 11 * 1000)          // post limits, etc.
     setInterval(() => getMessages(), 17 * 1000)     // user added galaxy
+    setInterval(() => enableFlair(), 37 * 1000)  // enable flair
 
     // let log = await sub.getModerationLog({type:"removelink",mods:["nmsceBot"],limit:10,sort:"new"})
     // console.log(JSON.stringify(log))
+}
+
+const rrdFlair = 'Casual Wednesday'
+
+async function enableFlair() {
+    let day = new Date().getDay()
+    let flair = getItem(flairList, rrdFlair)
+
+    if (flair) {
+        switch (day) {
+            case 3:
+                if (flair.mod_only || typeof flair.mod_only === "undefined") {
+                    flair.mod_only = false
+
+                    return (sub._post({
+                        uri: "r/".concat("NMSCoordinateExchange", "/api/flairtemplate_v2"),
+                        form: {
+                            api_type: "json",
+                            mod_only: false,
+                            flair_template_id: flair.flair_template_id,
+                            flair_type: "LINK_FLAIR",
+                            text: flair.flair_text,
+                            text_color: "dark",
+                            text_editable: false,
+                            allowable_content: "text",
+                            background_color: "#ffff80"
+                        }
+                    }).then(() => console.log("enable rrd")).catch(err => error("ef0", err)))
+                }
+
+                break
+
+            default:
+                if (!flair.mod_only) {
+                    flair.mod_only = true
+
+                    return (sub._post({
+                        uri: "r/".concat("NMSCoordinateExchange", "/api/flairtemplate_v2"),
+                        form: {
+                            api_type: "json",
+                            mod_only: true,
+                            flair_template_id: flair.flair_template_id,
+                            flair_type: "LINK_FLAIR",
+                            text: flair.flair_text,
+                            text_color: "dark",
+                            text_editable: false,
+                            allowable_content: "text",
+                            background_color: "#ffff80"
+                        }
+                    }).then(() => console.log("disable rrd")).catch(err => error("ef0", err)))
+                }
+
+                break
+        }
+    }
+
 }
 
 async function getMessages() {
@@ -69,22 +127,21 @@ async function loadSettings() {
         flairList = []
 
         for (let f of res) {
-            let n = {}
-
             if (f.flair_text.includes("EDIT")) {
-                n.name = f.flair_text.split("/")[0]
-                n.flair_template_id = f.flair_template_id
-                n.galaxy = f.flair_text.includes("GALAXY")
-                n.mode = f.flair_text.includes("MODE")
+                f.name = f.flair_text.split("/")[0]
+                f.galaxy = f.flair_text.includes("GALAXY")
+                f.mode = f.flair_text.includes("MODE")
 
-                if (!flairList.some(x => x.name === n.name))
-                    flairList.push(n)
+                if (!flairList.some(x => x.name === f.name))
+                    flairList.push(f)
             }
         }
 
         for (let f of res)
-            if (!flairList.some(x => f.flair_text.includes(x.name)))
-                flairList.push({ name: f.flair_text, flair_template_id: f.flair_template_id })
+            if (!flairList.some(x => f.flair_text.includes(x.name))) {
+                f.name = f.flair_text
+                flairList.push(f)
+            }
     }).catch(err => error("ls0", err)))
 
     p.push(sub.getUserFlairTemplates().then(res => {
@@ -130,7 +187,7 @@ async function getNew() {
     let p = []
 
     p.push(sub.getNew(!lastPost.name ? {
-        limit: 30 // day
+        limit: 50 // day
     } : lastPost.full + recheck < date ? {
         limit: 10 // hour
     } : {
@@ -144,7 +201,7 @@ async function getNew() {
             posts = posts.sort((a, b) => a.created_utc - b.created_utc)
 
             await checkFlair(posts)      // force order so bad posts are deleted before the limits are checked
-            p.push(checkPostLimits(posts))
+            p.push(checkLimits(posts))
             p.push(checkTitle(posts))
         }
 
@@ -170,31 +227,31 @@ async function getBestOf(post, type) {
     n = n ? parseInt(n[0]) : 4
 
     if (type) {
-        p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts=>{
-            return {type:type.name, posts:posts}
+        p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts => {
+            return { type: type.name, posts: posts }
         }))
     } else
         for (let type of flairs) {
-            p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts=>{
-                return {name:type.name, posts:posts}
+            p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts => {
+                return { name: type.name, posts: posts }
             }))
 
             await delay(1000)
         }
 
-    return Promise.all(p).then(async res=>{
+    return Promise.all(p).then(async res => {
         let text = "##Top Posts  \n"
 
         for (let type of res) {
             if (type.posts.length === 0)
                 continue
 
-            text += "###"+type.name + "  \n|Engagement|Title/Link|\n|----:|:-----------------------------------------|\n"
+            text += "###" + type.name + "  \n|Engagement|Title/Link|\n|----:|:-----------------------------------------|\n"
 
             for (let post of type.posts) {
-                post = await post.expandReplies({depth:1})
+                post = await post.expandReplies({ depth: 1 })
 
-                text += "|"+(post.ups+post.downs+post.comments.length)+"|["+post.title.slice(0,40)+"]("+permaLinkHdr+post.permalink+")|\n"
+                text += "|" + (post.ups + post.downs + post.comments.length) + "|[" + post.title.slice(0, 40) + "](" + permaLinkHdr + post.permalink + ")|\n"
             }
         }
 
@@ -224,11 +281,12 @@ async function checkTitle(posts) {
             text = "Many items are easy to find using the [search bar](https://www.reddit.com/r/NMSGlyphExchange/comments/1byxb6p/how_to_navigate_the_search_bar/) or the [nmsce app](https://nmsge.com). *Please search before posting a request.* If you haven't searched and subsequently find your item upon searching please delete this post.  \n\nPosts requesting easily found items will be removed. Requests are only allowed for locations, not a trade, of items (excepting dragon eggs). Requests for expedition items are not allowed because they have no location."
 
         else if (flair.galaxy) {
+            let error = false
             let userPosts = await sub.search({ query: "author:" + post.author.name, limit: 5 })
-                .catch(err => error("edu", err))
+                .catch(err => { error("edu", err); error = true })
 
-            if (userPosts.length < 5)
-                first = "Thank you for posting to NMSCE and taking an active part in the community!  \n\nSince this is one of your first 5 posts to NMSCE please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery.  \n  \n"
+            if (!error && userPosts.length < 5)
+                first = "Thank you for posting to NMSCE and taking an active part in the community!  \n\nSince this is one of your first few posts to NMSCE please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery.  \n  \n"
 
             let title = post.title.toLowerCase() + " " + post.selftext.toLowerCase()
             text = "Some info about this post:  \n"
@@ -333,13 +391,16 @@ async function getModqueue() {
     return Promise.all(p)
 }
 
-async function checkPostLimits(posts) {
+async function checkLimits(posts) {
     let p = []
     let now = new Date().valueOf() / 1000
-    let oldest = now - 12 * 60 * 60
+    let oldest = now - 24 * 60 * 60
 
-    let limits = [{ time: 60 * 60, limit: 2, str: "hour" }, // hour first so a post removed for hourly limit
-    { time: 24 * 60 * 60, limit: 10, str: "day" }]          //     won't count against the daily limit
+    let limits = [
+        { time: 60 * 60, limit: 2, str: "hour" },               // hour first so a post removed for hourly limit
+        { time: 24 * 60 * 60, limit: 2, str: "day", flair: rrdFlair },
+        { time: 24 * 60 * 60, limit: 10, str: "day" },          //     won't count against the daily limit
+    ]
 
     posts = posts.sort((a, b) => a.author.name >= b.author.name ? 1 : -1)
     let last = null
@@ -360,12 +421,12 @@ async function checkPostLimits(posts) {
 
         for (let limit of limits) {
             for (let i = 0; i < list.length; ++i) {
-                if (list.length < limit.limit)
+                if (list.length < limit.limit)  // list.length reduced if a post gets removed
                     break
 
                 let l = list[i]
                 let end = l.created_utc + limit.time
-                let total = 1
+                let total = typeof limit.flair === "undefined" || l.link_flair_text === limit.flair ? 1 : 0
 
                 for (let k = i + 1; k < list.length; ++k) {
                     let j = list[k]
@@ -373,10 +434,14 @@ async function checkPostLimits(posts) {
                     if (j.created_utc > end)
                         break
 
-                    if (++total > limit.limit) {
+                    total += typeof limit.flair === "undefined" || j.link_flair_text === limit.flair ? 1 : 0
+
+                    if (total > limit.limit) {
                         let message = removedPost
-                        message += postLimit + limit.limit + " posts per " + limit.str + ".  \n"
-                        if (end > now)
+                        message += postLimit + limit.limit + " posts per "
+                            + (typeof limit.flair !== "undefined" ? limit.flair + " per " : "") + limit.str + ".  \n"
+
+                        if (end > now && typeof limit.flair === "undefined")
                             message += "Your next post can be made after " + (new Date(end * 1000).toUTCString()) + ".  \n"
                         message += botSig
 
@@ -388,7 +453,7 @@ async function checkPostLimits(posts) {
 
                         p.push(j.remove().catch(err => error("lim1", err)))
 
-                        console.log("over limit", limit.str, permaLinkHdr + j.permalink)
+                        console.log("over limit", typeof limit.flair !== "undefined" ? limit.flair : limit.str, permaLinkHdr + j.permalink)
 
                         list.splice(k, 1)
                         --total
@@ -476,6 +541,8 @@ function checkFlair(posts, origFlair) {
         if (newFlair !== post.link_flair_text || origFlair && newFlair !== origFlair) {
             console.log("edit flair", post.link_flair_text, newFlair, permaLinkHdr + post.permalink)
 
+            post.link_flair_text = newFlair // so check title has correct flair
+
             p.push(post.selectFlair({
                 flair_template_id: flair.flair_template_id,
                 text: newFlair
@@ -554,35 +621,32 @@ async function modCommands(posts) {
         if (post.name.startsWith("t1_")) {
 
             let flair = post.body.startsWith("!") ? getItem(flairList, post.body) : null
-            let match = post.body.match(/!\W?(user|flair|pm|or|rall|redirect|best|r|c)\W?(.*)?/i)
+            let match = post.body.match(/!\W?(user|pm|or|rall|flair|redirect|request|best|setbest|r|c)\W?(.*)?/i)
             let m = match ? match[1].toLowerCase() : null
 
             if (flair || m) {
                 console.log("command", post.body, permaLinkHdr + post.permalink)
 
-                let op = await reddit.getSubmission(post.link_id).fetch().catch(err => error("mc0", err))
-                let parent
-
-                if (post.parent_id.startsWith("t1_"))
-                    parent = await reddit.getComment(post.parent_id).fetch().catch(err => error("mc1", err))
-                else
-                    parent = op
+                let parent = await reddit.getSubmission(post.link_id).fetch().catch(err => error("mc0", err))
 
                 p.push(post.remove().catch(err => error("mc2", err)))
 
                 if (flair && !m) {
                     if (modList.includes(post.author_fullname) || post.is_submitter)
-                        p.push(changeFlairCmd(post, op))
+                        p.push(changeFlairCmd(post, parent))
                 } else {
                     if (modList.includes(post.author_fullname))
                         switch (m) {
+                            case "request": // "r" catches this
+                            case "flair":
+                                p.push(changeFlairCmd(post, parent)); break
                             case "or":
                             case "r":
                                 p.push(removePostCmd(post, parent)); break          // remove post & quote rule
-
                             case "c": p.push(sendCommentCmd(post, parent)); break    // comment
                             case "redirect": p.push(redirectToThread(parent)); break
                             case "best": p.push(getBestOf(post, flair)); break
+                            case "setbest": p.push(setbestPost(post, parent)); break
                             case "rall": p.push(removeAll(post, parent)); break      // remove all of an ops posts or comments
                         }
 
@@ -607,10 +671,74 @@ async function changeFlairCmd(post, op) {
             p.push(c.remove().catch(err => error("cf1", err)))
 
     let flair = op.link_flair_text
-    op.link_flair_text = post.body + " " + flair.slice(flair.indexOf("/"))
+    op.link_flair_text = post.body + " " + flair.slice(flair.indexOf("EDIT"))
 
     p.push(checkFlair([op], flair))
     p.push(checkTitle([op]))
+
+    return Promise.all(p)
+}
+
+const bestPostsName = "Monthly Best Posts"
+
+async function setbestPost(post, op) {
+    let p = []
+    let flair = getItem(flairList, bestPostsName)
+
+    if (op.link_flair_text === bestPostsName) {
+        let list = []
+
+        if (post.body === "!setbest") {
+            let parent = await reddit.getComment(post.parent_id).fetch().catch(err => error("sb0", err))
+            let match = parent.body.match(/\[https:\/\/.*?comments\/.*?\W/ig)
+
+            for (let post of match)
+                list.push(post.replace(/.*?comments\/(.*)\//, "$1"))
+        } else {
+            list = post.body.match(/\[https:\/\/.*?comments\/.*?\W/ig)
+            if (list) {
+                for (let i = 0; i < list.length; ++i)
+                    list[i] = list[i].replace(/.*?comments\/(\w+?)\//, "$1")
+
+            } else
+                list = post.body.split(" ")
+
+            let text = "##Links for this months best posts.  \n  \n"
+            text += "|Author|Title/Link|\n"
+            text += "|:--------------------|:-----------------------------------|\n"
+
+            for (let l of list) {
+                if (l && l !== "!setbest") {
+                    let single = await reddit.getSubmission(l).fetch().catch(err => error("sb3", err))
+
+                    if (single) {
+                        text += "|u/" + single.author.name + "|[" + single.title + "](" + permaLinkHdr + single.permalink + ")|\n"
+
+                        console.log("set best list", permaLinkHdr + single.permalink)
+
+                        p.push(single.selectFlair({
+                            flair_template_id: flair.flair_template_id,
+                            text: single.link_flair_text
+                        }).catch(err => error("sb2", err)))
+
+                        p.push(uniqueReply(single, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
+
+                        await delay(2000)
+                    }
+                }
+            }
+
+            p.push(op.reply(text).catch(err => error("sb4", err)))
+        }
+    }
+    else {
+        console.log("set best post", permaLinkHdr + post.permalink)
+
+        p.push(op.selectFlair({
+            flair_template_id: flair.flair_template_id,
+            text: op.link_flair_text
+        }).catch(err => error("sb", err)))
+    }
 
     return Promise.all(p)
 }
@@ -871,7 +999,7 @@ const shipParts =
         "solar", "spectrometer", "spider", "spikes", "squid", "stabilizer", "star", "starburst", "starscream",
         "stinger", "stubby", "tail", "talon", "tank", "tau", "teeth", "tie", "tilt", "torpedo", "triple", "tristar",
         "tusked", "upsilon", "vector", "vent", "vented", "verta", "vertical", "viper", "voyager", "vulture",
-        "wedge", "widow"]
+        "wedge", "widow", "v-wing", "e-wing", "thruster"]
 
 const modeList = [{
     match: /(custom)|(creative)|(relaxed)|(normal)|(survival)|(expedition)/i,
