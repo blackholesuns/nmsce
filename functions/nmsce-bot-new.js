@@ -272,6 +272,9 @@ async function checkTitle(posts) {
         let first = ""
         let startLen = 0
 
+        if (flair.name === rrdFlair) 
+            text = "See [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1clsiij/casual_wednesday_relaxed_rules_flair/) for the rules on using the '"+rrdFlair+"' flair."
+
         if ((flair.name === "Request" || flair.name.includes("Starship")) && post.title.match(/(starbou?rne? runner)|(golden vector)|(Utopian? speeder)/ig)) {
             p.push(redirectToThread(post))
             continue
@@ -280,7 +283,7 @@ async function checkTitle(posts) {
         if (flair.name === "Request")
             text = "Many items are easy to find using the [search bar](https://www.reddit.com/r/NMSGlyphExchange/comments/1byxb6p/how_to_navigate_the_search_bar/) or the [nmsce app](https://nmsge.com). *Please search before posting a request.* If you haven't searched and subsequently find your item upon searching please delete this post.  \n\nPosts requesting easily found items will be removed. Requests are only allowed for locations, not a trade, of items (excepting dragon eggs). Requests for expedition items are not allowed because they have no location."
 
-        else if (flair.galaxy) {
+        if (flair.galaxy) {
             let error = false
             let userPosts = await sub.search({ query: "author:" + post.author.name, limit: 5 })
                 .catch(err => { error("edu", err); error = true })
