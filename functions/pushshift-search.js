@@ -37,18 +37,21 @@ async function main() {
     let editFlair = allFlair.filter(f => f.flair_text.match(/EDIT/))
 
     // pushshift data
-    const server = 'https://api.pushshift.io/reddit/search/submission?'
+    // const server = 'https://api.pushshift.io/reddit/search/submission?'
+    const server = 'https://api.pushshift.io/reddit/search/comment?'
     let search = new URLSearchParams({
-        subreddit: 'NMSCoordinateExchange',
+        subreddit: 'NoMansSkyTheGame',
         since: 1672531200, // Jan 1 2023
+        // since: 1704067200, // Jan 1 2024
         until: 9999999999, //9999999999, // newest post
         sort: 'created_utc',
         order: 'desc',
         agg_size: 25,
         shard_size: 1.5,
         track_total_hits: false,
-        limit: 100,
-        filter: 'id,title,link_flair_text,created_utc,removed_by_category'
+        limit: 500,
+        // filter: 'id,title,link_flair_text,created_utc,removed_by_category'
+        filter: 'id,author,created_utc,removed_by_category'
     })
 
     const headers = new Headers({
@@ -63,7 +66,7 @@ async function main() {
     // return
 
     let posts = []
-    let dayCount = [0, 0, 0, 0, 0, 0, 0]
+    let totals = []
     let total = 0
 
     do {
@@ -74,7 +77,8 @@ async function main() {
         let lastpost = posts.length > 0 ? posts[posts.length - 1] : null
 
         if (lastpost) {
-            console.error(total, lastpost.created_utc, lastpost.id)
+            let time = new Date(lastpost.created_utc * 1000)
+            console.error(total, lastpost.created_utc, time.toLocaleString(), lastpost.id)
             search.set("until", lastpost.created_utc)
         }
 
@@ -82,23 +86,40 @@ async function main() {
             if (post.removed_by_category)
                 continue
 
-            let flair = getItem(allFlair, post.link_flair_text)
-            if (flair) flair.count = typeof flair.count === "undefined" ? 1 : flair.count + 1
+            let hour = new Date(post.created_utc * 1000).getUTCHours()
 
-            let galaxy = getItem(galaxyList, post.link_flair_text)
-            if (galaxy) galaxy.count = typeof galaxy.count === "undefined" ? 1 : galaxy.count + 1
+            if (typeof totals[hour] === "undefined")
+                totals[hour] = []
 
-            let day = new Date(post.created_utc * 1000).getDay()
-            ++dayCount[day]
+            let name = getItem(totals[hour], post.author)
+            if (!name)
+                totals[hour].push({ name: post.author, total: 1 })
+            else
+                ++name.total
         }
 
-        console.error(JSON.stringify(dayCount))
+        if (total >= 50000)
+            break
+
         await delay(1000)
     } while (posts.length > 0)
 
-    console.log("total", total, dayCount)
-    for (let i of allFlair) console.log(i.name, i.count)
-    for (let i of galaxyList) if (i.count) console.log(i.name, i.count)
+    // for (let h = 0; h < 24; ++h) {
+    //     if (typeof totals[h] !== "undefined") {
+    //         let person = getItem(totals[h], "E-MingEyeroll")
+    //         if (person)
+    //         console.log(h, h-5, person)
+    //     }
+    // }
+
+    for (let h = 0; h < 24; ++h) {
+        if (typeof totals[h] !== "undefined") {
+            let list = totals[h].filter(a => a.name !== "AutoModerator" && a.name !== "nmsceBot" && a.name !== "[deleted]")
+            list = list.sort((a, b) => b.total - a.total)
+
+            console.log(h, h - 5 < 0 ? 24 + h - 5 : h - 5, list[0], list[1], list[3])
+        }
+    }
 }
 
 function checkList(list, post, full) {
