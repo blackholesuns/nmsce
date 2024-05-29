@@ -194,7 +194,7 @@ async function loadSettings(post) {
         flairPostLimit = []
         anyPostLimit = {}
 
-        if (typeof allPost.any === undefined) 
+        if (typeof allPost.any === undefined)
             allPost = {}
 
         for (let e of settings.ads) {
@@ -437,6 +437,9 @@ var posters = []
 function checkNewPosters(posts) {
     let p = []
 
+    if (typeof settings.firstPost !== "undefined" && !settings.firstPost)
+        return
+
     for (let post of posts) {
         if (posters.includes(post.author_fullname)) {
             continue
@@ -535,7 +538,7 @@ async function modCommands(posts, mods) {
 
     for (let post of posts) {
         if (post.name.startsWith("t1_")) {
-            let match = post.body.match(/!\W?(test|watch|unwatch|contest|reload|check|flair|agree|ad|pm|r|c)\W?(.*)?/i)
+            let match = post.body.match(/!\W?(test|watch|unwatch|contest|reload|check|flair|agree|ad|pm|1st|r|c)\W?(.*)?/i)
 
             if (match) {
                 console.log("command", post.body, permaLinkHdr + post.permalink)
@@ -574,6 +577,7 @@ async function modCommands(posts, mods) {
                         case "unwatch": p.push(clearWatch(post, parent)); break
                         case "contest": p.push(setupContest(post, op)); break   // setup contest
                         case "reload": p.push(loadSettings(post, op)); break    // reload settings from wiki
+                        case "1st": p.push(setFirstCheck(post)); break    // set first time posters check
                         case "check": p.push(botStats(post, op)); break         // am I running?
                     }
                 }
@@ -625,6 +629,13 @@ function checkMotherMayI(post, op) {
     return op.approve().catch(err => error(err, 22))
 }
 
+function setFirstCheck(post) {
+    settings.firstPost = !post.body.includes("off")
+    console.log("set first time post check " + settings.firstPost ? "off" : "on", permaLinkHdr + post.permalink)
+
+    return updateSettings()
+}
+
 function setupAdvertiser(post, op) {
     let p = []
     let ad = {
@@ -658,7 +669,7 @@ function setupAdvertiser(post, op) {
             case "contacts": {
                 let contacts = field[1].split(",")
                 for (let c of contacts)
-                    ad.contacts.push({ uid: c, email: null, name: null })
+                    ad.contacts.push({ uid: c })
 
                 break
             }
