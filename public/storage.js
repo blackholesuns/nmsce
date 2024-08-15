@@ -1,4 +1,4 @@
-import { ref, uploadBytes, deleteObject, getStorage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js"
+import { ref, uploadBytes, deleteObject, getStorage } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js"
 import { App } from "./firebase.js";
 
 // Buckets we want to upload to

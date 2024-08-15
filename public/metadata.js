@@ -1,6 +1,15 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.7",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Upgrade to firebase v10.12.5",
+            "Fix login",
+            "Delete Patreon"
+        ]
+    }, {
         Version: "1.2.6",
         Title: " ",
         Authors: ["spip01"],

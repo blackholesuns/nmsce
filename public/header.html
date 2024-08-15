@@ -19,9 +19,23 @@
                 <div class="col-5">
                     <div class="row float-center">
                         <div id="full-usermenu">
-                            <button id="login" type="button" class="btn-def no-border h5" onclick="bhs.logIn()">
-                                Login
-                            </button>
+                            <div id="login" class="dropdown h6">
+                                <button type="button" class="row btn-def no-border dropdown-toggle"
+                                    data-toggle="dropdown">
+                                    Login
+                                </button>
+
+                                <div class="dropdown-menu bkg-def text-center">
+                                    <button type="button" class="no-border dropdown-item btn-def"
+                                        onclick="bhs.googleLogin()">
+                                        Google Login
+                                    </button>
+                                    <button type="button" class="no-border dropdown-item btn-def"
+                                        onclick="bhs.githubLogin()">
+                                        GitHub Login
+                                    </button>
+                                </div>
+                            </div>
 
                             <div id="usermenu" class="dropdown" style="display: none">
                                 <button type="button" class="row btn-def no-border dropdown-toggle"
@@ -74,30 +88,33 @@
 </div>
 
 <div class="row border-top">
+    <div class="col-4 text-center clr-cream h5">
+        &nbsp;&nbsp;Just donating $1/month via&nbsp;<a href="https://ko-fi.com/nmsce">Ko-fi</a>&nbsp;will keep this site updated and functioning.
+    </div>
     <a class="col-2 text-center clr-cream h5" href="https://www.reddit.com/r/NMSCoordinateExchange/">NMSCE
-        Reddit</a>  
-         <a class="col-2 text-center clr-cream h5" href="https://www.reddit.com/r/NMSGlyphExchange/">NMSGE
-            Reddit</a>
+        Reddit</a>
+    <!--a class="col-2 text-center clr-cream h5" href="https://www.reddit.com/r/NMSGlyphExchange/">NMSGE
+        Reddit</a-->
     <a class="col-2 text-center clr-cream h5" href="https://discord.gg/JwBGq3a">NMSGE Discord&nbsp;
         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true" data-placement="bottom"
             title="Invite for NMSGE channel.">
         </i>
     </a>
-    <a class="col-2 text-center clr-cream h5"
-        href="https://discord.gg/QhjAN4AhCD">PGSC Taxi Service&nbsp;
+    <a class="col-3 text-center clr-cream h5" href="https://discord.gg/QhjAN4AhCD">PGSC Taxi Service&nbsp;
         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true" data-placement="bottom"
             title="Pan Galactic Star Cabs - We'll take you anywhere for free!">
         </i></a>
-    <a class="col-2 text-center clr-cream h5" href="https://www.patreon.com/bePatron?u=28538540">Support us on Patreon&nbsp;
+    <!--a class="col-2 text-center clr-cream h5" href="https://www.patreon.com/bePatron?u=28538540">Support us on
+        Patreon&nbsp;
         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true" data-placement="bottom"
             title="Please support this site on Patreon. Donations go to site hosting and development.">
         </i>
-    </a>
-    <a class="col-2 text-center clr-cream h5" href="https://ko-fi.com/nmsce">Support us on Ko-fi&nbsp;
+    </a-->
+    <!--a class="col-2 text-center clr-cream h5" href="https://ko-fi.com/nmsce">Support us on Ko-fi&nbsp;
         <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true" data-placement="bottom"
             title="Please support this site on Ko-fi. Donations go to site hosting and development.">
         </i>
-    </a>
+    </a-->
 </div>
 
 <div id="changelogpnl"
@@ -113,7 +130,7 @@
 
 <div id="loginpnl" class="card bkg-def pad-bottom" style="display:none">
     <div class="card-header text-center">
-        <div class="h4 txt-def">Login NMSGE</div>
+        <div class="h4 txt-def">Login</div>
     </div>
     <div class="card-body">
         <div class="row">

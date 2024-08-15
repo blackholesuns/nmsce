@@ -1,6 +1,6 @@
 "use strict";
 
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"
 import { blackHoleSuns, bhs } from "./commonFb.js";
 import { fnmsce } from "./commonNms.js";
 import { nmsce } from "./nmsce.js";
@@ -101,31 +101,31 @@ blackHoleSuns.prototype.doLoggedin = function (user) {
             console.log(err);
         });
 
-    getDoc(doc(bhs.fs, "bhs/patreon/contributors/" + bhs.user.uid))
-        .then((doc) => {
-            if (doc.exists()) {
-                bhs.patreon = doc.data().tier;
-                if (bhs.patreon >= 1) $("#patron").show();
+    // getDoc(doc(bhs.fs, "bhs/patreon/contributors/" + bhs.user.uid))
+    //     .then((doc) => {
+    //         if (doc.exists()) {
+    //             bhs.patreon = doc.data().tier;
+    //             if (bhs.patreon >= 1) $("#patron").show();
 
-                if (bhs.patreon >= 2) $("#id-notifySearch").show();
+    //             if (bhs.patreon >= 2) $("#id-notifySearch").show();
 
-                if (bhs.patreon >= 3) $("#id-private").show();
-            }
-        })
-        .catch((err) => {
-            bhs.status("ERROR: " + err.code);
-            console.log(err);
-        });
+    //             if (bhs.patreon >= 3) $("#id-private").show();
+    //         }
+    //     })
+    //     .catch((err) => {
+    //         bhs.status("ERROR: " + err.code);
+    //         console.log(err);
+    //     });
 
     $("#save").removeClass("disabled");
     $("#save").removeAttr("disabled");
 };
 
-blackHoleSuns.prototype.isPatreon = function (tier) {
+blackHoleSuns.prototype.isPatreon = function (tier) { // delete patreon
     return bhs.hasRole("nmsceEditor") || bhs.hasRole("admin")
         ? true
-        : typeof bhs.patreon === "number"
-            ? bhs.patreon >= tier
+        // : typeof bhs.patreon === "number"
+        //     ? bhs.patreon >= tier
             : false;
 };
 

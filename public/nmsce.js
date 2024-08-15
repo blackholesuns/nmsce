@@ -1,10 +1,10 @@
 'use strict'
 
-import { setLogLevel } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"
+import { setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"
 import {
     getCountFromServer, Timestamp, collection, collectionGroup, query, where, orderBy, increment,
     arrayUnion, startAfter, limit, doc, getDoc, getDocs, setDoc, deleteDoc
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"
 import { bhs, blackHoleSuns, startUp } from "./commonFb.js";
 import {
     addGlyphButtons, addressToXYZ, addrToGlyph, fcedata, fnmsce, fpreview, getIndex, mergeObjects,
@@ -68,7 +68,7 @@ $(document).ready(() => {
         if (fnmsce) {
             nmsce.buildResultsList()
             nmsce.buildTotals()
-            nmsce.buildPatron()
+            // nmsce.buildPatron()
 
             nmsce.getTotals()
             nmsce.getResultsLists()
@@ -706,8 +706,8 @@ class NMSCE {
         $("#searchlocal").hide()
         $("#row-savesearch").show()
 
-        // if (bhs.isPatreon(2))
-        //     $("#id-notifySearch").show()
+         if (bhs.isPatreon(2))
+             $("#id-notifySearch").show()
 
         this.getSearches()
     }
@@ -4345,66 +4345,66 @@ class NMSCE {
         //         this.displayTotals(doc.data(), "bhs/nmsceMonthly")
         // })
 
-        getDoc(doc(bhs.fs, "bhs/patreon")).then(doc => {
-            if (doc.exists())
-                this.displayPatron(doc.data(), "bhs/patreon")
-        })
+        // getDoc(doc(bhs.fs, "bhs/patreon")).then(doc => {
+        //     if (doc.exists())
+        //         this.displayPatron(doc.data(), "bhs/patreon")
+        // })
     }
 
-    buildPatron() {
-        const header = `
-        <div id="patronCard" class="card">
-            <div class="card-header pl-15 txt-def">
-                <div class="row">
-                    <div class="col-4">Thanks To All Our Supporters!</div>
-                    <div class="col-3">
-                        <a href="https://www.patreon.com/bePatron?u=28538540" style="background-color:red; color:white; border-radius:12px">&nbsp;&nbsp;Become a Patron!&nbsp;&nbsp;</a>
-                    </div>
-                    <!--div class="col-5">You can also get patron benefits by entering data.&nbsp;
-                        <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
-                            data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
-                        </i>
-                    </div-->
-                </div>
-                <br>
-                <div class="row h6 border-top">
-                    <div class="col-4">Name</div>
-                    <div class="col-sm-2 pl-15">Date Joined</div>
-                </div>
-            </div>
-            <div id="patronList" class="card-body scroll txt-black" style="height:600px"></div>
-        </div>`
+    // buildPatron() {
+    //     const header = `
+    //     <div id="patronCard" class="card">
+    //         <div class="card-header pl-15 txt-def">
+    //             <div class="row">
+    //                 <div class="col-4">Thanks To All Our Supporters!</div>
+    //                 <div class="col-3">
+    //                     <a href="https://www.patreon.com/bePatron?u=28538540" style="background-color:red; color:white; border-radius:12px">&nbsp;&nbsp;Become a Patron!&nbsp;&nbsp;</a>
+    //                 </div>
+    //                 <!--div class="col-5">You can also get patron benefits by entering data.&nbsp;
+    //                     <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+    //                         data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
+    //                     </i>
+    //                 </div-->
+    //             </div>
+    //             <br>
+    //             <div class="row h6 border-top">
+    //                 <div class="col-4">Name</div>
+    //                 <div class="col-sm-2 pl-15">Date Joined</div>
+    //             </div>
+    //         </div>
+    //         <div id="patronList" class="card-body scroll txt-black" style="height:600px"></div>
+    //     </div>`
 
-        let loc = $("#dl-Patrons")
-        loc.find("#list-Patrons").remove()
-        loc.append(header)
-    }
+    //     let loc = $("#dl-Patrons")
+    //     loc.find("#list-Patrons").remove()
+    //     loc.append(header)
+    // }
 
-    displayPatron(list) {
-        const rows = `
-        <div id="row-uid" class="border-bottom h6">
-            <div class="row">
-                <div id="id-name" class="col-3">dname</div>
-                <div id="id-date" class="col-sm-2 txt-right">ddate</div>
-            </div>
-        </div>`
+    // displayPatron(list) {
+    //     const rows = `
+    //     <div id="row-uid" class="border-bottom h6">
+    //         <div class="row">
+    //             <div id="id-name" class="col-3">dname</div>
+    //             <div id="id-date" class="col-sm-2 txt-right">ddate</div>
+    //         </div>
+    //     </div>`
 
-        let loc = $("#patronCard")
-        let l = loc.find("#patronList")
+    //     let loc = $("#patronCard")
+    //     let l = loc.find("#patronList")
 
-        let k = Object.keys(list)
-        for (let u of k) {
-            let e = list[u]
+    //     let k = Object.keys(list)
+    //     for (let u of k) {
+    //         let e = list[u]
 
-            let h = /uid/[Symbol.replace](rows, k)
-            h = /dname/[Symbol.replace](h, e.name)
-            h = /ddate/[Symbol.replace](h, e.start.toDate().toDateLocalTimeString().slice(0, 10))
+    //         let h = /uid/[Symbol.replace](rows, k)
+    //         h = /dname/[Symbol.replace](h, e.name)
+    //         h = /ddate/[Symbol.replace](h, e.start.toDate().toDateLocalTimeString().slice(0, 10))
 
-            l.append(h)
-        }
+    //         l.append(h)
+    //     }
 
-        this.sortTotals(null, "id-name", "patronList")
-    }
+    //     this.sortTotals(null, "id-name", "patronList")
+    // }
 
     buildTotals() {
         const header = `
@@ -5538,8 +5538,8 @@ const resultTables = [{
     //     limit: 20,
 }, {
     name: "Totals",
-}, {
-    name: "Patrons",
+// }, {
+//     name: "Patrons",
 },];
 
 const objectList = [{

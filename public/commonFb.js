@@ -1,8 +1,8 @@
 'use strict';
-import { getAuth, signInWithRedirect, GoogleAuthProvider, GithubAuthProvider }
-    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"
+import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, GithubAuthProvider }
+    from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"
 import { Timestamp, doc, setDoc, getDoc }
-    from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
+    from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js"
 import { buildGalaxyInfo } from "./commonNms.js";
 import { App, Auth, Firestore, Storage } from "./firebase.js";
 
@@ -96,12 +96,12 @@ export class blackHoleSuns {
             var provider = new GoogleAuthProvider()
             provider.addScope('profile')
             provider.addScope('email')
-            signInWithRedirect(getAuth(), provider)
+            signInWithPopup(getAuth(), provider)
         })
 
         $("#lgithub").click(() => {
             var provider = new GithubAuthProvider()
-            signInWithRedirect(getAuth(), provider)
+            signInWithPopup(getAuth(), provider)
         })
 
         $("#ltwitch").click(() => { })
@@ -109,6 +109,18 @@ export class blackHoleSuns {
         $("#ldiscord").click(() => { })
 
         $("#lreddit").click(() => { })
+    }
+
+    googleLogin() {
+        var provider = new GoogleAuthProvider()
+        provider.addScope('profile')
+        provider.addScope('email')
+        signInWithPopup(getAuth(), provider)
+    }
+
+    githubLogin() {
+        var provider = new GithubAuthProvider()
+        signInWithPopup(getAuth(), provider)
     }
 
     logOut() {
