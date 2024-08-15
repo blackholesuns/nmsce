@@ -688,6 +688,17 @@ async function setbestPost(post, op) {
     let p = []
     let flair = getItem(flairList, bestPostsName)
 
+    const setFlairAndComment = function (p, op) {
+        console.log("set best post", permaLinkHdr + post.permalink)
+
+        p.push(op.selectFlair({
+            flair_template_id: flair.flair_template_id,
+            text: op.link_flair_text
+        }).catch(err => error("sb", err)))
+        
+        p.push(uniqueReply(single, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
+    }
+
     if (op.link_flair_text === bestPostsName) {
         let list = []
 
@@ -717,14 +728,7 @@ async function setbestPost(post, op) {
                     if (single) {
                         text += "|u/" + single.author.name + "|[" + single.title + "](" + permaLinkHdr + single.permalink + ")|\n"
 
-                        console.log("set best list", permaLinkHdr + single.permalink)
-
-                        p.push(single.selectFlair({
-                            flair_template_id: flair.flair_template_id,
-                            text: single.link_flair_text
-                        }).catch(err => error("sb2", err)))
-
-                        p.push(uniqueReply(single, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
+                        setFlairAndComment(p, op)
 
                         await delay(2000)
                     }
@@ -734,14 +738,8 @@ async function setbestPost(post, op) {
             p.push(op.reply(text).catch(err => error("sb4", err)))
         }
     }
-    else {
-        console.log("set best post", permaLinkHdr + post.permalink)
-
-        p.push(op.selectFlair({
-            flair_template_id: flair.flair_template_id,
-            text: op.link_flair_text
-        }).catch(err => error("sb", err)))
-    }
+    else 
+        setFlairAndComment(p, op)
 
     return Promise.all(p)
 }
