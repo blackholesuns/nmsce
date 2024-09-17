@@ -296,7 +296,7 @@ async function checkTitle(posts) {
             startLen = text.length
 
             if (!post.link_flair_text.includes("Euclid"))
-                text += "- This " + flair.name.toLowerCase() + " is *not* in the Euclid/starting galaxy. **Shared glyphs only work in the specified galaxy.** If you need help getting there contact [Pan Galactic Star Cabs](https://discord.gg/mNtrkGVg). They can take you to any galaxy, any system for free!  \n  \n"
+                text += "- This " + flair.name.toLowerCase() + " is *not* in the Euclid/starting galaxy. **Shared glyphs only work in the specified galaxy.** If you need help getting there contact [Pan Galactic Star Cabs](https://discord.gg/WgUdnbZJjh). They can take you to any galaxy, any system for free!  \n  \n"
 
             if (flair.name === "Starship") {
                 let partsMatched = shipParts.filter(a => title.includes(a))

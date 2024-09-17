@@ -241,9 +241,13 @@ export const versionList = [
         version: 4.70,
         date: "3/27/2024"
     }, {
-        name: "worlds",
+        name: "worlds 1",
         version: 5.00,
         date: "7/17/2024"
+    }, {
+        name: "aquarius",
+        version: 5.10,
+        date: "9/4/2024"
     }
 ];
 
