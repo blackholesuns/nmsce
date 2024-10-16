@@ -249,6 +249,10 @@ body {
     color: rgb(238, 227, 183);
 }
 
+.clr-red {
+    color: rgb(255, 1, 1);
+}
+
 .clr-light-green {
     color: #e8ffe8;
 }

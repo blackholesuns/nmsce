@@ -64,7 +64,7 @@ async function enableFlair() {
                             allowable_content: "text",
                             background_color: "#ffff80"
                         }
-                    }).then(() => console.log("enable rrd")).catch(err => error("ef0", err)))
+                    }).then(() => console.log("enable " + rrdFlair)).catch(err => error("ef0", err)))
                 }
 
                 break
@@ -86,7 +86,7 @@ async function enableFlair() {
                             allowable_content: "text",
                             background_color: "#ffff80"
                         }
-                    }).then(() => console.log("disable rrd")).catch(err => error("ef0", err)))
+                    }).then(() => console.log("disable " + rrdFlair)).catch(err => error("ef0", err)))
                 }
 
                 break
@@ -272,8 +272,8 @@ async function checkTitle(posts) {
         let first = ""
         let startLen = 0
 
-        if (flair.name === rrdFlair) 
-            text = "See [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1clsiij/casual_wednesday_relaxed_rules_flair/) for the rules on using the '"+rrdFlair+"' flair."
+        if (flair.name === rrdFlair)
+            text = "See [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1clsiij/casual_wednesday_relaxed_rules_flair/) for the rules on using the '" + rrdFlair + "' flair."
 
         if ((flair.name === "Request" || flair.name.includes("Starship")) && post.title.match(/(starbou?rne? runner)|(golden vector)|(Utopian? speeder)/ig)) {
             p.push(redirectToThread(post))
@@ -695,7 +695,7 @@ async function setbestPost(post, op) {
             flair_template_id: flair.flair_template_id,
             text: op.link_flair_text
         }).catch(err => error("sb", err)))
-        
+
         p.push(uniqueReply(single, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
     }
 
@@ -738,7 +738,7 @@ async function setbestPost(post, op) {
             p.push(op.reply(text).catch(err => error("sb4", err)))
         }
     }
-    else 
+    else
         setFlairAndComment(p, op)
 
     return Promise.all(p)
