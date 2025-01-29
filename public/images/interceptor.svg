@@ -8,7 +8,7 @@
    style="clip-rule:evenodd;fill-rule:evenodd"
    id="svg7485"
    sodipodi:docname="interceptor.svg"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
    inkscape:export-filename="C:\Users\sp\Documents\webDevelopment\bhs-nmsce\public\images\interceptor.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
@@ -46,9 +46,9 @@
    inkscape:window-height="480"
    id="namedview7487"
    showgrid="false"
-   inkscape:zoom="5.1773452"
-   inkscape:cx="190.25195"
-   inkscape:cy="381.17991"
+   inkscape:zoom="2.5886726"
+   inkscape:cx="185.42322"
+   inkscape:cy="433.04047"
    inkscape:current-layer="layer1"
    inkscape:document-rotation="0"
    units="px"
@@ -28375,8 +28375,8 @@
      d="m 245.74871,295.55596 57.42053,20.85977 7.90657,18.36036 -2.22465,21.63708 -33.44695,6.15341 -28.85649,-2.61475 -47.47827,-15.17735 -28.71203,-37.67956 38.84022,-3.44873 z"
      id="bdr-h24"><title
        id="title9453">U-Wing</title><desc
-       id="desc7064">{&quot;group&quot;:[11,17,30,32],
-&quot;okGroup&quot;:[12,19,31,34],
+       id="desc7064">{&quot;group&quot;:[11,17,30,32,41],
+&quot;okGroup&quot;:[12,19,31,34,40],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 273.86041,216.62638 6.63317,-7.71653 23.49721,0.53218 1.12427,9.04695 -6.40833,26.60869 h -8.88172 z"
@@ -28486,24 +28486,24 @@
      d="m 2.9911856,416.76508 -0.1617952,7.27721 30.7411066,15.03956 30.579313,16.81843 35.756761,7.92408 45.626279,-3.55775 78.14713,9.05608 4.69206,-15.03955 -139.629345,-21.99335 -14.07619,-0.32343 z"
      id="bdr-h42"><title
        id="title9435">X-Wing Bottom</title><desc
-       id="desc7104">{&quot;group&quot;:[14,17,21,22],
-&quot;okGroup&quot;:[13,18,20,23],
+       id="desc7104">{&quot;group&quot;:[14,17,21,22,40],
+&quot;okGroup&quot;:[13,18,20,23,41],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 12.648893,448.72501 2.067016,12.82259 31.743489,12.08566 28.052385,18.71804 37.796897,4.56897 6.3487,-1.32647 9.30158,-20.33929 -28.052389,-7.51669 -23.25894,-2.26903 z"
      id="bdr-h43"
      sodipodi:nodetypes="cccccccccc"><title
        id="title9431">X-Wing Rear Bottom</title><desc
-       id="desc19470">{&quot;group&quot;:[14,17,22],
-&quot;okGroup&quot;:[13,18,20],
+       id="desc19470">{&quot;group&quot;:[14,17,22,40],
+&quot;okGroup&quot;:[13,18,20,41],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 2.6628399,453.8141 5.4601922,0.45467 2.8817679,8.94207 27.90765,9.24518 34.429544,22.58247 v 5.0015 L 15.858305,482.15587 3.4211998,465.6358 Z"
      id="bdr-h44"><title
        id="title9469">Pincer Bottom</title><desc
        id="desc7106">{&quot;requires&quot;:[&quot;h60&quot;],
-&quot;group&quot;:[20,17],
-&quot;okGroup&quot;:[22,13,18,20,23]}</desc></path><path
+&quot;group&quot;:[20,17,40],
+&quot;okGroup&quot;:[22,13,18,20,23,41]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 137.32408,500.87128 0.66747,-13.35001 41.88428,-17.02126 37.21194,3.83813 30.2034,14.18438 63.2436,14.85189 v 16.35377 l -4.67235,7.84313 -73.75639,-10.34626 -59.23872,0.16688 -31.8721,-9.34501 z"
      id="bdr-h55"><title
@@ -28535,8 +28535,8 @@
      id="bdr-h47"><title
        id="title9443">X-Fin</title><desc
        id="desc7112">{&quot;requires&quot;:[&quot;h60&quot;],
-&quot;group&quot;:[17,23],
-&quot;okGroup&quot;:[21,18,20,22]}</desc></path><path
+&quot;group&quot;:[17,23,40],
+&quot;okGroup&quot;:[21,18,20,22,41]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="M 2.7007652,666.46722 2.9367545,655.61136 35.50328,635.07961 93.556649,647.82345 109.36793,663.39926 94.028629,687.23497 Z"
      id="bdr-h64"><title
@@ -28601,8 +28601,8 @@
      d="m 17.730924,534.11167 -12.4521442,13.31731 11.4144652,12.97143 38.394112,13.49026 43.409559,-2.76723 56.553494,7.26399 5.36133,-4.66971 1.72947,-8.47466 z"
      id="bdr-h66"><title
        id="title9439">X-Wing Front Bottom</title><desc
-       id="desc19472">{&quot;group&quot;:[14,17,21],
-&quot;okGroup&quot;:[13,18,23],
+       id="desc19472">{&quot;group&quot;:[14,17,21,40],
+&quot;okGroup&quot;:[13,18,23,41],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      d="m 80.883994,321.53489 11.749347,13.53313 25.430179,-0.93981 1.12666,-6.57858 -13.68078,-11.46556 -16.73884,-3.75923 z"
@@ -28775,8 +28775,8 @@
      id="bdr-h72"><title
        id="title45946">U-Wing Fin</title><desc
        id="desc9977-4">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h24&quot;],
-&quot;group&quot;:[17,30,31,24],
-&quot;okGroup&quot;:[11,12,34]}</desc></path><g
+&quot;group&quot;:[17,30,31,24,41],
+&quot;okGroup&quot;:[11,12,34,40]}</desc></path><g
      id="g22572"
      style="display:inline;stroke-width:8.62887"
      transform="matrix(0.43800237,0,0,0.43801687,101.81862,272.37941)"><title

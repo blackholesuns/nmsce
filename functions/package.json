@@ -21,6 +21,8 @@
     "nmsbhs-utils": "^1.1.9",
     "node-fetch": "^2.6.0",
     "nodemailer": "^6.4.11",
+    "pm2": "^5.4.3",
+    "pm2-windows-startup": "^1.0.3",
     "sets": "^0.2.0",
     "snoowrap": "^1.23.0",
     "tesseract.js": "^4.1.1",

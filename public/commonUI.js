@@ -5,7 +5,7 @@ import { blackHoleSuns, bhs } from "./commonFb.js";
 import { fnmsce } from "./commonNms.js";
 import { nmsce } from "./nmsce.js";
 
-// Copyright 2019-2024 Black Hole Suns
+// Copyright 2019-2025 Black Hole Suns
 // Written by Stephen Piper
 
 blackHoleSuns.prototype.doLoggedout = function () {

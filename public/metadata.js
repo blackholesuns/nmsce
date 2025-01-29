@@ -1,6 +1,13 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.8",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Fix interceptor U-Wing parts selection"
+        ]
+    }, {
         Version: "1.2.7",
         Title: " ",
         Authors: ["spip01"],
