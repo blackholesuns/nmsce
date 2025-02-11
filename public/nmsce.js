@@ -1475,7 +1475,7 @@ class NMSCE {
                 name: "version",
                 type: "menu",
                 id: "menu-Version",
-                val: val
+                val: ver
             })
         }
 
@@ -4413,12 +4413,12 @@ class NMSCE {
                 <div class="card">
                     <div class="card-header pl-15 txt-def">
                         <div class="row">
-                            <div class="col-3">
+                            <!--div class="col-3">
                                 <label>
                                     <input id="ck-idname" type="checkbox" onclick="nmsce.showModTotals(this)">
                                     &nbsp;Show All
                                 </label>
-                            </div>
+                            </div-->
                             <!--div class="col-5">You can get patron benefits by entering data.&nbsp;
                                 <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
                                     data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
@@ -4485,10 +4485,10 @@ class NMSCE {
                     let h = /uid/[Symbol.replace](rows, k)
                     h = /nameS/[Symbol.replace](h, e.name)
                     h = /detailT/[Symbol.replace](h, s)
-                    if (e.name === "Bad Wolf") {    //was e.mod
-                        h = /ismod/[Symbol.replace](h, "modT")
-                        h = /border-bottom/[Symbol.replace](h, "border-bottom hidden")
-                    }
+                    // if (e.name === "Bad Wolf") {    //was e.mod
+                    //     h = /ismod/[Symbol.replace](h, "modT")
+                    //     h = /border-bottom/[Symbol.replace](h, "border-bottom hidden")
+                    // }
 
                     if (path === "bhs/nmsceTotals") {
                         h = /totalT/[Symbol.replace](h, t)

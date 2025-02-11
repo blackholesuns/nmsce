@@ -32,10 +32,10 @@ async function main() {
     await loadSettings()
     getWeekly()
 
-    setInterval(() => getComments(), 29 * 1000)     // for watched comments
-    setInterval(() => getModqueue(), 11 * 1000)     // for moderator commands
-    setInterval(() => getNew(), 11 * 1000)          // post limits, etc.
-    setInterval(() => getContest(), 5 * 60 * 1000)  // update contest wiki
+    setInterval(() => getComments(), 37 * 1000)     // for watched comments
+    setInterval(() => getModqueue(), 17 * 1000)     // for moderator commands
+    setInterval(() => getNew(), 27 * 1000)          // post limits, etc.
+    setInterval(() => getContest(), 10 * 60 * 1000)  // update contest wiki
 }
 
 async function getContest() {
@@ -67,7 +67,7 @@ async function getNew() {
     let p = []
 
     p.push(sub.getNew(!lastPost.name ? {
-        limit: 100 // day
+        limit: 200 // day
     } : lastPost.full + recheck < date ? {
         limit: 10 // hour
     } : {

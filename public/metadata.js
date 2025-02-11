@@ -1,6 +1,14 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.2.9",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Temp fix for address checking. Purple systems are outside of the original system number limits.",
+            "Adding new planet types & materials"
+        ]
+    }, {
         Version: "1.2.8",
         Title: " ",
         Authors: ["spip01"],

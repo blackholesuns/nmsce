@@ -31,9 +31,9 @@ async function main() {
     await loadSettings()
 
     setInterval(() => getModqueue(), 13 * 1000)     // for moderator commands
-    setInterval(() => getNew(), 11 * 1000)          // post limits, etc.
-    setInterval(() => getMessages(), 17 * 1000)     // user added galaxy
-    setInterval(() => enableFlair(), 37 * 1000)  // enable flair
+    setInterval(() => getNew(), 17 * 1000)          // post limits, etc.
+    setInterval(() => getMessages(), 37 * 1000)     // user added galaxy
+    setInterval(() => enableFlair(), 67 * 1000)  // enable flair
 
     // let log = await sub.getModerationLog({type:"removelink",mods:["nmsceBot"],limit:10,sort:"new"})
     // console.log(JSON.stringify(log))
@@ -187,7 +187,7 @@ async function getNew() {
     let p = []
 
     p.push(sub.getNew(!lastPost.name ? {
-        limit: 50 // day
+        limit: 100 // day
     } : lastPost.full + recheck < date ? {
         limit: 10 // hour
     } : {
@@ -696,7 +696,7 @@ async function setbestPost(post, op) {
             text: op.link_flair_text
         }).catch(err => error("sb", err)))
 
-        p.push(uniqueReply(single, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
+        p.push(uniqueReply(op, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
     }
 
     if (op.link_flair_text === bestPostsName) {

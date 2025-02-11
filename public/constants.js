@@ -2189,6 +2189,14 @@ export const resourceList = [{
     name: "Mordite"
 }, {
     name: "Basalt"
+}, {
+    name: "Quartzite"
+}, {
+    name: "Activated Quartzite"
+}, {
+    name: "Crystallized Helium"
+}, {
+    name: "Lithium"
 },]
 
 export const colorList = [{
@@ -2349,6 +2357,10 @@ export const biomeList = [{
     name: 'Irradiated',
 }, {
     name: 'Volcanic',
+}, {
+    name: 'Water World',
+}, {
+    name: 'Gas Giant',
 }]
 
 export const glitchList = [{
