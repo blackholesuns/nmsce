@@ -30,10 +30,10 @@ async function main() {
 
     await loadSettings()
 
-    setInterval(() => getModqueue(), 13 * 1000)     // for moderator commands
-    setInterval(() => getNew(), 17 * 1000)          // post limits, etc.
+    setInterval(() => getModqueue(), 23 * 1000)     // for moderator commands
+    setInterval(() => getNew(), 61 * 1000)          // post limits, etc.
     setInterval(() => getMessages(), 37 * 1000)     // user added galaxy
-    setInterval(() => enableFlair(), 67 * 1000)  // enable flair
+    setInterval(() => enableFlair(), 67 * 60 * 1000)  // enable flair
 
     // let log = await sub.getModerationLog({type:"removelink",mods:["nmsceBot"],limit:10,sort:"new"})
     // console.log(JSON.stringify(log))
@@ -144,6 +144,8 @@ async function loadSettings() {
             }
     }).catch(err => error("ls0", err)))
 
+    await delay(3000)
+
     p.push(sub.getUserFlairTemplates().then(res => {
         userFlair = res
 
@@ -158,12 +160,16 @@ async function loadSettings() {
         }
     }).catch(err => error("ls1", err)))
 
+    await delay(3000)
+
     p.push(sub.getRules().then(r => {
         rules = []
 
         for (let x of r.rules)
             rules.push(x.description)
     }).catch(err => error("ls2", err)))
+
+    await delay(3000)
 
     p.push(sub.getModerators().then(m => {
         modList = []
@@ -174,7 +180,8 @@ async function loadSettings() {
 
     return Promise.all(p).then(async () => {
         if (modList.length === 0 || rules.length === 0 || userFlair.length === 0 || flairList.length === 0) {
-            await delay(2000)
+            console.log("retry load settings")
+            await delay(30000)
             return loadSettings()
         }
     })
@@ -335,29 +342,31 @@ async function checkTitle(posts) {
     return Promise.all(p)
 }
 
-async function uniqueReply(post, text, part, noSticky) {
-    post = await post.expandReplies({ depth: 1 }).catch(err => error("ur", err))
+async function uniqueReply(op, text, part, noSticky) {
+    let post = await op.expandReplies({ depth: 1 }).catch(err => error("ur", err))
     let found = false
 
-    for (let c of post.comments) {
-        if (c.banned_by || c.body === "[deleted]")
-            continue
+    if (post) {
+        for (let c of post.comments) {
+            if (c.banned_by || c.body === "[deleted]")
+                continue
 
-        if (part && c.body.startsWith(part) || c.body === text) {
-            found = true
-            // console.log("found comment:", c.body.slice(0, 16))
-            break
+            if (part && c.body.startsWith(part) || c.body === text) {
+                found = true
+                // console.log("found comment:", c.body.slice(0, 16))
+                break
+            }
         }
-    }
 
-    if (!found) {
-        // console.log("reply:", text.slice(0, 16), permaLinkHdr + post.permalink)
+        if (!found) {
+            // console.log("reply:", text.slice(0, 16), permaLinkHdr + post.permalink)
 
-        return post.reply(text)
-            .distinguish({
-                status: true,
-                sticky: noSticky ? false : true
-            }).lock().catch(err => error("ur1", err))
+            return op.reply(text)
+                .distinguish({
+                    status: true,
+                    sticky: noSticky ? false : true
+                }).lock().catch(err => error("ur1", err))
+        }
     }
 }
 
@@ -470,7 +479,7 @@ async function checkLimits(posts) {
     return Promise.all(p)
 }
 
-function checkFlair(posts, origFlair) {
+async function checkFlair(posts, origFlair) {
     let p = []
 
     for (let post of posts) {
@@ -489,7 +498,9 @@ function checkFlair(posts, origFlair) {
                         sticky: true
                     }).lock().catch(err => error(12, err)))
 
-                p.push(post.remove({ reason: "unrecognized flair" }).catch(err => error("12b", err)))
+                    await delay(7)
+
+                    p.push(post.remove({ reason: "unrecognized flair" }).catch(err => error("12b", err)))
             }
 
             continue
@@ -575,8 +586,9 @@ function checkFlair(posts, origFlair) {
                     sticky: true
                 }).catch(err => error(15, err)))
 
+            await delay(7)
+            
             p.push(post.remove({ reason: "missing " + reason }).catch(err => error("15a", err)))
-
         } else if ((post.mod_reports.find(a => a[1] === "Artemis-Bot")
             || post.banned_by && (post.banned_by.name === "nmsceBot" || post.banned_by.name === "AutoModerator"))) {
 
@@ -589,11 +601,12 @@ function checkFlair(posts, origFlair) {
     return Promise.all(p)
 }
 
-async function removeBotComments(post, message) {
+async function removeBotComments(op, message) {
     let p = []
 
-    post = await post.expandReplies({ depth: 1 }).catch(err => error("rm", err))
+    let post = await op.expandReplies({ depth: 1 }).catch(err => error("rm", err))
 
+    if (post)
     for (let comment of post.comments) {
         if ((comment.author.name === "nmsceBot" || comment.author.name === "AutoModerator")
             && (!message || comment.body.startsWith(message))) {
@@ -908,7 +921,7 @@ function sendCommentCmd(post, op) {
 function error(s, err) {
     console.log(new Date().toUTCString(), s ? s : "",
         typeof err.cause !== "undefined" ? err.cause.errno : "", err.name, err.message)
-    console.error(JSON.stringify(err))
+    //console.error(JSON.stringify(err))
 }
 
 function checkFullText(list, post) {

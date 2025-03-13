@@ -18,6 +18,8 @@ var flairPostLimit = []
 var anyPostLimit = {}
 var allPost = {}
 
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 main()
 async function main() {
     console.log("\napp restart", new Date().toUTCString())
@@ -32,10 +34,10 @@ async function main() {
     await loadSettings()
     getWeekly()
 
-    setInterval(() => getComments(), 37 * 1000)     // for watched comments
-    setInterval(() => getModqueue(), 17 * 1000)     // for moderator commands
-    setInterval(() => getNew(), 27 * 1000)          // post limits, etc.
-    setInterval(() => getContest(), 10 * 60 * 1000)  // update contest wiki
+    setInterval(() => getComments(), 57 * 1000)     // for watched comments
+    setInterval(() => getModqueue(), 13 * 1000)     // for moderator commands
+    setInterval(() => getNew(), 61 * 1000)          // post limits, etc.
+    setInterval(() => getContest(), 11 * 60 * 1000)  // update contest wiki
 }
 
 async function getContest() {
@@ -248,24 +250,29 @@ async function loadSettings(post) {
                 allPost.any = []
             }
         }
-    }))
+    }).catch(err => error(err, "wiki")))
+
+    await delay(7000)
 
     p.push(sub.getRules().then(r => {
         for (let x of r.rules)
             rules.push(x.description)
-    }))
+    }).catch(err => error(err, "rules")))
+
+    await delay(7000)
 
     p.push(sub.getModerators().then(m => {
         for (let x of m)
             mods.push(x.id)
-    }))
+    }).catch(err => error(err, "mod")))
 
-    await Promise.all(p)
-
-    console.log("reload settings")
-
-    if (typeof post !== "undefined")
-        return post.reply("!-All settings reloaded").catch(err => error(err, 4))
+    return Promise.all(p).then(async () => {
+        if (mods.length === 0 || rules.length === 0) {
+            console.log("retry load settings")
+            await delay(41000)
+            return loadSettings()
+        }
+    })
 }
 
 function updateSettings() {
@@ -315,38 +322,38 @@ async function checkPostLimits(posts, approve) {
         if (limit) {
             userHistory = allPost[limit.flair]
 
-            // this really only happens if someone edits the flair
-            if (typeof limit.contacts !== "undefined" && !limit.contacts.find(x => x.uid === post.author.name) && !commentedList.includes(post.id)) {
-                commentedList.push(post.id)
+            // // this really only happens if someone edits the flair
+            // if (typeof limit.contacts !== "undefined" && !limit.contacts.find(x => x.uid === post.author.name) && !commentedList.includes(post.id)) {
+            //     commentedList.push(post.id)
 
-                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo - 1] + "  \n\n" + botSig)
-                    .distinguish({
-                        status: true
-                    }).lock()
-                    .catch(err => error(err, 7)))
+            //     p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo - 1] + "  \n\n" + botSig)
+            //         .distinguish({
+            //             status: true
+            //         }).lock()
+            //         .catch(err => error(err, 7)))
 
-                p.push(post.remove().catch(err => error(err, 8)))
+            //     p.push(post.remove().catch(err => error(err, 8)))
 
-                console.log("Ad flair op not approved:", post.author.name, permaLinkHdr + post.permalink)
-                continue
-            }
+            //     console.log("Ad flair op not approved:", post.author.name, permaLinkHdr + post.permalink)
+            //     continue
+            // }
         }
         else {
-            if (!commentedList.includes(post.id) && (post.link_flair_template_id === "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" || post.link_flair_text === "Civ Advertisement")) {
-                commentedList.push(post.id)
+            // if (!commentedList.includes(post.id) && (post.link_flair_template_id === "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" || post.link_flair_text === "Civ Advertisement")) {
+            //     commentedList.push(post.id)
 
-                p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo - 1] + "  \n\n" + botSig)
-                    .distinguish({
-                        status: true
-                    }).lock()
-                    .catch(err => error(err, 9)))
+            //     p.push(post.reply(thankYou + removedPost + civFlair + rules[settings.adRuleNo - 1] + "  \n\n" + botSig)
+            //         .distinguish({
+            //             status: true
+            //         }).lock()
+            //         .catch(err => error(err, 9)))
 
-                p.push(post.remove().catch(err => error(err, 10)))
-                // p.push(post.report({ reason: "Flair needs editing" }).catch(err => error(err, 11)))
+            //     p.push(post.remove().catch(err => error(err, 10)))
+            //     // p.push(post.report({ reason: "Flair needs editing" }).catch(err => error(err, 11)))
 
-                console.log("Ad flair doesn't match:", post.link_flair_text, permaLinkHdr + post.permalink)
-                continue
-            }
+            //     console.log("Ad flair doesn't match:", post.link_flair_text, permaLinkHdr + post.permalink)
+            //     continue
+            // }
 
             // check here for post/comments for registered url with wrong flair and delete
 
