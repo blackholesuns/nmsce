@@ -6,7 +6,7 @@
    version="1.1"
    id="svg322"
    sodipodi:docname="nmsge_app_logo.svg"
-   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
    inkscape:export-filename="C:\Users\sp\Documents\webDevelopment\bhs-nmsce\public\images\nmsge_app_logo.png"
    inkscape:export-xdpi="150.51852"
    inkscape:export-ydpi="150.51852"
@@ -44,8 +44,8 @@
      id="namedview74"
      showgrid="false"
      inkscape:zoom="1.31529"
-     inkscape:cx="302.59487"
-     inkscape:cy="558.81213"
+     inkscape:cx="302.97501"
+     inkscape:cy="559.19227"
      inkscape:current-layer="layer2"
      inkscape:document-rotation="0"
      inkscape:showpageshadow="2"
@@ -126,7 +126,7 @@
     <text
        xml:space="preserve"
        id="text2006"
-       style="font-size:10.5833px;line-height:1.25;font-family:sans-serif;text-align:center;white-space:pre;shape-inside:url(#rect2008)" />
+       style="font-size:10.5833px;line-height:1.25;font-family:sans-serif;text-align:center;white-space:pre;shape-inside:url(#rect2008);display:inline" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -339,7 +339,10 @@
        inkscape:label="planets"
        style="display:inline">
       <g
-         id="g22572">
+         id="g22572"
+         inkscape:export-filename="nmsge-app-logo.ico"
+         inkscape:export-xdpi="16.265049"
+         inkscape:export-ydpi="16.265049">
         <circle
            style="display:inline;fill:#006ec1;fill-opacity:1;stroke:#333333;stroke-width:0.529167;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
            id="path27736-8-6-8"
@@ -350,7 +353,7 @@
            inkscape:export-ydpi="299.95422" />
         <text
            xml:space="preserve"
-           style="display:inline;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.4615px;line-height:1.25;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.390765"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.4615px;line-height:1.25;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.390765"
            id="text40970-7-6-4-6"
            inkscape:export-xdpi="16.265049"
            inkscape:export-ydpi="16.265049"
@@ -359,7 +362,7 @@
            inkscape:transform-center-x="36.621967"
            inkscape:transform-center-y="3.5947996"><tspan
              id="tspan40968-4-2-1-4"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.4615px;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.390765">GE</tspan></text>
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.4615px;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.390765">CE</tspan></text>
         <path
            id="path16378-3-8-0-7-2-6"
            style="display:inline;fill:#f9f9f9;fill-opacity:1;stroke-width:0.0201254"
@@ -591,7 +594,7 @@
        transform="translate(0,-9.387931)"><tspan
          x="-101.18264"
          y="38.0787"
-         id="tspan44027">Glyphs</tspan></text>
+         id="tspan1">Glyphs</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:10.5833px;line-height:1.25;font-family:sans-serif;text-align:center;text-anchor:middle;display:inline;stroke-width:0.264583"
