@@ -706,8 +706,8 @@ class NMSCE {
         $("#searchlocal").hide()
         $("#row-savesearch").show()
 
-         if (bhs.isPatreon(2))
-             $("#id-notifySearch").show()
+        if (bhs.isPatreon(2))
+            $("#id-notifySearch").show()
 
         this.getSearches()
     }
@@ -3212,7 +3212,7 @@ class NMSCE {
         if (name === "pirate") name = "Pirate Raider"
         if (name === "2 glyphs") name = "You only need the first 2 glyphs to get to this system."
 
-        loc.val(loc.val() + (loc.val().length === 0 || name === "," ? "" : " ") + name)
+        loc.val(loc.val() + (loc.val().length === 0 || name === "," ? "" : ", ") + name)
     }
 
     buildRedditTitleMenu() {
@@ -3560,7 +3560,8 @@ class NMSCE {
                         menusize: "col"
                     })
 
-                    let flair = nmsce.last.type.idToName() + '/' + nmsce.last.galaxy.idToName() +
+                    let n = nmsce.last.type.idToName() === "Ship" ? "Starship" : nmsce.last.type.idToName()
+                    let flair = n + '/' + nmsce.last.galaxy.idToName() +
                         (name === "Base" ? "/" + nmsce.last["Game-Mode"] : "")
 
                     bhs.setMenu($("#menu-Flair"), flair)
@@ -3664,7 +3665,10 @@ class NMSCE {
                                     if (nmsce.last.Tags["pirate"])
                                         comment += "This is pirate raider ship. To buy this ship go to any trading post and wait for a pirate raid. It may take more than 1 raid for it to spawn and land.  \n\n"
 
-                                    else if (nmsce.last.type === "Ship" && nmsce.last.Type !== "Interceptor" && nmsce.last.Type !== "Living Ship")
+                                    else if (nmsce.last.Type !== "Interceptor" && nmsce.last.Type !== "Living Ship")
+                                        comment += "Latitude & longitude should be displayed [here](" + plink + ").  \n\n"
+                                   
+                                    else if (nmsce.last.type === "Ship")
                                         comment += "Ships can be found at any landing pad in the system.  \n\n"
                                 }
 
@@ -5538,8 +5542,8 @@ const resultTables = [{
     //     limit: 20,
 }, {
     name: "Totals",
-// }, {
-//     name: "Patrons",
+    // }, {
+    //     name: "Patrons",
 },];
 
 const objectList = [{
