@@ -489,7 +489,7 @@ class NMSCE {
                             this.last.sys = e.sys
                             this.displaySys(this.last)
 
-                            if (entry)
+                            if (entry && e.sys)
                                 setDoc(snapshot.docs[0].ref, { sys: e.sys }, { merge: true })
                         }
                     })
@@ -502,7 +502,7 @@ class NMSCE {
                             this.last.Lifeform = e.Lifeform
                             setRadio($("#id-Lifeform"), e.Lifeform)
 
-                            if (entry)
+                            if (entry && e.Lifeform)
                                 setDoc(snapshot.docs[0].ref, { Lifeform: e.Lifeform }, { merge: true })
                         }
                     })
@@ -515,7 +515,7 @@ class NMSCE {
                             this.last.Economy = e.Economy
                             setRadio($("#id-Economy"), e.Economy)
 
-                            if (entry)
+                            if (entry && e.Economy)
                                 setDoc(snapshot.docs[0].ref, { Economy: e.Economy }, { merge: true })
                         }
                     })
@@ -538,7 +538,7 @@ class NMSCE {
                             this.last.reg = e.reg
                             this.displayReg(this.last)
 
-                            if (entry)
+                            if (entry && e.reg)
                                 setDoc(doc(bhs.fs, "nmsceCombined/" + entry.id), { reg: e.reg }, { merge: true })
                         }
                     })
@@ -3212,7 +3212,22 @@ class NMSCE {
         if (name === "pirate") name = "Pirate Raider"
         if (name === "2 glyphs") name = "You only need the first 2 glyphs to get to this system."
 
-        loc.val(loc.val() + (loc.val().length === 0 || name === "," ? "" : ", ") + name)
+        let text = loc.val()
+        if (!text)
+            text = name
+        else if (name === "&" || name === ",") {
+            let loc = text.search(/[&,]$/)
+            if (loc >= 0)
+                text = text.slice(0, loc - 1)
+            text += (name === "&" ? " " : "") + name
+        } else {
+            if (text.match(/[&,]$/))
+                text += " " + name
+            else
+                text += ", " + name
+        }
+
+        loc.val(text)
     }
 
     buildRedditTitleMenu() {
@@ -3667,7 +3682,7 @@ class NMSCE {
 
                                     else if (nmsce.last.Type !== "Interceptor" && nmsce.last.Type !== "Living Ship")
                                         comment += "Latitude & longitude should be displayed [here](" + plink + ").  \n\n"
-                                   
+
                                     else if (nmsce.last.type === "Ship")
                                         comment += "Ships can be found at any landing pad in the system.  \n\n"
                                 }
