@@ -256,6 +256,10 @@ export const versionList = [
         name: "worlds 2",
         version: 5.50,
         date: "1/29/2025"
+    }, {
+        name: "relics",
+        version: 5.60,
+        date: "3/26/2025"
     }
 ];
 
