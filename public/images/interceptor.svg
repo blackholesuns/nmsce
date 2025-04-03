@@ -47,8 +47,8 @@
    id="namedview7487"
    showgrid="false"
    inkscape:zoom="1.3981197"
-   inkscape:cx="213.85865"
-   inkscape:cy="491.0166"
+   inkscape:cx="213.85866"
+   inkscape:cy="491.01661"
    inkscape:current-layer="layer1"
    inkscape:document-rotation="0"
    units="px"
@@ -28307,14 +28307,14 @@
      id="bdr-h51"><title
        id="title9445">I-Wing Top</title><desc
        id="desc7124">{&quot;group&quot;:[11,17,30,50],
-&quot;okGroup&quot;:[12,19,24,33,53,58],
+&quot;okGroup&quot;:[12,19,24,33,53,58,62],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 210.14095,476.4525 51.40998,-1.67733 48.75076,4.18574 6.29326,-3.85214 1.22574,2.91079 -2.4582,9.68822 -39.0269,4.14757 -64.23993,-5.83149 z"
      id="bdr-h52"><title
        id="title9471">I-Fin Top</title><desc
        id="desc7126">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h51&quot;],
-&quot;group&quot;:[24,17,30,33],
+&quot;group&quot;:[24,17,30,33,70,62],
 &quot;okGroup&quot;:[11,12,24]}</desc></path><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h53"
@@ -28326,7 +28326,7 @@
        id="title18527">X-Wing Offset Top</title><desc
        id="desc7128">{&quot;requires&quot;:[&quot;h60&quot;],
 &quot;group&quot;:[18,17,50,51],
-&quot;okGroup&quot;:[60,57,58]}</desc></rect><rect
+&quot;okGroup&quot;:[60,57,58,23]}</desc></rect><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.525;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h54"
      width="64.745422"
@@ -28337,7 +28337,7 @@
        id="title9427">X-Wing Offset Bottom</title><desc
        id="desc7130">{&quot;requires&quot;:[&quot;h60&quot;],
 &quot;group&quot;:[17,18,51,50],
-&quot;okGroup&quot;:[60,57,58]}</desc></rect><path
+&quot;okGroup&quot;:[60,57,58,23]}</desc></rect><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 9.8704365,312.06959 -0.1378121,16.3668 113.7804956,18.02051 -0.10933,-13.68739 -21.65796,-24.34303 -17.975326,-3.425 -23.209733,-0.0832 -20.028759,10.4994 z"
      id="bdr-h40"><title
@@ -28378,16 +28378,16 @@
      d="m 143.91311,521.06136 0.2351,-12.20726 41.32269,-16.77735 37.32685,2.4038 30.65505,12.05631 63.70856,11.6889 0.52947,14.92972 -4.41726,7.2983 -74.07284,-7.26482 -59.21844,1.90368 -32.16665,-7.58901 z"
      id="bdr-h55"><title
        id="title9447">I-Wing Bottom</title><desc
-       id="desc7132">{&quot;group&quot;:[12,17,51],
-&quot;okGroup&quot;:[11,24,32,57,50,55],
+       id="desc7132">{&quot;group&quot;:[12,17,51,56],
+&quot;okGroup&quot;:[11,24,32,57,50,55,61,71],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 210.10168,543.31491 15.42301,-0.0935 34.23776,-0.83809 51.10699,5.78797 3.77896,-1.34033 4.68038,1.2017 -4.08368,8.79319 -38.48779,4.49424 -64.75651,-9.94708 z"
      id="bdr-h56"><title
        id="title9473">I-Fin Bottom</title><desc
        id="desc7134">{&quot;requires&quot;:[&quot;h55&quot;,&quot;h60&quot;],
-&quot;group&quot;:[24,17,34],
-&quot;okGroup&quot;:[11,12,24]}</desc></path><path
+&quot;group&quot;:[24,17,34,73],
+&quot;okGroup&quot;:[11,12,24,56,61,57,71]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 17.09907,638.90268 3.5381,-0.3767 7.48285,-4.43613 59.13902,-0.99774 7.90683,8.6558 -0.042,19.00457 -8.1862,7.08005 -55.80019,-5.53217 -13.16524,-8.61656 z"
      id="bdr-h63"><title
@@ -28408,7 +28408,7 @@
      inkscape:transform-center-y="-39.293249"><title
        id="title9443">X-Fin</title><desc
        id="desc7112">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h45&quot;],
-&quot;group&quot;:[17,23,40],
+&quot;group&quot;:[17,23,40,71],
 &quot;okGroup&quot;:[13,18,21,20,22,41,51,34]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 1.1288848,703.81976 -0.1155,-10.85781 31.8849202,-21.57506 58.43543,10.85816 16.307125,15.05589 -14.559775,24.31971 z"
@@ -28447,16 +28447,16 @@
      d="m 180.74056,605.52322 -13.74634,3.43073 -12.28573,17.60046 0.17477,5.39681 8.06751,11.96539 43.08838,5.57098 48.7614,-4.84899 61.84281,2.12025 0.67996,-15.09208 -57.55584,-8.94107 -42.15087,-12.70986 z"
      id="bdr-h58"><title
        id="title9451">I-Wing Closed Bottom</title><desc
-       id="desc7140">{&quot;group&quot;:[12,17,51],
-&quot;okGroup&quot;:[11,57,50,55],
+       id="desc7140">{&quot;group&quot;:[12,17,51,56],
+&quot;okGroup&quot;:[11,57,70,71,72,61],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 219.07326,563.11862 12.29575,3.66962 28.76487,7.21915 59.20043,11.98146 0.58465,8.49052 -6.37292,9.47142 -66.1072,-2.97507 -51.3776,2.0324 -30.89513,-1.71982 -7.77152,-10.83924 3.84789,-16.99199 9.17411,-7.65708 z"
      id="bdr-h57"
      sodipodi:nodetypes="ccccccccccccc"><title
        id="title9449">I-Wing Closed Top</title><desc
-       id="desc7138">{&quot;group&quot;:[11,17,50],
-&quot;okGroup&quot;:[12,19,53,58],
+       id="desc7138">{&quot;group&quot;:[11,17,50,56],
+&quot;okGroup&quot;:[12,19,53,58,73,62],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><rect
      style="clip-rule:evenodd;display:inline;opacity:1;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:0.524999;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      id="bdr-h1"
@@ -28648,7 +28648,7 @@
      id="bdr-h72"><title
        id="title45946">U-Wing Fin</title><desc
        id="desc9977-4">{&quot;requires&quot;:[&quot;h60&quot;,&quot;h24&quot;],
-&quot;group&quot;:[17,30,31,24,41],
+&quot;group&quot;:[17,30,31,24,41,72],
 &quot;okGroup&quot;:[11,12,34,40]}</desc></path><g
      id="g3"
      transform="translate(125.34144,-463.69504)"><g
@@ -28916,16 +28916,16 @@
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:42.0248px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1);display:inline;fill:none;stroke:#80007f"><tspan
        x="339.16992"
        y="655.24602"
-       id="tspan5"><tspan
+       id="tspan2"><tspan
          dx="0 24.911184 23.18751 17.380371 23.208038 18.057526 13.850952 20.499405 17.380371"
-         id="tspan4">Thrusters</tspan></tspan></text><text
+         id="tspan1">Thrusters</tspan></tspan></text><text
      xml:space="preserve"
      transform="matrix(0.2825892,0,0,0.2825892,162.62279,483.63829)"
      id="text2"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:42.0248px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2);display:inline;fill:#000000;fill-opacity:1;stroke:#80007f"><tspan
        x="373.9375"
        y="642.11126"
-       id="tspan6">Thrusters</tspan></text><path
+       id="tspan3">Thrusters</tspan></text><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#80007f;stroke-width:0.403439;stroke-dasharray:none;stroke-opacity:1"
      d="m 297.05849,706.8913 3.63664,2.69992 0.11005,17.52191 -2.03872,2.81014 -22.48092,0.551 -2.75502,-2.81014 c 0,0 0.22041,-11.57108 0.22041,-11.79146 0,-0.22041 2.20402,-1.76322 2.20402,-1.76322 z"
      id="bdr-h80"><desc

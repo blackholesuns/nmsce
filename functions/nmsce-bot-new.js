@@ -309,7 +309,7 @@ async function checkTitle(posts) {
                 let partsMatched = shipParts.filter(a => title.includes(a))
                 // console.log("part matches", partsMatched.length, permaLinkHdr + post.permalink)
 
-                if (userPosts.length >= 5 && partsMatched.length < 3 && !title.includes("squid"))
+                if (userPosts.length >= 5 && partsMatched.length < 2 && !title.includes("squid"))
                     text += "- Please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery.  \n"
 
                 if (title.match(/(trad(?:ers?|ing)\W?posts?)|station/ig))
