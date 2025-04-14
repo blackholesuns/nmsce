@@ -1,6 +1,13 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.3.1",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Replace fontawesome because it went behind a paywall with boxicons"
+        ]
+    },  {
         Version: "1.3.0",
         Title: " ",
         Authors: ["spip01"],
