@@ -14,7 +14,7 @@ async function main() {
         subreddit: 'NoMansSkyTheGame',
         since: 1672531200, // Jan 1 2023
         //since: 1704067200, // Jan 1 2024
-        until: 1704067200, //9999999999, // newest post
+        until: 9999999999, // newest post
         sort: 'created_utc',
         order: 'desc',
         agg_size: 25,
@@ -31,10 +31,10 @@ async function main() {
     })
 
     // run to get new token from the old.
-    // let response = await fetch("https://auth.pushshift.io/refresh?access_token="+pushshift.token, {method:'POST'})
-    // let res = await response.json() // { detail: 'Access token is still active and can not be refreshed.' }
-    // console.log(res)
-    // return
+    //  let response = await fetch("https://auth.pushshift.io/refresh?access_token="+pushshift.token, {method:'POST'})
+    //  let res = await response.json() // { detail: 'Access token is still active and can not be refreshed.' }
+    //  console.log(res)
+    //  return
 
     let posts = []
 
