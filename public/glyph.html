@@ -52,7 +52,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
 
-    <script src="https://kit.fontawesome.com/4c24999109.js" crossorigin="anonymous"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
@@ -113,7 +113,7 @@
                                 data-placement="bottom"
                                 title="Coordinatess can be entered without leading zeros or as a 16 digit number without separators.">
                                 Coords&nbsp;
-                                <i class="far fa-question-circle text-danger h6"></i>
+                                <i class="bx bx-help-circle text-danger h6"></i>
                             </div>
                             <input id="id-addr" class="rounded col-lg-7 col-md-8 col-sm-7 col-9 h6" maxength="19"
                                 placeholder="0000:0000:0000:0000" onchange="dispAddr(this)">
@@ -125,7 +125,7 @@
                             <div class="col-sm-4 col-5 txt-label-def" data-toggle="tooltip" data-html="true"
                                 data-placement="bottom" title="Planet number 0-15.<br>Defaults to 0.">
                                 Planet&nbsp;
-                                <i class="far fa-question-circle text-danger h6"></i>
+                                <i class="bx bx-help-circle text-danger h6"></i>
                             </div>
                             <input id="id-planet" class="rounded col-3 h6" type="number" value=0 min=0 max=15
                                 placeholder="0" onchange="dispAddr(this)">
@@ -150,7 +150,7 @@
                     <div class="col-md-2 col-4 txt-label-def" data-toggle="tooltip" data-html="true"
                         data-placement="bottom" title="Type hex digits into field or use buttons.">
                         Glyph&nbsp;
-                        <i class="far fa-question-circle text-danger h6"></i>
+                        <i class="bx bx-help-circle text-danger h6"></i>
                     </div>
                     <input id="id-glyph" class="col-lg-4 col-md-5 col-sm-6 col-14 rounded txt-glyph-disp" maxength="19"
                         onchange="dispGlyph(this)" placeholder="000000000000">&nbsp;
@@ -160,7 +160,7 @@
                     <div class="col-md-2 col-4 txt-label-def" data-toggle="tooltip" data-html="true"
                         data-placement="bottom" title="Load unmodified screenshot containing glyphs.">
                         Screenshot&nbsp;
-                        <i class="far fa-question-circle text-danger h6"></i>
+                        <i class="bx bx-help-circle text-danger h6"></i>
                     </div>
                     <input type="file" class="col-4 form-control form-control-sm" accept="image/*" name="files[]"
                         data-type="img" onchange="glyph.loadGlyphImage(this)">

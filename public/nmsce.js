@@ -158,7 +158,7 @@ const tSubList = `<div id="slist-idname" class="row pl-10" style="display:none">
 const tReq = `&nbsp;<font style="color:red">*</font>`
 const tText = `&nbsp;
     <span data-toggle="tooltip" data-html="true" data-placement="bottom" title="ttext">
-        <i class="far fa-question-circle text-danger h6"></i>
+        <i class="bx bx-help-circle text-danger h6"></i>
     </span>`
 const inpHdr = `<div class="col-lg-7 col-14" data-allowhide="ihide">`
 const inpLongHdr = `<div class="col-14" data-allowhide="ihide">`
@@ -167,7 +167,7 @@ const tString = `
     <div id="row-idname" data-type="string" data-req="ifreq" class="row">
         <div class="col-lg-6 col-4 txt-label-def">titlettip&nbsp;</div>
         <input id="id-idname" class="rounded col-lg-7 col-9">&nbsp;
-        <!--i class="fas fa-check text-success hidden"></i-->
+        <!--i class="bx bx-check text-success hidden"></i-->
     </div>`
 const tMap = `<div id="row-idname" class="" data-type="map"></div>`
 const tLongString = `
@@ -197,7 +197,7 @@ const tTags = `
             <div id="list-idname" class="row"></div>
         </div>
     </div>`
-const tTag = `<div id="tag-idname" class="border pointer txt-input-def" style="border-radius:8px; background-color:#d0d0d0" onclick="$(this).remove()">&nbsp;title&nbsp;<i class="far fa-times-circle" style="color:#ffffff;"></i>&nbsp;</div>&nbsp;`;
+const tTag = `<div id="tag-idname" class="border pointer txt-input-def" style="border-radius:8px; background-color:#d0d0d0" onclick="$(this).remove()">&nbsp;title&nbsp;<i class="bx bx-x-circle" style="color:#ffffff;"></i>&nbsp;</div>&nbsp;`;
 const tExact = `
     <label id="id-match" class="col-lg-3 col-sm-4 col-14 txt-label-def">
         Exact Match&nbsp
@@ -245,7 +245,7 @@ const resultsItem = `
                 date<br>
             </div>
             <div class="col-1">
-                <i id="favorite-idname" class="fas fa-thumbs-up h3" style="color:grey" onclick="nmsce.vote(this)"></i>
+                <i id="favorite-idname" class="bx bx-like h3" style="color:grey" onclick="nmsce.vote(this)"></i>
             </div>
         </div>
         <div class="pl-15 pr-5 row" style="min-height:20px" onclick="nmsce.selectResult(this)">
@@ -2460,7 +2460,7 @@ class NMSCE {
             <input id="ck-Text" type="checkbox" data-loc="#id-Text"
                 onchange="nmsce.getImageText(this, true)">
             Text&nbsp;
-            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="false"
+            <i class="bx bx-help-circle text-danger h6" data-toggle="tooltip" data-html="false"
                 data-placement="bottom" title="Use Line break, <br>, to separate multiple lines.">
             </i>&nbsp;
         </label>
@@ -2471,7 +2471,7 @@ class NMSCE {
             <input id="ck-myLogo" type="checkbox" data-loc="#id-myLogo" data-type="img"
                 onchange="nmsce.getImageText(this, true)">
             Load Overlay&nbsp;
-            <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="false"
+            <i class="bx bx-help-circle text-danger h6" data-toggle="tooltip" data-html="false"
                 data-placement="bottom"
                 title="Load a 2nd image as an overlay. You can resize and move the 2nd image."></i>&nbsp;
         </label>
@@ -4380,7 +4380,7 @@ class NMSCE {
     //                     <a href="https://www.patreon.com/bePatron?u=28538540" style="background-color:red; color:white; border-radius:12px">&nbsp;&nbsp;Become a Patron!&nbsp;&nbsp;</a>
     //                 </div>
     //                 <!--div class="col-5">You can also get patron benefits by entering data.&nbsp;
-    //                     <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+    //                     <i class="bx bx-help-circle text-danger h6" data-toggle="tooltip" data-html="true"
     //                         data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
     //                     </i>
     //                 </div-->
@@ -4439,15 +4439,15 @@ class NMSCE {
                                 </label>
                             </div-->
                             <!--div class="col-5">You can get patron benefits by entering data.&nbsp;
-                                <i class="far fa-question-circle text-danger h6" data-toggle="tooltip" data-html="true"
+                                <i class="bx bx-help-circle text-danger h6" data-toggle="tooltip" data-html="true"
                                     data-placement="top" title="T1 benefits for 25 items/month, T2-75 items, T3-150 items.">
                                 </i>
                             </div-->
                         </div>
                         <div class="row">
-                            <div id="id-name" class="col-sm-9 pointer" onclick="nmsce.sortTotals(this)">Player&nbsp;&nbsp;<i class="fas fa-sort-alpha-down"></i></div>
-                            <div id="id-total" class="col-sm-2 pointer" onclick="nmsce.sortTotals(this)">Overall&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div>
-                            <!--div id="id-monthly" class="col-sm-2 pointer" onclick="nmsce.sortTotals(this)">Monthly&nbsp;&nbsp;<i class="fas fa-sort-numeric-up"></i></div-->
+                            <div id="id-name" class="col-sm-9 pointer" onclick="nmsce.sortTotals(this)">Player&nbsp;&nbsp;<i class="bx bx-sort-down"></i></div>
+                            <div id="id-total" class="col-sm-2 pointer" onclick="nmsce.sortTotals(this)">Overall&nbsp;&nbsp;<i class="bx bx-sort-up"></i></div>
+                            <!--div id="id-monthly" class="col-sm-2 pointer" onclick="nmsce.sortTotals(this)">Monthly&nbsp;&nbsp;<i class="bx bx-sort-up"></i></div-->
                         </div>
                     </div>
                     <div id="userTotals" class="card-body scroll txt-black" style="height:600px"></div>
@@ -4470,7 +4470,7 @@ class NMSCE {
         const rows = `
         <div id="row-uid" name="ismod" class="border-bottom h6">
             <div class="row pointer" onclick="nmsce.expandTotals(this)">
-                <div id="id-name" class="col-8"><i class="far fa-caret-square-down txt-input"></i> nameS</div>
+                <div id="id-name" class="col-8"><i class="bx bx-caret-down-square txt-input"></i> nameS</div>
                 <div id="id-total" class="col-sm-2 txt-right">totalT</div>
                 <!--div id="id-monthly" class="col-sm-2 txt-right">monthlyT</div-->
             </div>
@@ -4592,12 +4592,12 @@ class NMSCE {
 
     expandTotals(evt) {
         let loc = $(evt).parent()
-        let exp = loc.find(".fa-caret-square-down")
+        let exp = loc.find(".bx-caret-down-square")
         if (exp.length > 0) {
-            exp.removeClass("fa-caret-square-down").addClass("fa-caret-square-up")
+            exp.removeClass("bx-caret-down-square").addClass("bx-caret-up-square")
             loc.find("#id-exp").show()
         } else {
-            loc.find(".fa-caret-square-up").removeClass("fa-caret-square-up").addClass("fa-caret-square-down")
+            loc.find(".bx-caret-up-square").removeClass("bx-caret-up-square").addClass("bx-caret-down-square")
             loc.find("#id-exp").hide()
         }
     }
@@ -4984,12 +4984,12 @@ class NMSCE {
     showVotes(entry) {
         const shvote = function (loc, tf) {
             if (tf) {
-                loc.removeClass("fa-square")
-                loc.addClass("fa-check-square")
+                loc.removeClass("bx-square")
+                loc.addClass("bx-check-square")
                 loc.css("color", "#00c000")
             } else {
-                loc.removeClass("fa-check-square")
-                loc.addClass("fa-square")
+                loc.removeClass("bx-check-square")
+                loc.addClass("bx-square")
                 loc.css("color", "grey")
             }
         }
@@ -5336,14 +5336,14 @@ class NMSCE {
     }
 
     toggleSearch(evt) {
-        if ($(evt).find(".fa-caret-square-down").is(":visible")) {
+        if ($(evt).find(".bx-caret-down-square").is(":visible")) {
             $("#searchPanel").show()
-            $(evt).find(".fa-caret-square-up").show()
-            $(evt).find(".fa-caret-square-down").hide()
+            $(evt).find(".bx-caret-up-square").show()
+            $(evt).find(".bx-caret-down-square").hide()
         } else {
             $("#searchPanel").hide()
-            $(evt).find(".fa-caret-square-up").hide()
-            $(evt).find(".fa-caret-square-down").show()
+            $(evt).find(".bx-caret-up-square").hide()
+            $(evt).find(".bx-caret-down-square").show()
         }
     }
 
@@ -5474,7 +5474,7 @@ function getPlanet(evt) {
     let planet = $(evt.target ? evt.target : evt).val()
 
     if (gal === "" || addr === "" || planet <= 0) {
-        $("[id='row-Planet-Name'] .fa-check").hide()
+        $("[id='row-Planet-Name'] .bx-check").hide()
         return
     }
 
@@ -5490,11 +5490,11 @@ function getPlanet(evt) {
 
             if (e["Planet-Name"] && e["Planet-Name"] !== "") {
                 $("[id='id-Planet-Name']").val(e["Planet-Name"])
-                $("[id='row-Planet-Name'] .fa-check").show()
+                $("[id='row-Planet-Name'] .bx-check").show()
                 nmsce.restoreImageText(null, true)
             }
         } else
-            $("[id='row-Planet-Name'] .fa-check").hide()
+            $("[id='row-Planet-Name'] .bx-check").hide()
     })
 }
 
@@ -5514,7 +5514,7 @@ function getEntry() {
         getDocs(q).then(snapshot => {
             if (!snapshot.empty) {
                 nmsce.displaySingle(snapshot.docs[0].data(), true)
-                $("#typePanels .active #row-Name .fa-check").show()
+                $("#typePanels .active #row-Name .bx-check").show()
             }
         })
     }
