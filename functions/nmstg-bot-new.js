@@ -33,9 +33,6 @@ async function main() {
 
     await loadSettings()
 
-getContest()
-return
-
     getWeekly()
 
     setInterval(() => getComments(), 57 * 1000)     // for watched comments
@@ -45,7 +42,7 @@ return
 }
 
 async function getContest() {
-console.log(settings.contest)
+
     for (let contest of settings.contest)
         if (contest.active) {
             let posts = await sub.search({
@@ -54,7 +51,7 @@ console.log(settings.contest)
                 limit: 1000,
                 sort: "new"
             })
-console.log(posts.length)
+
             if (posts.length > 0)
                 checkContest(posts, contest)
 
