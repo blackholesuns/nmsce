@@ -32,6 +32,10 @@ async function main() {
     sub = await reddit.getSubreddit('NoMansSkyTheGame')
 
     await loadSettings()
+
+getContest()
+return
+
     getWeekly()
 
     setInterval(() => getComments(), 57 * 1000)     // for watched comments
@@ -41,8 +45,7 @@ async function main() {
 }
 
 async function getContest() {
-    let start = new Date()
-
+console.log(settings.contest)
     for (let contest of settings.contest)
         if (contest.active) {
             let posts = await sub.search({
@@ -51,7 +54,7 @@ async function getContest() {
                 limit: 1000,
                 sort: "new"
             })
-
+console.log(posts.length)
             if (posts.length > 0)
                 checkContest(posts, contest)
 
@@ -217,7 +220,7 @@ async function loadSettings(post) {
         for (let e of settings.contest) {
             if (e.flair) {
                 let start = Date.parse(e.start).valueOf() + e.tz * 60 * 60 * 1000
-                let end = start + e.end * 24 * 60 * 60 * 1000 + e.tz * 60 * 60 * 1000
+                let end = Date.parse(e.end).valueOf() + e.tz * 60 * 60 * 1000
 
                 e.endUTC = new Date(end).toUTCString()
                 e.active = now > start && now < end
@@ -876,9 +879,9 @@ function setupContest(post, op) {
             let l = o.split(":")
             console.log(l)
 
-            if (l[0].match(/(end|tz|limit)/))
+            if (l[0].match(/(tz|limit)/))
                 contest[l[0]] = parseInt(l[1])
-            else if (l[0].match(/(type|start)/))
+            else if (l[0].match(/(type|start|end)/))
                 contest[l[0]] = l[1]
             else if (l[0] === "comment")
                 contest[l[0]] = l[1] === "true"
@@ -909,8 +912,7 @@ async function listContest(post, op) {
     let text = "!Current Contest  \n"
 
     let contest = await settings.contest.filter(x => {
-        let start = new Date(x.start).valueOf()
-        let end = start + x.end * 1000 * 60 * 60 * 24
+        let end = new Date(x.end).valueOf()
 
         return today < end
     })
