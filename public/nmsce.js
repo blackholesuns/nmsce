@@ -1687,9 +1687,9 @@ class NMSCE {
 
         let ref = query(collection(bhs.fs, "nmsceCombined"),
             where("galaxy", "==", this.last.galaxy),
-            where("x", "==", xyz.x),
-            where("y", "==", xyz.y),
-            where("z", "==", xyz.z))
+            where("xyzs.x", "==", xyz.x),
+            where("xyzs.y", "==", xyz.y),
+            where("xyzs.z", "==", xyz.z))
 
         getDocs(ref).then(snapshot => {
             let list = []
