@@ -1678,6 +1678,12 @@ class NMSCE {
         })
     }
 
+    searchNMSTG() {
+        this.last.galaxy = "Euclid"
+        this.last.addr = reformatAddress("03FC01DDF571")
+        this.searchRegion()
+    }
+
     searchRegion() {
         if (!this.last)
             return
