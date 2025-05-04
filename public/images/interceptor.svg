@@ -48,7 +48,7 @@
    showgrid="false"
    inkscape:zoom="1.3981197"
    inkscape:cx="213.85866"
-   inkscape:cy="491.01661"
+   inkscape:cy="605.45603"
    inkscape:current-layer="layer1"
    inkscape:document-rotation="0"
    units="px"
@@ -28448,7 +28448,7 @@
      id="bdr-h58"><title
        id="title9451">I-Wing Closed Bottom</title><desc
        id="desc7140">{&quot;group&quot;:[12,17,51,56],
-&quot;okGroup&quot;:[11,57,70,71,72,61],
+&quot;okGroup&quot;:[11,57,70,71,72,55],
 &quot;requires&quot;:[&quot;h60&quot;]}</desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
      d="m 219.07326,563.11862 12.29575,3.66962 28.76487,7.21915 59.20043,11.98146 0.58465,8.49052 -6.37292,9.47142 -66.1072,-2.97507 -51.3776,2.0324 -30.89513,-1.71982 -7.77152,-10.83924 3.84789,-16.99199 9.17411,-7.65708 z"
@@ -28837,7 +28837,7 @@
      d="m 19.087533,217.35906 -17.1294639,35.01223 3.1705227,7.3425 66.5809812,-36.04504 -7.008523,-7.34251 0.166865,-8.84438 z"
      id="bdr-h30"><title
        id="title9415">Wedge</title><desc
-       id="desc7094">{&quot;requires&quot;:[&quot;h34&quot;,&quot;h60&quot;,&quot;h31&quot;],
+       id="desc7094">{&quot;requires&quot;:[&quot;h34&quot;,&quot;h60&quot;,&quot;h31&quot;,&quot;h33&quot;],
 &quot;group&quot;:[4,8,9]}
 </desc></path><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#0000ff;stroke-width:1.05;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.532872"
@@ -28916,16 +28916,16 @@
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:42.0248px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1);display:inline;fill:none;stroke:#80007f"><tspan
        x="339.16992"
        y="655.24602"
-       id="tspan2"><tspan
+       id="tspan5"><tspan
          dx="0 24.911184 23.18751 17.380371 23.208038 18.057526 13.850952 20.499405 17.380371"
-         id="tspan1">Thrusters</tspan></tspan></text><text
+         id="tspan4">Thrusters</tspan></tspan></text><text
      xml:space="preserve"
      transform="matrix(0.2825892,0,0,0.2825892,162.62279,483.63829)"
      id="text2"
      style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:42.0248px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';text-align:start;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect2);display:inline;fill:#000000;fill-opacity:1;stroke:#80007f"><tspan
        x="373.9375"
        y="642.11126"
-       id="tspan3">Thrusters</tspan></text><path
+       id="tspan6">Thrusters</tspan></text><path
      style="clip-rule:evenodd;display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#80007f;stroke-width:0.403439;stroke-dasharray:none;stroke-opacity:1"
      d="m 297.05849,706.8913 3.63664,2.69992 0.11005,17.52191 -2.03872,2.81014 -22.48092,0.551 -2.75502,-2.81014 c 0,0 0.22041,-11.57108 0.22041,-11.79146 0,-0.22041 2.20402,-1.76322 2.20402,-1.76322 z"
      id="bdr-h80"><desc
@@ -28954,7 +28954,7 @@
      d="m 288.14909,732.75612 0.40973,16.1161 27.452,0.27315 -0.54631,-16.1161 z"
      id="bdr-h88"><desc
        id="desc4">{&quot;group&quot;:[14,51,55,63],
-&quot;okGroup&quot;:[12,13,50]}</desc><title
+&quot;okGroup&quot;:[12,13,50,51]}</desc><title
        id="title24">I-Wing Bottom Thruster</title></path><path
      style="fill:#000000;fill-opacity:0;stroke:#80007f;stroke-width:0.6;stroke-dasharray:none"
      d="m 267.34251,730.75434 18.16475,0.68289 0.68289,24.72045 -18.84764,-0.13658 z"
