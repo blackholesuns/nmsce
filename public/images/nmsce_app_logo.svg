@@ -5,11 +5,11 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg322"
-   sodipodi:docname="nmsge_app_logo.svg"
+   sodipodi:docname="nmsce_app_logo.svg"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
-   inkscape:export-filename="nmsce_app_logo.png"
-   inkscape:export-xdpi="150.51852"
-   inkscape:export-ydpi="150.51852"
+   inkscape:export-filename="nmsce-app-logo.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -44,9 +44,9 @@
      id="namedview74"
      showgrid="false"
      inkscape:zoom="0.93005048"
-     inkscape:cx="298.90851"
+     inkscape:cx="415.03124"
      inkscape:cy="603.73067"
-     inkscape:current-layer="svg322"
+     inkscape:current-layer="layer7"
      inkscape:document-rotation="0"
      inkscape:showpageshadow="2"
      inkscape:pagecheckerboard="0"
@@ -142,14 +142,15 @@
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300"
        inkscape:export-filename="nmsce_app_logo.png" />
-    <circle
+    <ellipse
        style="display:inline;fill:none;stroke:#ffffff;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path63430-8-4"
        cx="105"
        cy="148.5"
-       r="56.691132"
        inkscape:export-xdpi="299.95422"
-       inkscape:export-ydpi="299.95422" />
+       inkscape:export-ydpi="299.95422"
+       rx="56.691002"
+       ry="56.691132" />
     <g
        inkscape:groupmode="layer"
        id="layer1"
@@ -271,11 +272,6 @@
     </g>
     <g
        inkscape:groupmode="layer"
-       id="layer4"
-       inkscape:label="GE"
-       style="display:none" />
-    <g
-       inkscape:groupmode="layer"
        id="layer10"
        inkscape:label="ship"
        style="display:inline" />
@@ -291,7 +287,8 @@
          cy="148.5"
          r="49.7076"
          inkscape:export-xdpi="299.95422"
-         inkscape:export-ydpi="299.95422" />
+         inkscape:export-ydpi="299.95422"
+         inkscape:export-filename="nmsce.png" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.4615px;line-height:1.25;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:none;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.390765"
@@ -516,6 +513,23 @@
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.3796px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.326958"
            x="60.542877"
            y="142.33453">COORDINATE</tspan></text>
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer4"
+       inkscape:label="CE"
+       style="display:none">
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:19.2332px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#ffffff;stroke:#0000ff;stroke-width:0.228203;stroke-opacity:0.533333"
+         x="68.445107"
+         y="146.53769"
+         id="text1"><tspan
+           sodipodi:role="line"
+           id="tspan1"
+           style="stroke-width:0.228203"
+           x="68.445107"
+           y="146.53769">NMSCE</tspan></text>
     </g>
   </g>
   <g
