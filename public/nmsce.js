@@ -5391,8 +5391,8 @@ const mapColors = {
 }
 
 const clientIds = {
-    nmsge: "8oDpVp9JDDN7ng",
-    nmsce: "9Ukymj_MbqxWglSLm0kQqw",
+    nmsce: "8oDpVp9JDDN7ng",
+    nmsge: "9Ukymj_MbqxWglSLm0kQqw",
     alpha: "8DNnTDRJMlG9ZecGVV44Ew",
     local: "vCekWEy1EPnRIy2zpu3EeA"
 }
