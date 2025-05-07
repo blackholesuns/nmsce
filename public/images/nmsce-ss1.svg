@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
-   sodipodi:docname="drawing.svg"
+   sodipodi:docname="nmsce-ss1.svg"
    xml:space="preserve"
    inkscape:export-filename="nmsce-ss1.png"
    inkscape:export-xdpi="25.4"
@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="0.054957295"
-     inkscape:cx="1637.6352"
-     inkscape:cy="3648.2873"
+     inkscape:zoom="0.077721352"
+     inkscape:cx="1730.5412"
+     inkscape:cy="4857.0951"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" /><defs
+     inkscape:current-layer="layer3" /><defs
      id="defs1"><linearGradient
        id="linearGradient13"
        inkscape:collect="always"><stop
@@ -379,7 +379,7 @@
          id="tspan3"
          style="font-size:52.9167px;text-align:start;text-anchor:start;fill:url(#linearGradient12);fill-opacity:1;stroke-width:0.383154"
          x="348.81763"
-         y="312.92438">No Man's Sky Coordinates Exchange</tspan></text><text
+         y="312.92438">No Man's Sky Coordinate Exchange</tspan></text><text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:88.1944px;font-family:'NMS GeoSans';-inkscape-font-specification:'NMS GeoSans';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:1;fill:url(#linearGradient14);fill-opacity:1;stroke:none;stroke-width:0.273;stroke-dasharray:none;stroke-opacity:1"
        x="515.85345"
