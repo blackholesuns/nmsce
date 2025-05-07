@@ -2834,7 +2834,7 @@ class NMSCE {
     }
 
     onLoadLogo(evt) {
-        let text = evt.currentTarget.src.includes("nmsce-app-logo") ? this.imageText.logo : this.imageText.myLogo
+        let text = evt.currentTarget.src.includes("nmsce-app-logo-abrev") ? this.imageText.logo : this.imageText.myLogo
         let img = text.img = evt.currentTarget
 
         let scale = text.right ? Math.min(text.right / img.naturalWidth, text.decent / img.naturalHeight) : 0.1

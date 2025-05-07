@@ -1,20 +1,27 @@
 /** @type {{Version: string, Title: string, Authors: string[], Changes: string[]}[]} */
 export const ChangeLog = [
     {
+        Version: "1.3.2",
+        Title: " ",
+        Authors: ["spip01"],
+        Changes: [
+            "Rebrand to NMS Coordinate Exchange"
+        ]
+    }, {
         Version: "1.3.1",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Replace fontawesome because it went behind a paywall with boxicons"
         ]
-    },  {
+    }, {
         Version: "1.3.0",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Add interceptor thruster selection"
         ]
-    },   {
+    }, {
         Version: "1.2.9",
         Title: " ",
         Authors: ["spip01"],
@@ -53,14 +60,14 @@ export const ChangeLog = [
         Changes: [
             "Add build menu to help create Reddit post titles."
         ]
-    },{
+    }, {
         Version: "1.2.4",
         Title: " ",
         Authors: ["spip01"],
         Changes: [
             "Update to firebase 9.23.0. Add count of items found for search."
         ]
-    },{
+    }, {
         Version: "1.2.3",
         Title: " ",
         Authors: ["spip01"],
