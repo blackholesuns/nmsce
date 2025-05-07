@@ -7,7 +7,7 @@
    id="svg322"
    sodipodi:docname="nmsce_app_logo.svg"
    inkscape:version="1.4 (86a8ad7, 2024-10-11)"
-   inkscape:export-filename="nmsce-app-logo.png"
+   inkscape:export-filename="nmsce-app-logo-abrev.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -44,7 +44,7 @@
      id="namedview74"
      showgrid="false"
      inkscape:zoom="0.93005048"
-     inkscape:cx="415.03124"
+     inkscape:cx="367.72198"
      inkscape:cy="603.73067"
      inkscape:current-layer="layer7"
      inkscape:document-rotation="0"
@@ -141,7 +141,7 @@
        r="65.059471"
        inkscape:export-xdpi="300"
        inkscape:export-ydpi="300"
-       inkscape:export-filename="nmsce_app_logo.png" />
+       inkscape:export-filename="nmsce-app-logo-abrev.png" />
     <ellipse
        style="display:inline;fill:none;stroke:#ffffff;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path63430-8-4"
@@ -251,25 +251,6 @@
      id="layer3"
      inkscape:label="Center"
      style="display:inline">
-    <g
-       inkscape:groupmode="layer"
-       id="layer5"
-       inkscape:label="NMSGE"
-       style="display:none">
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.1667px;line-height:1.25;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:none;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.349866"
-         id="text40970-7-6-4"
-         inkscape:export-xdpi="15.465602"
-         inkscape:export-ydpi="15.465602"
-         x="135.58163"
-         y="-14.885818"
-         transform="translate(171.5149,46.46789)"><textPath
-           xlink:href="#path940"
-           id="textPath942"><tspan
-             id="tspan40968-4-2-1"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.1667px;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.349866">NMSGE</tspan></textPath></text>
-    </g>
     <g
        inkscape:groupmode="layer"
        id="layer10"
@@ -471,12 +452,18 @@
          r="0.93567252"
          inkscape:export-xdpi="299.95422"
          inkscape:export-ydpi="299.95422" />
+      <path
+         id="path16378-3-8-9-7-0"
+         style="display:inline;fill:#f9f9f9;fill-opacity:1;stroke-width:0.0154986"
+         d="m 98.058573,151.64673 c -0.13308,0.005 -0.46083,-1.80214 -1.08618,-2.43265 -0.49005,-0.4941 -1.89334,-0.73373 -1.89924,-0.86681 -0.006,-0.13308 1.36914,-0.53897 1.81271,-1.08617 0.55921,-0.68986 0.73372,-2.5133 0.8668,-2.5192 0.13307,-0.005 0.46082,1.80216 1.08617,2.43267 0.49005,0.4941 1.893337,0.73372 1.899237,0.8668 0.006,0.13308 -1.369137,0.53897 -1.812707,1.08617 -0.55921,0.68987 -0.73372,2.5133 -0.86679,2.51919 z"
+         inkscape:export-xdpi="299.95422"
+         inkscape:export-ydpi="299.95422" />
     </g>
     <g
        inkscape:groupmode="layer"
        id="layer9"
        inkscape:label="NMS Glyph Exchange"
-       style="display:inline">
+       style="display:none">
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.3796px;line-height:1.25;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.349554"
@@ -513,6 +500,25 @@
            style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:13.3796px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.326958"
            x="60.542877"
            y="142.33453">COORDINATE</tspan></text>
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer5"
+       inkscape:label="NMSGE"
+       style="display:inline">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.1667px;line-height:1.25;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.349866"
+         id="text40970-7-6-4"
+         inkscape:export-xdpi="15.465602"
+         inkscape:export-ydpi="15.465602"
+         x="135.58163"
+         y="-14.885818"
+         transform="rotate(3.2851767,-775.80715,3122.1398)"><textPath
+           xlink:href="#path940"
+           id="textPath942"><tspan
+             id="tspan40968-4-2-1"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.1667px;font-family:'Arial Black';-inkscape-font-specification:'Arial Black, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke-width:0.349866">NMSCE</tspan></textPath></text>
     </g>
     <g
        inkscape:groupmode="layer"
