@@ -5484,6 +5484,8 @@ function getPlanet(evt) {
         return
     }
 
+    $("[id='id-Planet-Index']").val(planet)
+
     let q = query(collection(bhs.fs, "nmsceCombined"),
         where("galaxy", "==", gal),
         where("addr", "==", addr),
