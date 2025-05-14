@@ -2676,7 +2676,8 @@ class NMSCE {
                 loc = loc.find(data.row)
 
             if (data.sub) {
-                let btn = loc.find("[id|='menu']").text().stripMarginWS()
+                let btn = loc.find("[id|='menu']")
+                btn = bhs.getMenu(btn)
                 loc = $(data.loc).find("#slist-" + btn)
                 loc = loc.find(data.sub)
             }
