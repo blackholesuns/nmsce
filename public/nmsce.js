@@ -3687,10 +3687,12 @@ class NMSCE {
                                     if (nmsce.last.Tags["pirate"])
                                         comment += "This is pirate raider ship. To buy this ship go to any trading post and wait for a pirate raid. It may take more than 1 raid for it to spawn and land.  \n\n"
 
-                                    else if (nmsce.last.Type === "Interceptor" || nmsce.last.Type === "Living" || nmsce.last.Crashed)
-                                        comment += "[This link](" + plink + ") contains any specific latitude & longitude information required for a crashed ship.  Make sure you have multiplayer disabled before entering system.  \n\n"
-
-                                    else if (nmsce.last.type === "Ship")
+                                    else if (nmsce.last.Type === "Interceptor" || nmsce.last.Type === "Living" || nmsce.last.Crashed) {
+                                          if (nmsce.last.Type === "Living")
+                                            comment += "To get this living ship go near the specified latitude/longitude and reset the mission. If a normal ship spawns instead of the living ship then you need to reload the game.  "
+                                      
+                                          comment += "[This link](" + plink + ") contains any specific latitude & longitude information required for a crashed ship.  Make sure you have multiplayer disabled before entering system.  \n\n"
+                                    }else if (nmsce.last.type === "Ship")
                                         comment += "Ships can be found at any landing pad in the system.  \n\n"
                                 }
 
