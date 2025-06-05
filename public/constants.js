@@ -260,6 +260,10 @@ export const versionList = [
         name: "relics",
         version: 5.60,
         date: "3/26/2025"
+    }, {
+        name: "beacon",
+        version: 5.70,
+        date: "6/4/2025"
     }
 ];
 

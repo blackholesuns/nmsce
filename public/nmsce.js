@@ -2666,6 +2666,11 @@ class NMSCE {
         let id = $(evt).attr("id").stripID()
         let ck = $(evt).prop("checked")
 
+        if (!$(evt).is(":checkbox")) {
+            evt = $(evt).parent().find("#ck-"+id)
+            ck = $(evt).prop("checked")
+        }
+
         if (ck) {
             let text = ""
             let data = $(evt).data()
