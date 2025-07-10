@@ -409,9 +409,9 @@ async function checkLimits(posts) {
     let oldest = now - 24 * 60 * 60
 
     let limits = [
-        { time: 60 * 60, limit: 2, str: "hour" },               // hour first so a post removed for hourly limit
-        { time: 24 * 60 * 60, limit: 2, str: "day", flair: rrdFlair },
-        { time: 24 * 60 * 60, limit: 10, str: "day" },          //     won't count against the daily limit
+        { time: 60 * 60, limit: 3, str: "hour" },               // hour first so a post removed for hourly limit
+        { time: 24 * 60 * 60, limit: 3, str: "day", flair: rrdFlair },
+        { time: 24 * 60 * 60, limit: 12, str: "day" },          //     won't count against the daily limit
     ]
 
     posts = posts.sort((a, b) => a.author.name >= b.author.name ? 1 : -1)
