@@ -110,6 +110,7 @@ async function getMessages() {
 
                     p.push(checkFlair([op], flair))
                     p.push(c.remove().catch(err => error("gm5", err)))
+                    p.push(checkLimits(op))
                 }
         }
 
