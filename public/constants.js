@@ -264,6 +264,10 @@ export const versionList = [
         name: "beacon",
         version: 5.70,
         date: "6/4/2025"
+    }, {
+        name: "voyagers",
+        version: 6.00,
+        date: "8/27/2025"
     }
 ];
 

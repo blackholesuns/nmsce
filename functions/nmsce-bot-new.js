@@ -575,7 +575,7 @@ async function checkFlair(posts, origFlair) {
             else if (reason.includes("mode"))
                 text = text.replace(/\[example\]/, '"Permadeath". Game mode is "Permadeath" or "Normal".')
             else
-                text = text.replace(/\[example\]/, "Eissemtam") + noGal
+                text = text.replace(/\[example\]/, "Eissentam") + noGal
 
             text += 'For future posts you can include required information in the title and the bot will automatically update the flair.' + botSig
 
