@@ -100,18 +100,20 @@ async function getMessages() {
         let p = []
 
         for (let c of comments) {
-            let parent = await reddit.getComment(c.parent_id).fetch().catch(err => error(err, "gm2"))
-            let op = await reddit.getSubmission(parent.link_id).fetch().catch(err => error(err, "gm1"))
+            if (c.parent_id) { // i.e. not a pm
+                let parent = await reddit.getComment(c.parent_id).fetch().catch(err => error(err, "gm2"))
+                let op = await reddit.getSubmission(parent.link_id).fetch().catch(err => error(err, "gm1"))
 
-            if (parent && op && (op.author_fullname === c.author_fullname || modList.includes(c.author_fullname)))
-                if (parent.body.startsWith("##What")) {
-                    let flair = op.link_flair_text
-                    op.link_flair_text += " " + c.body
+                if (parent && op && (op.author_fullname === c.author_fullname || modList.includes(c.author_fullname)))
+                    if (parent.body.startsWith("##What")) {
+                        let flair = op.link_flair_text
+                        op.link_flair_text += " " + c.body
 
-                    p.push(checkFlair([op], flair))
-                    p.push(c.remove().catch(err => error(err, "gm5")))
-                    p.push(checkLimits([op]))
-                }
+                        p.push(checkFlair([op], flair))
+                        p.push(c.remove().catch(err => error(err, "gm5")))
+                        p.push(checkLimits([op]))
+                    }
+            }
         }
 
         return Promise.all(p)
@@ -567,7 +569,7 @@ async function checkFlair(posts, origFlair) {
 
         if (reason) {
             const editFlair = '##What [is/are] the [missing]?  \n---\n######Please, reply to this comment with the [missing] to have the bot rewrite the flair and approve the post, e.g. [example] '
-            const noGal = 'If everything is included and you still received this message please double check the galaxy spelling.'
+            const noGal = 'If everything is included and you still received this message please double check the galaxy spelling. Do not reply with anything other than the galaxy name.'
 
             let text = editFlair.replace(/\[is\/are\]/g, reason.includes("&") ? "are" : "is")
             text = text.replace(/\[missing\]/g, reason)
