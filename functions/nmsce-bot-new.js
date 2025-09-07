@@ -64,7 +64,7 @@ async function enableFlair() {
                             allowable_content: "text",
                             background_color: "#ffff80"
                         }
-                    }).then(() => console.log("enable " + rrdFlair)).catch(err => error("ef0", err)))
+                    }).then(() => console.log("enable " + rrdFlair)).catch(err => error(err, "ef0")))
                 }
 
                 break
@@ -86,7 +86,7 @@ async function enableFlair() {
                             allowable_content: "text",
                             background_color: "#ffff80"
                         }
-                    }).then(() => console.log("disable " + rrdFlair)).catch(err => error("ef0", err)))
+                    }).then(() => console.log("disable " + rrdFlair)).catch(err => error(err, "ef0")))
                 }
 
                 break
@@ -100,8 +100,8 @@ async function getMessages() {
         let p = []
 
         for (let c of comments) {
-            let parent = await reddit.getComment(c.parent_id).fetch().catch(err => error("gm2", err))
-            let op = await reddit.getSubmission(parent.link_id).fetch().catch(err => error("gm1", err))
+            let parent = await reddit.getComment(c.parent_id).fetch().catch(err => error(err, "gm2"))
+            let op = await reddit.getSubmission(parent.link_id).fetch().catch(err => error(err, "gm1"))
 
             if (parent && op && (op.author_fullname === c.author_fullname || modList.includes(c.author_fullname)))
                 if (parent.body.startsWith("##What")) {
@@ -109,13 +109,13 @@ async function getMessages() {
                     op.link_flair_text += " " + c.body
 
                     p.push(checkFlair([op], flair))
-                    p.push(c.remove().catch(err => error("gm5", err)))
+                    p.push(c.remove().catch(err => error(err, "gm5")))
                     p.push(checkLimits([op]))
                 }
         }
 
         return Promise.all(p)
-    }).catch(err => error("GM", err))
+    }).catch(err => error(err, "GM"))
 }
 
 async function loadSettings() {
@@ -143,7 +143,7 @@ async function loadSettings() {
                 f.name = f.flair_text
                 flairList.push(f)
             }
-    }).catch(err => error("ls0", err)))
+    }).catch(err => error(err, "ls0")))
 
     await delay(3000)
 
@@ -159,7 +159,7 @@ async function loadSettings() {
                 else
                     f.award = true
         }
-    }).catch(err => error("ls1", err)))
+    }).catch(err => error(err, "ls1")))
 
     await delay(3000)
 
@@ -168,7 +168,7 @@ async function loadSettings() {
 
         for (let x of r.rules)
             rules.push(x.description)
-    }).catch(err => error("ls2", err)))
+    }).catch(err => error(err, "ls2")))
 
     await delay(3000)
 
@@ -177,7 +177,7 @@ async function loadSettings() {
 
         for (let x of m)
             modList.push(x.id)
-    }).catch(err => error("ls3", err)))
+    }).catch(err => error(err, "ls3")))
 
     return Promise.all(p).then(async () => {
         if (modList.length === 0 || rules.length === 0 || userFlair.length === 0 || flairList.length === 0) {
@@ -220,10 +220,10 @@ async function getNew() {
             p.push(lastPost.refresh().then(post => {
                 if (post.removed_by_category)
                     lastPost.full = 0       // post was deleted so force reread of last 10 post
-            }).catch(err => { lastPost.full = 0; error("gn0", err) }))
+            }).catch(err => { lastPost.full = 0; error(err, "gn0") }))
 
         return Promise.all(p)
-    }).catch(err => { lastPost.full = 0; error("GN", err) }))
+    }).catch(err => { lastPost.full = 0; error(err, "GN") }))
 
     return Promise.all(p)
 }
@@ -294,7 +294,7 @@ async function checkTitle(posts) {
         if (flair.galaxy) {
             let error = false
             let userPosts = await sub.search({ query: "author:" + post.author.name, limit: 5 })
-                .catch(err => { error("edu", err); error = true })
+                .catch(err => { error(err, "edu"); error = true })
 
             if (!error && userPosts.length < 5)
                 first = "Thank you for posting to NMSCE and taking an active part in the community!  \n\nSince this is one of your first few posts to NMSCE please read [this post](https://www.reddit.com/r/NMSCoordinateExchange/comments/1c0l1a4/how_to_create_helpful_starship_post_titles_and/) about what to include in your post to help people find your discovery.  \n  \n"
@@ -344,7 +344,7 @@ async function checkTitle(posts) {
 }
 
 async function uniqueReply(op, text, part, noSticky) {
-    let post = await op.expandReplies({ depth: 1 }).catch(err => error("ur", err))
+    let post = await op.expandReplies({ depth: 1 }).catch(err => error(err, "ur"))
     let found = false
 
     if (post) {
@@ -366,26 +366,26 @@ async function uniqueReply(op, text, part, noSticky) {
                 .distinguish({
                     status: true,
                     sticky: noSticky ? false : true
-                }).lock().catch(err => error("ur1", err))
+                }).lock().catch(err => error(err, "ur1"))
         }
     }
 }
 
 async function redirectToThread(post) {
     let p = []
-    let thread = await sub.search({ query: "flair_text:trading", sort: "new", limit: 1 }).catch(err => error("re0", err))
+    let thread = await sub.search({ query: "flair_text:trading", sort: "new", limit: 1 }).catch(err => error(err, "re0"))
 
     let text = "Thank you for posting to r/NMSCoordinateExchange! Please make your request [here](" + permaLinkHdr + thread[0].permalink + ") instead. The trading thread was specifically created for requesting items that are generally not allowed as posts themselves. See rule 8."
 
     console.log("redirect", permaLinkHdr + post.permalink)
 
-    p.push(post.remove().catch(err => error("ct2", err)))
+    p.push(post.remove().catch(err => error(err, "ct2")))
 
     p.push(post.reply(text)
         .distinguish({
             status: true,
             sticky: true
-        }).lock().catch(err => error("ct3", err)))
+        }).lock().catch(err => error(err, "ct3")))
 
     return Promise.all(p)
 }
@@ -399,7 +399,7 @@ async function getModqueue() {
         p.push(checkReported(posts))
 
         return Promise.all(p)
-    }).catch(err => error("MQ", err)))
+    }).catch(err => error(err, "MQ")))
 
     return Promise.all(p)
 }
@@ -425,7 +425,7 @@ async function checkLimits(posts) {
 
         if (!last || post.author.name !== last.author.name) {       // only do this once/author
             list = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "day" })
-                .catch(err => error("lim", err))
+                .catch(err => error(err, "lim"))
 
             list = list.sort((a, b) => a.created_utc - b.created_utc)
             last = post
@@ -462,9 +462,9 @@ async function checkLimits(posts) {
                             .distinguish({
                                 status: true,
                                 sticky: true
-                            }).lock().catch(err => error("lim0", err)))
+                            }).lock().catch(err => error(err, "lim0")))
 
-                        p.push(j.remove().catch(err => error("lim1", err)))
+                        p.push(j.remove().catch(err => error(err, "lim1")))
 
                         console.log("over limit", typeof limit.flair !== "undefined" ? limit.flair : limit.str, permaLinkHdr + j.permalink)
 
@@ -497,11 +497,11 @@ async function checkFlair(posts, origFlair) {
                     .distinguish({
                         status: true,
                         sticky: true
-                    }).lock().catch(err => error(12, err)))
+                    }).lock().catch(err => error(err, 12)))
 
                     await delay(7)
 
-                    p.push(post.remove({ reason: "unrecognized flair" }).catch(err => error("12b", err)))
+                    p.push(post.remove({ reason: "unrecognized flair" }).catch(err => error(err, "12b")))
             }
 
             continue
@@ -516,11 +516,11 @@ async function checkFlair(posts, origFlair) {
                 p.push(post.selectFlair({
                     flair_template_id: flair.flair_template_id,
                     text: newFlair
-                }).catch(err => error("cf9", err)))
+                }).catch(err => error(err, "cf9")))
             }
 
             if (post.banned_by && (post.banned_by.name === "nmsceBot" || post.banned_by.name === "AutoModerator"))
-                p.push(post.approve().catch(err => error("cf8", err)))
+                p.push(post.approve().catch(err => error(err, "cf8")))
 
             continue
         }
@@ -561,7 +561,7 @@ async function checkFlair(posts, origFlair) {
             p.push(post.selectFlair({
                 flair_template_id: flair.flair_template_id,
                 text: newFlair
-            }).catch(err => error(13, err)))
+            }).catch(err => error(err, 13)))
         }
 
         if (reason) {
@@ -585,16 +585,16 @@ async function checkFlair(posts, origFlair) {
                 .distinguish({
                     status: true,
                     sticky: true
-                }).catch(err => error(15, err)))
+                }).catch(err => error(err, 15)))
 
             await delay(7)
             
-            p.push(post.remove({ reason: "missing " + reason }).catch(err => error("15a", err)))
+            p.push(post.remove({ reason: "missing " + reason }).catch(err => error(err, "15a")))
         } else if ((post.mod_reports.find(a => a[1] === "Artemis-Bot")
             || post.banned_by && (post.banned_by.name === "nmsceBot" || post.banned_by.name === "AutoModerator"))) {
 
             p.push(removeBotComments(post, "##What"))
-            p.push(post.approve().catch(err => error("13a", err)))
+            p.push(post.approve().catch(err => error(err, "13a")))
             console.log("approve", permaLinkHdr + post.permalink)
         }
     }
@@ -605,14 +605,14 @@ async function checkFlair(posts, origFlair) {
 async function removeBotComments(op, message) {
     let p = []
 
-    let post = await op.expandReplies({ depth: 1 }).catch(err => error("rm", err))
+    let post = await op.expandReplies({ depth: 1 }).catch(err => error(err, "rm"))
 
     if (post)
     for (let comment of post.comments) {
         if ((comment.author.name === "nmsceBot" || comment.author.name === "AutoModerator")
             && (!message || comment.body.startsWith(message))) {
 
-            p.push(comment.delete().catch(err => error("rc", err)))
+            p.push(comment.delete().catch(err => error(err, "rc")))
             console.log("delete message", message, permaLinkHdr + post.permalink)
         }
     }
@@ -624,7 +624,7 @@ function checkReported(posts) {
     let p = []
     for (let post of posts) {
         if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot") && post.body[0] !== '!')
-            p.push(post.approve().catch(err => error("cr", err)))  // idiots reporting automod & bot comments
+            p.push(post.approve().catch(err => error(err, "cr")))  // idiots reporting automod & bot comments
     }
 
     return Promise.all(p)
@@ -644,9 +644,9 @@ async function modCommands(posts) {
             if (flair || m) {
                 console.log("command", post.body, permaLinkHdr + post.permalink)
 
-                let parent = await reddit.getSubmission(post.link_id).fetch().catch(err => error("mc0", err))
+                let parent = await reddit.getSubmission(post.link_id).fetch().catch(err => error(err, "mc0"))
 
-                p.push(post.remove().catch(err => error("mc2", err)))
+                p.push(post.remove().catch(err => error(err, "mc2")))
 
                 if (flair && !m) {
                     if (modList.includes(post.author_fullname) || post.is_submitter)
@@ -681,11 +681,11 @@ async function modCommands(posts) {
 async function changeFlairCmd(post, op) {
     let p = []
 
-    op = await op.expandReplies({ depth: 1 }).catch(err => error("cf", err))
+    op = await op.expandReplies({ depth: 1 }).catch(err => error(err, "cf"))
 
     for (let c of op.comments)
         if (c.author.name === "AutoModerator" || c.author.name === "nmsceBot")
-            p.push(c.remove().catch(err => error("cf1", err)))
+            p.push(c.remove().catch(err => error(err, "cf1")))
 
     let flair = op.link_flair_text
     op.link_flair_text = post.body + " " + flair.slice(flair.indexOf("EDIT"))
@@ -708,7 +708,7 @@ async function setbestPost(post, op) {
         p.push(op.selectFlair({
             flair_template_id: flair.flair_template_id,
             text: op.link_flair_text
-        }).catch(err => error("sb", err)))
+        }).catch(err => error(err, "sb")))
 
         p.push(uniqueReply(op, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
     }
@@ -717,7 +717,7 @@ async function setbestPost(post, op) {
         let list = []
 
         if (post.body === "!setbest") {
-            let parent = await reddit.getComment(post.parent_id).fetch().catch(err => error("sb0", err))
+            let parent = await reddit.getComment(post.parent_id).fetch().catch(err => error(err, "sb0"))
             let match = parent.body.match(/\[https:\/\/.*?comments\/.*?\W/ig)
 
             for (let post of match)
@@ -737,7 +737,7 @@ async function setbestPost(post, op) {
 
             for (let l of list) {
                 if (l && l !== "!setbest") {
-                    let single = await reddit.getSubmission(l).fetch().catch(err => error("sb3", err))
+                    let single = await reddit.getSubmission(l).fetch().catch(err => error(err, "sb3"))
 
                     if (single) {
                         text += "|u/" + single.author.name + "|[" + single.title + "](" + permaLinkHdr + single.permalink + ")|\n"
@@ -749,7 +749,7 @@ async function setbestPost(post, op) {
                 }
             }
 
-            p.push(op.reply(text).catch(err => error("sb4", err)))
+            p.push(op.reply(text).catch(err => error(err, "sb4")))
         }
     }
     else
@@ -781,13 +781,13 @@ async function setUserFlairCmd(post) {
         text = ":ship: " + text + " :ship:"
         template = userFlair.find(a => a.mod).flair_template_id
     } else if (flair) {
-        let user = await sub.getUserFlair(post.author.name).catch(err => error("uf0", err))
+        let user = await sub.getUserFlair(post.author.name).catch(err => error(err, "uf0"))
 
         if (user.flair_text) {
             if (user.flair_text.endsWith(":ship:"))
                 award = true
         } else {
-            user = await subGE.getUserFlair(post.author.name).catch(err => error("uf1", err))
+            user = await subGE.getUserFlair(post.author.name).catch(err => error(err, "uf1"))
 
             if (user.flair_text)//["Hunter","Specialist","Decorated","Exemplar"].includes(user.flair_text))
                 award = true
@@ -802,11 +802,11 @@ async function setUserFlairCmd(post) {
             let search = await sub.search({
                 query: "author:" + post.author.name,
                 limit: 10
-            }).catch(err => error("sea", err))
+            }).catch(err => error(err, "sea"))
 
             if (search < 10) {
                 text = ""
-                p.push(post.reply("Please wait until you have made 10 posts to r/NMSCoordinateExchange before selecting a user flair.").catch(err => error("ufl", err)))
+                p.push(post.reply("Please wait until you have made 10 posts to r/NMSCoordinateExchange before selecting a user flair.").catch(err => error(err, "ufl")))
             }
         }
     }
@@ -823,11 +823,11 @@ async function setUserFlairCmd(post) {
                 name: post.author.name,
                 text: text
             }
-        }).catch(err => error("uf2", err)))
+        }).catch(err => error(err, "uf2")))
 
-        p.push(post.reply("User flair '" + text + "' assigned. You may need to reload to see the change.").catch(err => error("ufs", err)))
+        p.push(post.reply("User flair '" + text + "' assigned. You may need to reload to see the change.").catch(err => error(err, "ufs")))
     } else
-        p.push(post.reply("Invalid user flair selected. It needs to be an existing post flair + 'Hunter' or 'Builder'. e.g !user:Starship Hunter, !user:Hunter, !user:builder").catch(err => error("uf", err)))
+        p.push(post.reply("Invalid user flair selected. It needs to be an existing post flair + 'Hunter' or 'Builder'. e.g !user:Starship Hunter, !user:Hunter, !user:builder").catch(err => error(err, "uf")))
 
     return Promise.all(p)
 }
@@ -883,9 +883,9 @@ function removePostCmd(post, op) {
         .distinguish({
             status: true,
             sticky: true
-        }).lock().catch(err => error("rp0", err)))
+        }).lock().catch(err => error(err, "rp0")))
 
-    p.push(op.remove().catch(err => error("rp1", err)))
+    p.push(op.remove().catch(err => error(err, "rp1")))
 
     console.log("remove post: rule: " + list + " " + permaLinkHdr + op.permalink)
 
@@ -916,10 +916,10 @@ function sendCommentCmd(post, op) {
         .distinguish({
             status: true
         }).lock()
-        .catch(err => error("sc1", err))
+        .catch(err => error(err, "sc1"))
 }
 
-function error(s, err) {
+function error(err, s) {
     console.log(new Date().toUTCString(), s ? s : "",
         typeof err.cause !== "undefined" ? err.cause.errno : "", err.name, err.message)
     //console.error(JSON.stringify(err))
