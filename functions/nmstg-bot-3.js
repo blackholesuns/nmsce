@@ -262,10 +262,7 @@ async function setFlair(post, cmd) {
 
     console.log("set flair", post.link_flair_text, permaLinkHdr + post.permalink)
 
-    let posts = []
-    posts.push(post)
-
-    return checkPostLimits(posts)
+    return checkPostLimits([post])
 }
 
 async function checkFlair(posts) {
@@ -378,8 +375,9 @@ async function getContest(post, op, cmd) {
 }
 
 function error(err, add) {
-    console.log(new Date().toUTCString(), add ? add : "", err.name, err.message)
-    // console.log(err)
+    console.log(new Date().toUTCString(), add ? add : "",
+        typeof err.cause !== "undefined" ? err.cause.errno : "", err.name, err.message)
+    //console.error(err)
 }
 
 const thankYou = 'Thank You for posting to r/NoMansSkyTheGame!  \n\n'

@@ -7,12 +7,12 @@ const reddit = new snoowrap(login)
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 var sub
-var subGE
+// var subGE
 var lastPost = {}
 var rules = []
 var modList = []
 var flairList = []
-var userFlair = []
+// var userFlair = []
 
 main()
 async function main() {
@@ -22,11 +22,11 @@ async function main() {
         continueAfterRatelimitError: true,
         requestTimeout: 90000,
         retryErrorCodes: [-3008, -4077, -4078, 429, 500, 502, 503, 504],
-        maxRetryAttempts: 5
+        maxRetryAttempts: 10
     })
 
     sub = await reddit.getSubreddit('NMSCoordinateExchange')
-    subGE = await reddit.getSubreddit('NMSGlyphExchange')
+    // subGE = await reddit.getSubreddit('NMSGlyphExchange')
 
     await loadSettings()
 
@@ -143,25 +143,26 @@ async function loadSettings() {
                 f.name = f.flair_text
                 flairList.push(f)
             }
+
     }).catch(err => error(err, "ls0")))
 
     await delay(3000)
 
-    p.push(sub.getUserFlairTemplates().then(res => {
-        userFlair = res
+    // p.push(sub.getUserFlairTemplates().then(res => {
+    //     userFlair = res
 
-        for (let f of userFlair) {
-            f.name = f.flair_text
+    //     for (let f of userFlair) {
+    //         f.name = f.flair_text
 
-            if (f.flair_text.endsWith(":ship:"))
-                if (f.flair_text.startsWith(":ship:"))
-                    f.mod = true
-                else
-                    f.award = true
-        }
-    }).catch(err => error(err, "ls1")))
+    //         if (f.flair_text.endsWith(":ship:"))
+    //             if (f.flair_text.startsWith(":ship:"))
+    //                 f.mod = true
+    //             else
+    //                 f.award = true
+    //     }
+    // }).catch(err => error(err, "ls1")))
 
-    await delay(3000)
+    // await delay(3000)
 
     p.push(sub.getRules().then(r => {
         rules = []
@@ -180,7 +181,7 @@ async function loadSettings() {
     }).catch(err => error(err, "ls3")))
 
     return Promise.all(p).then(async () => {
-        if (modList.length === 0 || rules.length === 0 || userFlair.length === 0 || flairList.length === 0) {
+        if (modList.length === 0 || rules.length === 0 || flairList.length === 0/*|| userFlair.length === 0*/) {
             console.log("retry load settings")
             await delay(30000)
             return loadSettings()
@@ -228,44 +229,44 @@ async function getNew() {
     return Promise.all(p)
 }
 
-async function getBestOf(post, type) {
-    let p = []
-    let flairs = flairList.filter(a => a.galaxy)
-    let n = post.body.match(/(\d+)/g)
-    n = n ? parseInt(n[0]) : 4
+// async function getBestOf(post, type) {
+//     let p = []
+//     let flairs = flairList.filter(a => a.galaxy)
+//     let n = post.body.match(/(\d+)/g)
+//     n = n ? parseInt(n[0]) : 4
 
-    if (type) {
-        p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts => {
-            return { type: type.name, posts: posts }
-        }))
-    } else
-        for (let type of flairs) {
-            p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts => {
-                return { name: type.name, posts: posts }
-            }))
+//     if (type) {
+//         p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts => {
+//             return { type: type.name, posts: posts }
+//         }))
+//     } else
+//         for (let type of flairs) {
+//             p.push(sub.search({ query: "flair_text:" + type.name, time: "month", sort: "top", limit: n }).then(posts => {
+//                 return { name: type.name, posts: posts }
+//             }))
 
-            await delay(1000)
-        }
+//             await delay(1000)
+//         }
 
-    return Promise.all(p).then(async res => {
-        let text = "##Top Posts  \n"
+//     return Promise.all(p).then(async res => {
+//         let text = "##Top Posts  \n"
 
-        for (let type of res) {
-            if (type.posts.length === 0)
-                continue
+//         for (let type of res) {
+//             if (type.posts.length === 0)
+//                 continue
 
-            text += "###" + type.name + "  \n|Engagement|Title/Link|\n|----:|:-----------------------------------------|\n"
+//             text += "###" + type.name + "  \n|Engagement|Title/Link|\n|----:|:-----------------------------------------|\n"
 
-            for (let post of type.posts) {
-                post = await post.expandReplies({ depth: 1 })
+//             for (let post of type.posts) {
+//                 post = await post.expandReplies({ depth: 1 })
 
-                text += "|" + (post.ups + post.downs + post.comments.length) + "|[" + post.title.slice(0, 40) + "](" + permaLinkHdr + post.permalink + ")|\n"
-            }
-        }
+//                 text += "|" + (post.ups + post.downs + post.comments.length) + "|[" + post.title.slice(0, 40) + "](" + permaLinkHdr + post.permalink + ")|\n"
+//             }
+//         }
 
-        return post.reply(text)
-    })
-}
+//         return post.reply(text)
+//     })
+// }
 
 async function checkTitle(posts) {
     let p = []
@@ -499,9 +500,9 @@ async function checkFlair(posts, origFlair) {
                         sticky: true
                     }).lock().catch(err => error(err, 12)))
 
-                    await delay(7)
+                await delay(7)
 
-                    p.push(post.remove({ reason: "unrecognized flair" }).catch(err => error(err, "12b")))
+                p.push(post.remove({ reason: "unrecognized flair" }).catch(err => error(err, "12b")))
             }
 
             continue
@@ -588,7 +589,7 @@ async function checkFlair(posts, origFlair) {
                 }).catch(err => error(err, 15)))
 
             await delay(7)
-            
+
             p.push(post.remove({ reason: "missing " + reason }).catch(err => error(err, "15a")))
         } else if ((post.mod_reports.find(a => a[1] === "Artemis-Bot")
             || post.banned_by && (post.banned_by.name === "nmsceBot" || post.banned_by.name === "AutoModerator"))) {
@@ -608,14 +609,14 @@ async function removeBotComments(op, message) {
     let post = await op.expandReplies({ depth: 1 }).catch(err => error(err, "rm"))
 
     if (post)
-    for (let comment of post.comments) {
-        if ((comment.author.name === "nmsceBot" || comment.author.name === "AutoModerator")
-            && (!message || comment.body.startsWith(message))) {
+        for (let comment of post.comments) {
+            if ((comment.author.name === "nmsceBot" || comment.author.name === "AutoModerator")
+                && (!message || comment.body.startsWith(message))) {
 
-            p.push(comment.delete().catch(err => error(err, "rc")))
-            console.log("delete message", message, permaLinkHdr + post.permalink)
+                p.push(comment.delete().catch(err => error(err, "rc")))
+                console.log("delete message", message, permaLinkHdr + post.permalink)
+            }
         }
-    }
 
     return Promise.all(p)
 }
@@ -654,22 +655,22 @@ async function modCommands(posts) {
                 } else {
                     if (modList.includes(post.author_fullname))
                         switch (m) {
-                            case "request": // "r" catches this
+                            case "request":
                             case "flair":
                                 p.push(changeFlairCmd(post, parent)); break
-                            case "or":
+                            case "or":  // direct to nmstg
                             case "r":
                                 p.push(removePostCmd(post, parent)); break          // remove post & quote rule
-                            case "c": p.push(sendCommentCmd(post, parent)); break    // comment
+                            // case "c": p.push(sendCommentCmd(post, parent)); break    // comment
                             case "redirect": p.push(redirectToThread(parent)); break
-                            case "best": p.push(getBestOf(post, flair)); break
-                            case "setbest": p.push(setbestPost(post, parent)); break
-                            case "rall": p.push(removeAll(post, parent)); break      // remove all of an ops posts or comments
+                            // case "best": p.push(getBestOf(post, flair)); break
+                            // case "setbest": p.push(setbestPost(post, parent)); break
+                            // case "rall": p.push(removeAll(post, parent)); break      // remove all of an ops posts or comments
                         }
 
-                    switch (m) {
-                        case "user": p.push(setUserFlairCmd(post)); break
-                    }
+                    // switch (m) {
+                    //     case "user": p.push(setUserFlairCmd(post)); break
+                    // }
                 }
             }
         }
@@ -696,178 +697,178 @@ async function changeFlairCmd(post, op) {
     return Promise.all(p)
 }
 
-const bestPostsName = "Monthly Best Posts"
+// const bestPostsName = "Monthly Best Posts"
 
-async function setbestPost(post, op) {
-    let p = []
-    let flair = getItem(flairList, bestPostsName)
+// async function setbestPost(post, op) {
+//     let p = []
+//     let flair = getItem(flairList, bestPostsName)
 
-    const setFlairAndComment = function (p, op) {
-        console.log("set best post", permaLinkHdr + post.permalink)
+//     const setFlairAndComment = function (p, op) {
+//         console.log("set best post", permaLinkHdr + post.permalink)
 
-        p.push(op.selectFlair({
-            flair_template_id: flair.flair_template_id,
-            text: op.link_flair_text
-        }).catch(err => error(err, "sb")))
+//         p.push(op.selectFlair({
+//             flair_template_id: flair.flair_template_id,
+//             text: op.link_flair_text
+//         }).catch(err => error(err, "sb")))
 
-        p.push(uniqueReply(op, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
-    }
+//         p.push(uniqueReply(op, "###Congratulations! This post has been selected as one of the best posts of the month on r/NMSCoordinateExchange!", "##Congratulations"))
+//     }
 
-    if (op.link_flair_text === bestPostsName) {
-        let list = []
+//     if (op.link_flair_text === bestPostsName) {
+//         let list = []
 
-        if (post.body === "!setbest") {
-            let parent = await reddit.getComment(post.parent_id).fetch().catch(err => error(err, "sb0"))
-            let match = parent.body.match(/\[https:\/\/.*?comments\/.*?\W/ig)
+//         if (post.body === "!setbest") {
+//             let parent = await reddit.getComment(post.parent_id).fetch().catch(err => error(err, "sb0"))
+//             let match = parent.body.match(/\[https:\/\/.*?comments\/.*?\W/ig)
 
-            for (let post of match)
-                list.push(post.replace(/.*?comments\/(.*)\//, "$1"))
-        } else {
-            list = post.body.match(/\[https:\/\/.*?comments\/.*?\W/ig)
-            if (list) {
-                for (let i = 0; i < list.length; ++i)
-                    list[i] = list[i].replace(/.*?comments\/(\w+?)\//, "$1")
+//             for (let post of match)
+//                 list.push(post.replace(/.*?comments\/(.*)\//, "$1"))
+//         } else {
+//             list = post.body.match(/\[https:\/\/.*?comments\/.*?\W/ig)
+//             if (list) {
+//                 for (let i = 0; i < list.length; ++i)
+//                     list[i] = list[i].replace(/.*?comments\/(\w+?)\//, "$1")
 
-            } else
-                list = post.body.split(" ")
+//             } else
+//                 list = post.body.split(" ")
 
-            let text = "##Links for this months best posts.  \n  \n"
-            text += "|Author|Title/Link|\n"
-            text += "|:--------------------|:-----------------------------------|\n"
+//             let text = "##Links for this months best posts.  \n  \n"
+//             text += "|Author|Title/Link|\n"
+//             text += "|:--------------------|:-----------------------------------|\n"
 
-            for (let l of list) {
-                if (l && l !== "!setbest") {
-                    let single = await reddit.getSubmission(l).fetch().catch(err => error(err, "sb3"))
+//             for (let l of list) {
+//                 if (l && l !== "!setbest") {
+//                     let single = await reddit.getSubmission(l).fetch().catch(err => error(err, "sb3"))
 
-                    if (single) {
-                        text += "|u/" + single.author.name + "|[" + single.title + "](" + permaLinkHdr + single.permalink + ")|\n"
+//                     if (single) {
+//                         text += "|u/" + single.author.name + "|[" + single.title + "](" + permaLinkHdr + single.permalink + ")|\n"
 
-                        setFlairAndComment(p, op)
+//                         setFlairAndComment(p, op)
 
-                        await delay(2000)
-                    }
-                }
-            }
+//                         await delay(2000)
+//                     }
+//                 }
+//             }
 
-            p.push(op.reply(text).catch(err => error(err, "sb4")))
-        }
-    }
-    else
-        setFlairAndComment(p, op)
+//             p.push(op.reply(text).catch(err => error(err, "sb4")))
+//         }
+//     }
+//     else
+//         setFlairAndComment(p, op)
 
-    return Promise.all(p)
-}
+//     return Promise.all(p)
+// }
 
-async function setUserFlairCmd(post) {
-    let p = []
-    let flair = getItem(userFlair, post.body)
-    let pflair = getItem(flairList, post.body)
-    let award = false
-    let template
-    let text = null
+// async function setUserFlairCmd(post) {
+//     let p = []
+//     let flair = getItem(userFlair, post.body)
+//     let pflair = getItem(flairList, post.body)
+//     let award = false
+//     let template
+//     let text = null
 
-    // if (!pflair && flair && flair.name === "Hunter") {
-    //     const types = ["Fighter", "Hauler", "Explorer", "Shuttle", "Interceptor", "Staff", "Solar", "Living Ship"]
-    //     let matched = types.find(a => post.body.includes(a))
-    //     if (matched.length) {
-    //         pflair = {}
-    //         pflair.name = matched[0]
-    //         pflair.galaxy = true
-    //     }
-    // }
+//     // if (!pflair && flair && flair.name === "Hunter") {
+//     //     const types = ["Fighter", "Hauler", "Explorer", "Shuttle", "Interceptor", "Staff", "Solar", "Living Ship"]
+//     //     let matched = types.find(a => post.body.includes(a))
+//     //     if (matched.length) {
+//     //         pflair = {}
+//     //         pflair.name = matched[0]
+//     //         pflair.galaxy = true
+//     //     }
+//     // }
 
-    if (modList.includes(post.author_fullname)) {
-        text = post.body.replace(/!user\W+(.*)/i, "$1")
-        text = ":ship: " + text + " :ship:"
-        template = userFlair.find(a => a.mod).flair_template_id
-    } else if (flair) {
-        let user = await sub.getUserFlair(post.author.name).catch(err => error(err, "uf0"))
+//     if (modList.includes(post.author_fullname)) {
+//         text = post.body.replace(/!user\W+(.*)/i, "$1")
+//         text = ":ship: " + text + " :ship:"
+//         template = userFlair.find(a => a.mod).flair_template_id
+//     } else if (flair) {
+//         let user = await sub.getUserFlair(post.author.name).catch(err => error(err, "uf0"))
 
-        if (user.flair_text) {
-            if (user.flair_text.endsWith(":ship:"))
-                award = true
-        } else {
-            user = await subGE.getUserFlair(post.author.name).catch(err => error(err, "uf1"))
+//         if (user.flair_text) {
+//             if (user.flair_text.endsWith(":ship:"))
+//                 award = true
+//         } else {
+//             user = await subGE.getUserFlair(post.author.name).catch(err => error(err, "uf1"))
 
-            if (user.flair_text)//["Hunter","Specialist","Decorated","Exemplar"].includes(user.flair_text))
-                award = true
-        }
+//             if (user.flair_text)//["Hunter","Specialist","Decorated","Exemplar"].includes(user.flair_text))
+//                 award = true
+//         }
 
-        text = (pflair && pflair.galaxy ? pflair.name + " " : "") + flair.name
+//         text = (pflair && pflair.galaxy ? pflair.name + " " : "") + flair.name
 
-        if (award) {
-            text = text + " :ship:"
-            template = userFlair.find(a => a.award).flair_template_id
-        } else if (!user) {
-            let search = await sub.search({
-                query: "author:" + post.author.name,
-                limit: 10
-            }).catch(err => error(err, "sea"))
+//         if (award) {
+//             text = text + " :ship:"
+//             template = userFlair.find(a => a.award).flair_template_id
+//         } else if (!user) {
+//             let search = await sub.search({
+//                 query: "author:" + post.author.name,
+//                 limit: 10
+//             }).catch(err => error(err, "sea"))
 
-            if (search < 10) {
-                text = ""
-                p.push(post.reply("Please wait until you have made 10 posts to r/NMSCoordinateExchange before selecting a user flair.").catch(err => error(err, "ufl")))
-            }
-        }
-    }
+//             if (search < 10) {
+//                 text = ""
+//                 p.push(post.reply("Please wait until you have made 10 posts to r/NMSCoordinateExchange before selecting a user flair.").catch(err => error(err, "ufl")))
+//             }
+//         }
+//     }
 
-    if (text) {
-        console.log("change user flair", text, post.author.name)
+//     if (text) {
+//         console.log("change user flair", text, post.author.name)
 
-        p.push(sub._post({
-            uri: "r/".concat("NMSCoordinateExchange", "/api/selectflair"),
-            form: {
-                api_type: "json",
-                flair_template_id: template,
-                link: "",
-                name: post.author.name,
-                text: text
-            }
-        }).catch(err => error(err, "uf2")))
+//         p.push(sub._post({
+//             uri: "r/".concat("NMSCoordinateExchange", "/api/selectflair"),
+//             form: {
+//                 api_type: "json",
+//                 flair_template_id: template,
+//                 link: "",
+//                 name: post.author.name,
+//                 text: text
+//             }
+//         }).catch(err => error(err, "uf2")))
 
-        p.push(post.reply("User flair '" + text + "' assigned. You may need to reload to see the change.").catch(err => error(err, "ufs")))
-    } else
-        p.push(post.reply("Invalid user flair selected. It needs to be an existing post flair + 'Hunter' or 'Builder'. e.g !user:Starship Hunter, !user:Hunter, !user:builder").catch(err => error(err, "uf")))
+//         p.push(post.reply("User flair '" + text + "' assigned. You may need to reload to see the change.").catch(err => error(err, "ufs")))
+//     } else
+//         p.push(post.reply("Invalid user flair selected. It needs to be an existing post flair + 'Hunter' or 'Builder'. e.g !user:Starship Hunter, !user:Hunter, !user:builder").catch(err => error(err, "uf")))
 
-    return Promise.all(p)
-}
+//     return Promise.all(p)
+// }
 
-var inproc = false // jic command wasn't deleted
+// var inproc = false // jic command wasn't deleted
 
-async function removeAll(post, op) {
-    return
-    let type = post.body.match(/!rall\W+(.*?)\W+(.*)/)
-    let user = reddit.getUser(op.author.name)
-    if (inproc) {
-        console.log("in process")
-        return
-    }
+// async function removeAll(post, op) {
+//     return
+//     let type = post.body.match(/!rall\W+(.*?)\W+(.*)/)
+//     let user = reddit.getUser(op.author.name)
+//     if (inproc) {
+//         console.log("in process")
+//         return
+//     }
 
-    if (type[1] === "comments") {
-        inproc = true
-        console.log("get comments")
-        let comments = await user.getComments({ sort: "new", limit: 1000 })
-        let count = 0
+//     if (type[1] === "comments") {
+//         inproc = true
+//         console.log("get comments")
+//         let comments = await user.getComments({ sort: "new", limit: 1000 })
+//         let count = 0
 
-        for (let c of comments) {
-            if (c.removed) {
-                ++count
-                continue
-            }
+//         for (let c of comments) {
+//             if (c.removed) {
+//                 ++count
+//                 continue
+//             }
 
-            if (c.subreddit_name_prefixed === "r/NMSCoordinateExchange") {
-                // if (type[2] === "img" && c.body.includes("preview.redd.it")) { // specific to u/sweetdick who was spamming images
-                console.log(++count, c.link_permalink)
-                await c.remove().catch(err => console.error("error"))
-                await delay(2000)
-                // }
-            }
-        }
+//             if (c.subreddit_name_prefixed === "r/NMSCoordinateExchange") {
+//                 // if (type[2] === "img" && c.body.includes("preview.redd.it")) { // specific to u/sweetdick who was spamming images
+//                 console.log(++count, c.link_permalink)
+//                 await c.remove().catch(err => console.error("error"))
+//                 await delay(2000)
+//                 // }
+//             }
+//         }
 
-        console.error("done")
-        inproc = false
-    }
-}
+//         console.error("done")
+//         inproc = false
+//     }
+// }
 
 function removePostCmd(post, op) {
     let message = removedPost + (post.body.startsWith("!or") ? respOffTopic : "")
@@ -892,37 +893,37 @@ function removePostCmd(post, op) {
     return Promise.all(p)
 }
 
-function sendCommentCmd(post, op) {
-    let message = ""
-    let match = post.body.match(/!\W?c\W?([0-9,]+)/)
+// function sendCommentCmd(post, op) {
+//     let message = ""
+//     let match = post.body.match(/!\W?c\W?([0-9,]+)/)
 
-    if (match) {
-        let list = match[1].split(",")
+//     if (match) {
+//         let list = match[1].split(",")
 
-        message = "##Please read the following.  \n######This is a comment about your post. Your post has *not been removed*.  \n---\n"
+//         message = "##Please read the following.  \n######This is a comment about your post. Your post has *not been removed*.  \n---\n"
 
-        for (let r of list) {
-            message += "Rule " + r + ":  \n"
-            message += typeof rules[r - 1] !== "undefined" ? rules[r - 1] + "  \n\n" : ""
-        }
-    } else
-        message = post.body.match(/!\W?c\W?(.*)/)[1]
+//         for (let r of list) {
+//             message += "Rule " + r + ":  \n"
+//             message += typeof rules[r - 1] !== "undefined" ? rules[r - 1] + "  \n\n" : ""
+//         }
+//     } else
+//         message = post.body.match(/!\W?c\W?(.*)/)[1]
 
-    message += modSig
+//     message += modSig
 
-    console.log("post comment", permaLinkHdr + post.permalink)
+//     console.log("post comment", permaLinkHdr + post.permalink)
 
-    return op.reply(message)
-        .distinguish({
-            status: true
-        }).lock()
-        .catch(err => error(err, "sc1"))
-}
+//     return op.reply(message)
+//         .distinguish({
+//             status: true
+//         }).lock()
+//         .catch(err => error(err, "sc1"))
+// }
 
-function error(err, s) {
-    console.log(new Date().toUTCString(), s ? s : "",
+function error(err, add) {
+    console.log(new Date().toUTCString(), add ? add : "",
         typeof err.cause !== "undefined" ? err.cause.errno : "", err.name, err.message)
-    //console.error(JSON.stringify(err))
+    // console.error(err)
 }
 
 function checkFullText(list, post) {
