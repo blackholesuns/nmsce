@@ -16,7 +16,7 @@ var flairList = []
 
 main()
 async function main() {
-    console.log("\napp restart", new Date().toUTCString())
+    console.log("\nnmsce restart", new Date().toUTCString())
 
     reddit.config({
         continueAfterRatelimitError: true,

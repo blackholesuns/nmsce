@@ -1,5 +1,6 @@
 'use strict'
 
+const { promises } = require('nodemailer/lib/xoauth2')
 const login = require('./nmsce-bot.json')
 const snoowrap = require('snoowrap')
 const reddit = new snoowrap(login)
@@ -51,7 +52,7 @@ async function getNew() {
 
         if (posts.length > 0) {
             lastPost = posts[0]
-            checkPostLimits(posts)
+            p.push(checkPostLimits(posts))
         }
 
         if (posts.length > 0 || !lastPost.full || lastPost.full + recheck < date)
@@ -111,6 +112,11 @@ async function loadSettings() {
 async function checkPostLimits(posts) {
     let contestFlair = "Contest"
     let communityID = "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267"
+    let now = new Date().getTime() / 1000
+    const hour = 60 * 60
+    const day = 24 * hour
+    const week = 7 * day
+    let p = []
 
     posts = posts.sort((a, b) => a.author.name >= b.author.name ? 1 : -1)
     checkFlair(posts)
@@ -121,73 +127,42 @@ async function checkPostLimits(posts) {
         if (!last || post.author.name !== last.author.name) {       // only do this once/author
             last = post
 
-            let author = posts.filter(a => a.author.name === post.author.name)
+            let author = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "month" })
 
             let contest = author.filter(a => a.link_flair_text && a.link_flair_text.includes(contestFlair))
             let video = author.filter(a => a.link_flair_text && a.link_flair_text.includes("Video"))
-            let community = author.filter(a => a.link_flair_text && a.link_flair_template_id === communityID)
+            let community = author.filter(a => a.link_flair_text && a.link_flair_template_id === communityID
+                && (!a.approved_by || a.approved_by !== "nmsceBot")) // leave mod approved stuff up
 
-            author = author.filter(a => a.link_flair_text
-                && !a.link_flair_text.includes(contestFlair)
+            let hour = author.filter(a => a.link_flair_text
+                && !a.link_flair_text.includes(contestFlair)        // post checked elsewhere don't count towards hourly limit
                 && !a.link_flair_text.includes("Video")
                 && a.link_flair_template_id !== communityID)
 
-            if (contest.length > 0) {
-                let list = await sub.search({ query: "author:" + post.author.name + " flair_text:" + contestFlair, sort: "new", time: "month" })
-                    .catch(err => error(err, "lim1"))
+            for (let i = 0; i < contest.length - 3; ++i)
+                p.push(overLimit(contest[i], "3 post for contest"))
 
-                for (let i = list.length; i > 3; --i) {
-                    overLimit(list[list.length - i], "3 entries for " + post.link_flair_text + ". You may repost this using a different flair")
+            for (let i = 0; i < video.length - 2; ++i)
+                if (now - video[i].created_utc < day && video[i].created_utc - video[i + 2].created_utc < week)
+                    p.push(overLimit(video[i], "2 video posts/week"))
 
-                    delay(1000)
-                }
-            }
+            for (let i = 0; i < community.length - 2; ++i)
+                if (now - community[i].created_utc < day
+                    && community[i].created_utc - community[i + 2].created_utc < week)
+                    p.push(overLimit(community[i], "2 community content posts/week"))
 
-            if (video.length > 0) {
-                let list = await sub.search({ query: "author:" + post.author.name + " flair_text:Video", sort: "new", time: "week" })
-                    .catch(err => error(err, "lim2"))
+            for (let i = 0; i < hour.length - 2; ++i)
+                if (now - hour[i].created_utc < day && hour[i].created_utc - hour[i + 2].created_utc < hour)
+                    p.push(overLimit(hour[i], "2 posts/hour", new Date((hour[i + 2].created_utc + hour) * 1000).toUTCString()))
 
-                for (let i = list.length; i > 2; --i) {
-                    overLimit(list[list.length - i], "2 video posts/week")
-
-                    delay(1000)
-                }
-
-                if (community.length > 0) {
-                    let list = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "week" })
-                        .catch(err => error(err, "lim2"))
-
-                    list = list.filter(a => a.link_flair_template_id === communityID)
-
-                    for (let i = list.length; i > 2; --i) {
-                        overLimit(list[list.length - i], "2 community content posts/week")
-
-                        delay(1000)
-                    }
-                }
-            }
-
-            // first read after start
-            for (let i = 0; i < author.length - 2; ++i) {
-                if (author[i].created_utc - author[i + 2].created_utc < 60 * 60) {
-                    overLimit(author[i], "2 posts/hour", new Date((author[i + 2].created_utc + 60 * 60) * 1000).toUTCString())
-
-                    delay(1000)
-                }
-            }
-
-            let list = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "hour" })
-                .catch(err => error(err, "lim3"))
-
-            for (let i = list.length; i > 2; --i) {
-                overLimit(list[list.length - i], "2 posts/hour", new Date((list[list.length - 1].created_utc + 60 * 60) * 1000).toUTCString())
-
-                delay(1000)
-            }
-
-            delay(2000)
+            delay(1000)
         }
     }
+
+    return Promise.all(p).then(async () => {
+        if (posts.length > 100)
+            console.log("start up done")
+    })
 }
 
 async function overLimit(post, str, time) {
@@ -208,6 +183,7 @@ async function overLimit(post, str, time) {
     p.push(post.remove().catch(err => error(err, "lim1")))
 
     console.log("over limit", str, permaLinkHdr + post.permalink)
+    delay(2000)
 
     await Promise.all(p)
 }
