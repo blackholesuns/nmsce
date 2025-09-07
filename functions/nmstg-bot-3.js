@@ -44,10 +44,13 @@ async function getNew() {
     }).then(async posts => {
         let p = []
 
+        if (posts.length > 100) {
+            let t = ((posts[0].created_utc - posts[posts.length - 1].created_utc) / (60 * 60)).toFixed(2)
+            console.log("read", posts.length, t + " hr", (posts.length / t).toFixed(1), "/hr")
+        }
+
         if (posts.length > 0) {
             lastPost = posts[0]
-            posts = posts.sort((a, b) => a.created_utc - b.created_utc)
-
             checkPostLimits(posts)
         }
 
@@ -79,7 +82,7 @@ async function getModqueue() {
     await Promise.all(p)
 }
 
-async function loadSettings(post) {
+async function loadSettings() {
     let p = []
 
     p.push(sub.getRules().then(r => {
@@ -120,9 +123,14 @@ async function checkPostLimits(posts) {
 
             let author = posts.filter(a => a.author.name === post.author.name)
 
-            let contest = author.filter(a => a.link_flair_text.includes(contestFlair))
-            let video = author.filter(a => a.link_flair_text.includes("Video"))
-            let community = author.filter(a => a.link_flair_template_id === communityID)
+            let contest = author.filter(a => a.link_flair_text && a.link_flair_text.includes(contestFlair))
+            let video = author.filter(a => a.link_flair_text && a.link_flair_text.includes("Video"))
+            let community = author.filter(a => a.link_flair_text && a.link_flair_template_id === communityID)
+
+            author = author.filter(a => a.link_flair_text
+                && !a.link_flair_text.includes(contestFlair)
+                && !a.link_flair_text.includes("Video")
+                && a.link_flair_template_id !== communityID)
 
             if (contest.length > 0) {
                 let list = await sub.search({ query: "author:" + post.author.name + " flair_text:" + contestFlair, sort: "new", time: "month" })
@@ -144,22 +152,30 @@ async function checkPostLimits(posts) {
 
                     delay(1000)
                 }
+
+                if (community.length > 0) {
+                    let list = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "week" })
+                        .catch(err => error(err, "lim2"))
+
+                    list = list.filter(a => a.link_flair_template_id === communityID)
+
+                    for (let i = list.length; i > 2; --i) {
+                        overLimit(list[list.length - i], "2 community content posts/week")
+
+                        delay(1000)
+                    }
+                }
             }
 
-            if (community.length > 0) {
-                let list = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "week" })
-                    .catch(err => error(err, "lim2"))
-
-                list = list.filter(a => a.link_flair_template_id === communityID)
-
-                for (let i = list.length; i > 2; --i) {
-                    overLimit(list[list.length - i], "2 community content posts/week")
+            // first read after start
+            for (let i = 0; i < author.length - 2; ++i) {
+                if (author[i].created_utc - author[i + 2].created_utc < 60 * 60) {
+                    overLimit(author[i], "2 posts/hour", new Date((author[i + 2].created_utc + 60 * 60) * 1000).toUTCString())
 
                     delay(1000)
                 }
             }
 
-            // will not catch if over an hour old
             let list = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "hour" })
                 .catch(err => error(err, "lim3"))
 
@@ -220,7 +236,7 @@ async function modCommands(posts, mods) {
                     switch (match[1].toLowerCase()) {
                         case "r": p.push(removePost(op, match[2])); break           // remove post for rule violation
                         case "cc": p.push(setFlair(op, "Community Content")); break // change flair to community content
-                        case "reload": p.push(loadSettings(op)); break              // reload settings
+                        case "reload": p.push(loadSettings()); break              // reload settings
                         case "contest": p.push(getContest(post, op, match[2])); break   // get contest results
                     }
                 }
@@ -243,6 +259,10 @@ async function setFlair(post, cmd) {
     if (cmd === "Community Content") {
         post.link_flair_template_id = "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267"
         post.link_flair_text = "Community Content"
+
+        p.push(post.reply("Your post has been assigned the 'Community Content' flair, which is for NMS-related content creators, \
+            modders, apps, tools, websites, and in-game groups (Civs). You may edit the flair to include your specific name (e.g., \
+            channel, mod, or tool) for better visibility. Please use this flair for similar future posts. Thank you.").catch(err => error(err, "cc")))
     }
     else if (cmd.toLowerCase() === "answered") {
         post.link_flair_template_id = "30e40f0c-948f-11eb-bc74-0e0c6b05f4ff"
@@ -270,6 +290,11 @@ async function checkFlair(posts) {
 
     // check for videos not using video flair
     for (let post of posts) {
+        if (!post.link_flair_text) {  // somehow a post got made with no flair
+            console.log("ERROR no flair", permaLinkHdr + post.permalink)
+            continue
+        }
+
         if (post.link_flair_template_id !== "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267" // community content flair
             && !post.link_flair_text.includes("Bug") && !post.link_flair_text.includes("Video")
             && !post.link_flair_text.includes("Question") && !post.link_flair_text.includes("Answered")) {
@@ -369,7 +394,7 @@ async function getContest(post, op, cmd) {
     return reddit.composeMessage({
         to: op.author.name,
         fromSubreddit: "NoMansSkyTheGame",
-        subject: cmd+ "Results",
+        subject: cmd + "Results",
         text: text
     }).catch(err => error(err, 32))
 }
