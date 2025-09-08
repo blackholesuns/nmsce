@@ -269,6 +269,16 @@ async function checkFlair(posts) {
     // check for videos not using video flair
     for (let post of posts) {
         if (!post.link_flair_text) {  // somehow a post got made with no flair
+            p.push(post.reply("Somehow you've created a post with no flair. Please make a comment to this post using the \
+                              !flair command, e.g. '!flair:Screenshot' or repost this post and select a flair.")
+                .distinguish({
+                    status: true
+                }).lock()
+                .catch(err => error(err, 29)))
+
+            p.push(post.remove()
+                .catch(err => error(err, 30)))
+
             console.log("ERROR no flair", permaLinkHdr + post.permalink)
             continue
         }
