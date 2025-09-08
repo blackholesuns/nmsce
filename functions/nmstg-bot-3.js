@@ -11,6 +11,8 @@ var lastPost = {}
 var rules = []
 var mods = []
 
+const contestFlair = "Ship Build Contest"
+
 main()
 async function main() {
     console.log("\nnmstg restart", new Date().toUTCString())
@@ -110,12 +112,12 @@ async function loadSettings() {
 }
 
 async function checkPostLimits(posts) {
-    let contestFlair = "Contest"
-    let communityID = "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267"
-    let now = new Date().getTime() / 1000
+    const communityID = "9e4276b2-a4d1-11ec-94cc-4ea5a9f5f267"
+    const now = new Date().getTime() / 1000
     const hour = 60 * 60
     const day = 24 * hour
     const week = 7 * day
+
     let p = []
 
     posts = posts.sort((a, b) => a.author.name >= b.author.name ? 1 : -1)
@@ -127,9 +129,9 @@ async function checkPostLimits(posts) {
         if (!last || post.author.name !== last.author.name) {       // only do this once/author
             last = post
 
-            let author = await sub.search({ query: "author:" + post.author.name, sort: "new", time: "month" })
+            let author = await sub.search({ query: "author:" + post.author.name, sort: "new", time: contestFlair ? "month" : "week" }) // if contest then use month if not use week
 
-            let contest = author.filter(a => a.link_flair_text && a.link_flair_text.includes(contestFlair))
+            let contest = author.filter(a => contestFlair && a.link_flair_text && a.link_flair_text.includes(contestFlair))
             let video = author.filter(a => a.link_flair_text && a.link_flair_text.includes("Video"))
             let community = author.filter(a => a.link_flair_text && a.link_flair_template_id === communityID
                 && (!a.approved_by || a.approved_by !== "nmsceBot")) // leave mod approved stuff up
@@ -368,7 +370,7 @@ async function getContest(post, op, cmd) {
     // return post.reply(text).catch(err => error(err, 32))
 
     return reddit.composeMessage({
-        to: op.author.name,
+        to: post.author.name,
         fromSubreddit: "NoMansSkyTheGame",
         subject: cmd + "Results",
         text: text
@@ -384,5 +386,6 @@ function error(err, add) {
 const thankYou = 'Thank You for posting to r/NoMansSkyTheGame!  \n\n'
 const removedPost = 'Your post has been removed because it violates the following rules for posting:  \n\n'
 const postLimit = "Posting limit exceded: OP is allowed to make "
-const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*  \n"
+const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the \
+                [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*  \n"
 const permaLinkHdr = "https://reddit.com"
