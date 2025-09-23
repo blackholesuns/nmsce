@@ -957,7 +957,7 @@ function getItem(list, str) {
 }
 
 const removedPost = 'Thank You for posting to r/NMSCoordinateExchange! Your post has been removed because it violates the following rules for posting:  \n\n'
-const postLimit = "Posting limit exceded: OP is allowed to make "
+const postLimit = "Posting limit exceeded: OP is allowed to make "
 const permaLinkHdr = "https://reddit.com"
 
 const replyHelp = `List of bot commands

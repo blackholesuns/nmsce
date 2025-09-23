@@ -151,7 +151,7 @@
 
                     <div id="id-glyphInput" class="hidden">
                         <div class="row">
-                            <div class="col-lg-2 col-md-2 col-sm-3 txt-label-def">
+                            <div class="col-lg-2 col-md-14 col-sm-14 txt-label-def">
                                 Glyph&nbsp;
                                 <span class="text-danger">*</span>&nbsp;
                                 <i class="bx bx-help-circle text-danger" data-toggle="tooltip" data-html="true"
@@ -161,10 +161,10 @@
                                                 The address field always shows 0 as the first digit. This is the planet index.">
                                 </i>
                             </div>
-                            <input id="id-glyph" type="text" maxength="12"
-                                class="col-lg-9 col-md-9 col-sm-8 col-9 rounded glyph" style="font-size: 37px;" placeholder="000000000000"
+                            <input id="id-glyph" type="text" maxlength="12"
+                                class="col-lg-7 col-md-7 col-sm-14 col-14 rounded txt-glyph-disp" style="font-size: 24px;" placeholder="000000000000"
                                 onchange="nmsce.changeAddr(this)">
-                            <div class="col-lg-4 col-md-5 col-sm-5 col-4">
+                            <div class="col-lg-4 col-md-5 col-sm-5 col-5">
                                 <label class=" txt-label-def">
                                     <input id="ck-glyphs" type="checkbox" onchange="nmsce.setGlyphInput(this)">
                                     Input Glyphs&nbsp;
@@ -173,7 +173,7 @@
                                     </i>
                                 </label>
                             </div>
-                            <div class="col text-danger h5">First glyph will always be
+                            <div class="col-8 text-danger h6">First glyph will always be
                                 displayed as&nbsp;<span class="txt-glyph-disp h6">0</span>
                             </div>
                         </div>

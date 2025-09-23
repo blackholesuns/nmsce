@@ -27,6 +27,8 @@ async function main() {
     sub = await reddit.getSubreddit('NoMansSkyTheGame')
 
     await loadSettings()
+    // await getContest(null, null, "ship build contest")
+    // return
 
     setInterval(() => getModqueue(), 13 * 1000)     // for moderator commands
     setInterval(() => getNew(), 31 * 1000)          // post limits, etc.
@@ -39,7 +41,7 @@ async function getNew() {
     let p = []
 
     p.push(sub.getNew(!lastPost.name ? {
-        limit: 200
+        limit: 1000
     } : lastPost.full + recheck < date ? {
         limit: 10 // make sure to go back past deleted last post
     } : {
@@ -337,34 +339,42 @@ function removePost(post, cmd) {
 }
 
 async function getContest(post, op, cmd) {
-    let total = 0
     let entries = []
+    let total = 0
 
     if (!cmd)
         cmd = op.link_flair_text
 
-    let posts = await sub.search({ query: "flair_text:" + cmd, sort: "new", time: "month" })
+    let posts = await sub.search({ query: "flair:" + cmd, time:"month", orderBy: "top" })
         .catch(err => error(err, "lim2"))
 
-    for (let post of posts) {
-        let comments = 0
+    while (posts.length > 0) {
+        console.log(posts.length, posts[0].name)
 
-        let replies = await post.expandReplies().comments
+        for (let post of posts) {
+            let comments = 0
 
-        if (replies.length)
-            for (let r of replies) {  // top level comments only
-                if (r.author_fullname !== post.author_fullname)
-                    comments++
-            }
+            let replies = await post.expandReplies().comments
+            if (replies.length)
+                for (let r of replies) {  // top level comments only
+                    if (r.author_fullname !== post.author_fullname)
+                        comments++
+                }
 
-        total += post.ups + post.downs + post.total_awards_received + comments
+            let t = post.ups + post.downs + post.total_awards_received + comments
+            // console.log(t, post.ups, post.downs, post.total_awards_received, comments, permaLinkHdr + post.permalink)
 
-        entries.push({
-            link: post.permalink,
-            id: post.id,
-            votes: post.ups + post.downs + post.total_awards_received + comments,
-            title: post.title,
-        })
+            entries.push({
+                link: post.permalink,
+                id: post.id,
+                votes: t,
+                title: post.title,
+            })
+        }
+
+        
+        posts = await sub.search({ query: "flair:" + cmd, time:"month", orderBy: "top", after: posts[0].name })
+            .catch(err => error(err, "lim2"))
     }
 
     let text = "Contest: " + cmd + "  \n"
@@ -378,13 +388,13 @@ async function getContest(post, op, cmd) {
         text += (i + 1) + "| " + entries[i].votes + "| [" + entries[i].title + "](" + permaLinkHdr + entries[i].link + ")  \n"
 
     // return post.reply(text).catch(err => error(err, 32))
-
-    return reddit.composeMessage({
-        to: post.author.name,
-        fromSubreddit: "NoMansSkyTheGame",
-        subject: cmd + "Results",
-        text: text
-    }).catch(err => error(err, 32))
+    console.log(text)
+    // return reddit.composeMessage({
+    //     to: post.author.name,
+    //     fromSubreddit: "NoMansSkyTheGame",
+    //     subject: cmd + "Results",
+    //     text: text
+    // }).catch(err => error(err, 32))
 }
 
 function error(err, add) {
@@ -395,7 +405,7 @@ function error(err, add) {
 
 const thankYou = 'Thank You for posting to r/NoMansSkyTheGame!  \n\n'
 const removedPost = 'Your post has been removed because it violates the following rules for posting:  \n\n'
-const postLimit = "Posting limit exceded: OP is allowed to make "
+const postLimit = "Posting limit exceeded: OP is allowed to make "
 const botSig = "  \n*This action was taken by the nmstgBot. If you have any questions please contact the \
                 [moderators](https://www.reddit.com/message/compose/?to=/r/NoMansSkyTheGame).*  \n"
 const permaLinkHdr = "https://reddit.com"
