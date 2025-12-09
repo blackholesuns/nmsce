@@ -95,3 +95,13 @@ function displayAll(addr, planet) {
     $("#addr-card #id-addr").val(addr)
     $("#addr-card #id-planet").val(planet)
 }
+
+$(window).on('paste', (event) => {
+    const paste = event.originalEvent.clipboardData.files;
+    const file = Array.from(paste).find(file => /^image\//.test(file.type));
+
+    const transfer = new DataTransfer();
+    if (file) transfer.items.add(file);
+
+    if (transfer.files.length) $('#file-input').prop('files', transfer.files).trigger('change');
+});
