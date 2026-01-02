@@ -11,7 +11,7 @@ var lastPost = {}
 var rules = []
 var mods = []
 
-const contestFlair = "Ship Build Contest"
+const contestFlair = null //"Ship Build Contest"
 
 main()
 async function main() {
@@ -81,6 +81,7 @@ async function getModqueue() {
     p.push(sub.getModqueue().then(posts => {
         let p = []
         p.push(modCommands(posts, mods))
+        p.push(checkReported(posts))
         return Promise.all(p)
     }).catch(err => error(err, 2)))
 
@@ -133,33 +134,34 @@ async function checkPostLimits(posts) {
 
             let author = await sub.search({ query: "author:" + post.author.name, sort: "new", time: contestFlair ? "month" : "week" }) // if contest then use month if not use week
 
-            let contest = author.filter(a => contestFlair && a.link_flair_text && a.link_flair_text.includes(contestFlair))
-            let video = author.filter(a => a.link_flair_text && a.link_flair_text.includes("Video"))
-            let community = author.filter(a => a.link_flair_text && a.link_flair_template_id === communityID
-                && (!a.approved_by || a.approved_by !== "nmsceBot")) // leave mod approved stuff up
+            if (author.length > 2) {
+                let contest = contestFlair ? author.filter(a => contestFlair && a.link_flair_text && a.link_flair_text.includes(contestFlair)) : []
+                let video = author.filter(a => a.link_flair_text && a.link_flair_text.includes("Video"))
+                let community = author.filter(a => a.link_flair_text && a.link_flair_template_id === communityID
+                    && (!a.approved_by || a.approved_by !== "nmsceBot")) // leave mod approved stuff up
 
-            let hour = author.filter(a => a.link_flair_text
-                && !a.link_flair_text.includes(contestFlair)        // post checked elsewhere don't count towards hourly limit
-                && !a.link_flair_text.includes("Video")
-                && a.link_flair_template_id !== communityID)
+                let hourly = author.filter(a => (!contestFlair || !a.link_flair_text.includes(contestFlair))        // post checked elsewhere don't count towards hourly limit
+                    && !a.link_flair_text.includes("Video")
+                    && a.link_flair_template_id !== communityID)
 
-            for (let i = 0; i < contest.length - 3; ++i)
-                p.push(overLimit(contest[i], "3 post for contest"))
+                for (let i = 0; i < contest.length - 3; ++i)
+                    p.push(overLimit(contest[i], "3 post for contest")) // per month
 
-            for (let i = 0; i < video.length - 2; ++i)
-                if (now - video[i].created_utc < day && video[i].created_utc - video[i + 2].created_utc < week)
-                    p.push(overLimit(video[i], "2 video posts/week"))
+                for (let i = 0; i < video.length - 2; ++i)
+                    if (now - video[i].created_utc < day && video[i].created_utc - video[i + 2].created_utc < week)
+                        p.push(overLimit(video[i], "2 video posts/week"))
 
-            for (let i = 0; i < community.length - 2; ++i)
-                if (now - community[i].created_utc < day
-                    && community[i].created_utc - community[i + 2].created_utc < week)
-                    p.push(overLimit(community[i], "2 community content posts/week"))
+                for (let i = 0; i < community.length - 2; ++i)
+                    if (now - community[i].created_utc < day
+                        && community[i].created_utc - community[i + 2].created_utc < week)
+                        p.push(overLimit(community[i], "2 community content posts/week"))
 
-            for (let i = 0; i < hour.length - 2; ++i)
-                if (now - hour[i].created_utc < day && hour[i].created_utc - hour[i + 2].created_utc < hour)
-                    p.push(overLimit(hour[i], "2 posts/hour", new Date((hour[i + 2].created_utc + hour) * 1000).toUTCString()))
+                for (let i = 0; i < hourly.length - 2; ++i)
+                    if (now - hourly[i].created_utc < day && hourly[i].created_utc - hourly[i + 2].created_utc < hour)
+                        p.push(overLimit(hourly[i], "2 posts/hour", new Date((hourly[i + 2].created_utc + hour) * 1000).toUTCString()))
+            }
 
-            delay(1000)
+            delay(2000)
         }
     }
 
@@ -198,17 +200,25 @@ async function modCommands(posts, mods) {
 
     for (let post of posts) {
         if (post.name.startsWith("t1_")) {
-            let match = post.body.match(/!\W?(contest|reload|flair|cc|r)\W?(.*)?/i)
+            let match = post.body.match(/!\W?(contest|reload|rall|flair|cc|r)\W?(.*)?/i)
 
             if (match) {
                 console.log("command", match[1], match[2], permaLinkHdr + post.permalink)
 
                 let op = post
+                let parent = null
 
-                while (typeof op.parent_id !== "undefined" && op.parent_id.startsWith("t1_"))
+                while (typeof op.parent_id !== "undefined" && op.parent_id.startsWith("t1_")) {
                     op = await reddit.getComment(op.parent_id).fetch()   // trace back up comment thread
 
+                    if (!parent)
+                        parent = op
+                }
+
                 op = await reddit.getSubmission(op.parent_id).fetch()   // get post
+
+                if (!parent)
+                    parent = op
 
                 p.push(post.remove().catch(err => error(err, 20)))
 
@@ -218,6 +228,7 @@ async function modCommands(posts, mods) {
                         case "cc": p.push(setFlair(op, "Community Content")); break // change flair to community content
                         case "reload": p.push(loadSettings()); break              // reload settings
                         case "contest": p.push(getContest(post, op, match[2])); break   // get contest results
+                        //case "rall": p.push(removeAll(parent)); break      // remove all of an ops posts or comments
                     }
                 }
 
@@ -228,6 +239,39 @@ async function modCommands(posts, mods) {
                 }
             }
         }
+    }
+
+    return Promise.all(p)
+}
+
+async function removeAll(op) {
+    console.log("get comments", op.author.name)
+    let user = reddit.getUser(op.author.name)
+
+    let comments = await user.getComments({ sort: "new", limit: 1000 })
+    let count = 0
+    console.log(comments.length)
+
+    for (let c of comments) {
+        if (c.removed)
+            continue
+
+        if (c.subreddit_name_prefixed === "r/NoMansSkyTheGame") {
+            console.log(++count, c.link_permalink)
+            // await c.remove().catch(err => console.error("error"))
+            // await delay(2000)
+            ++count
+        }
+    }
+
+    console.error("done. removed ", count)
+}
+
+function checkReported(posts) {
+    let p = []
+    for (let post of posts) {
+        if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot" || post.author.name === "NoMansSkyTheGame-ModTeam") && post.body[0] !== '!')
+            p.push(post.approve())  // idiots reporting automod & bot comments
     }
 
     return Promise.all(p)
@@ -345,7 +389,7 @@ async function getContest(post, op, cmd) {
     if (!cmd)
         cmd = op.link_flair_text
 
-    let posts = await sub.search({ query: "flair:" + cmd, time:"month", orderBy: "top" })
+    let posts = await sub.search({ query: "flair:" + cmd, time: "month", orderBy: "top" })
         .catch(err => error(err, "lim2"))
 
     while (posts.length > 0) {
@@ -372,8 +416,8 @@ async function getContest(post, op, cmd) {
             })
         }
 
-        
-        posts = await sub.search({ query: "flair:" + cmd, time:"month", orderBy: "top", after: posts[0].name })
+
+        posts = await sub.search({ query: "flair:" + cmd, time: "month", orderBy: "top", after: posts[0].name })
             .catch(err => error(err, "lim2"))
     }
 

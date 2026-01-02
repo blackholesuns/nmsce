@@ -626,8 +626,8 @@ async function removeBotComments(op, message) {
 function checkReported(posts) {
     let p = []
     for (let post of posts) {
-        if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot") && post.body[0] !== '!')
-            p.push(post.approve().catch(err => error(err, "cr")))  // idiots reporting automod & bot comments
+        if ((post.author.name === "AutoModerator" || post.author.name === "nmsceBot" || post.author.name === "NoMansSkyTheGame-ModTeam") && post.body[0] !== '!')
+            p.push(post.approve())  // idiots reporting automod & bot comments
     }
 
     return Promise.all(p)
