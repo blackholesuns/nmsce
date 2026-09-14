@@ -280,6 +280,14 @@ export const versionList = [
         name: "xeno arena",
         version: 6.30 ,
         date: "4/8/2026"
+    }, {
+        name: "swarm",
+        version: 6.40 ,
+        date: "5/27/2026"
+    }, {
+        name: "cosmos",
+        version: 7.00 ,
+        date: "6/9/2026"
     }
 ];
 
