@@ -158,11 +158,11 @@
 
                 <div class="row">
                     <div class="col-md-2 col-4 txt-label-def" data-toggle="tooltip" data-html="true"
-                        data-placement="bottom" title="Load unmodified screenshot containing glyphs. ALWAYS double check results.">
+                        data-placement="bottom" title="Load or paste unmodified screenshot containing glyphs. ALWAYS double check results.">
                         Screenshot&nbsp;
                         <i class="bx bx-help-circle text-danger h6"></i>
                     </div>
-                    <input type="file" class="col-4 form-control form-control-sm" accept="image/*" name="files[]"
+                    <input id="file-input" type="file" class="col-4 form-control form-control-sm" accept="image/*" name="files[]"
                         data-type="img" onchange="glyph.loadGlyphImage(this)">
                     <div class="col-14">
                         <canvas id="ss-canvas" class="border" style="height:10px;width:20px;"></canvas>
