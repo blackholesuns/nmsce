@@ -286,8 +286,16 @@ export const versionList = [
         date: "5/27/2026"
     }, {
         name: "cosmos",
-        version: 7.00 ,
+        version: 7.00 , 
         date: "6/9/2026"
+    }, {
+        name: "cosmos",
+        version: 7.00 , 
+        date: "9/9/2026"
+    }, {
+        name: "forsaken",
+        version: 7.10 , 
+        date: "10/29/2026"
     }
 ];
 
